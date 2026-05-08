@@ -23,12 +23,13 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardEffect
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardViewModel
-import javax.inject.Inject
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardRoot
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Main input method host for KP2A Compose Keyboard.
@@ -111,7 +112,7 @@ class KeyboardImeService :
                 MaterialTheme {
                     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-                    KeyboardInputView(
+                    KeyboardRoot(
                         state = state,
                         onIntent = viewModel::onIntent,
                     )
