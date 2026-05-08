@@ -78,4 +78,24 @@ sealed interface SecureLogEvent {
     data object EntryPickerActivityLaunchFailed : SecureLogEvent {
         override val message = "Entry picker activity launch failed"
     }
+
+    data object Kp2aLaunchRequested : SecureLogEvent {
+        override val message = "KP2A launch requested"
+    }
+
+    data object Kp2aLaunchFailed : SecureLogEvent {
+        override val message = "KP2A launch failed"
+    }
+
+    data object Kp2aResultReceived : SecureLogEvent {
+        override val message = "KP2A result received"
+    }
+
+    data object Kp2aSelectionCancelled : SecureLogEvent {
+        override val message = "KP2A selection cancelled"
+    }
+
+    data object Kp2aSelectionFailed : SecureLogEvent {
+        override val message = "KP2A selection failed"
+    }
 }

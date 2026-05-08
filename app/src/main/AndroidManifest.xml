@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <queries>
+        <package android:name="keepass2android.keepass2android" />
+        <package android:name="keepass2android.keepass2android_nonet" />
+
+        <intent>
+            <action android:name="keepass2android.ACTION_QUERY_CREDENTIALS" />
+        </intent>
+
+        <intent>
+            <action android:name="keepass2android.ACTION_QUERY_CREDENTIALS_FOR_OWN_PACKAGE" />
+        </intent>
+    </queries>
+
     <application
         android:name=".Kp2aComposeKeyboardApp"
         android:allowBackup="false"

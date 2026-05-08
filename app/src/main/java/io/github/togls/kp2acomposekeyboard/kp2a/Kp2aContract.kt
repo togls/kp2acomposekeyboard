@@ -6,39 +6,23 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
-/**
- * 这里先采用 ACTION_QUERY_CREDENTIALS_FOR_OWN_PACKAGE 作为可编译、可隔离的查询入口。
- *
- * 开源样例中的 Kp2aControl.getQueryEntryForOwnPackageIntent() 就是返回这个 action 的 Intent，字段结果通过 EXTRA_ENTRY_OUTPUT_DATA JSON 解析。
- */
 object Kp2aContract {
 
-    object Packages {
-        const val KEEPASS2ANDROID = "keepass2android.keepass2android"
-        const val KEEPASS2ANDROID_OFFLINE = "keepass2android.keepass2android_nonet"
-    }
-
     object Actions {
+        const val QUERY_CREDENTIALS =
+            "keepass2android.ACTION_QUERY_CREDENTIALS"
+
         const val QUERY_CREDENTIALS_FOR_OWN_PACKAGE =
             "keepass2android.ACTION_QUERY_CREDENTIALS_FOR_OWN_PACKAGE"
-
-        const val TRIGGER_REQUEST_ACCESS =
-            "keepass2android.ACTION_TRIGGER_REQUEST_ACCESS"
-
-        const val REQUEST_ACCESS =
-            "keepass2android.ACTION_REQUEST_ACCESS"
-
-        const val RECEIVE_ACCESS =
-            "keepass2android.ACTION_RECEIVE_ACCESS"
-
-        const val REVOKE_ACCESS =
-            "keepass2android.ACTION_REVOKE_ACCESS"
 
         const val START_WITH_TASK =
             "keepass2android.ACTION_START_WITH_TASK"
     }
 
     object Extras {
+        const val QUERY_STRING =
+            "keepass2android.EXTRA_QUERY_STRING"
+
         const val ENTRY_OUTPUT_DATA =
             "keepass2android.EXTRA_ENTRY_OUTPUT_DATA"
 
@@ -46,52 +30,21 @@ object Kp2aContract {
             "keepass2android.EXTRA_PROTECTED_FIELDS_LIST"
 
         const val ENTRY_ID =
-            "keepass2android.EXTRA_ENTRY_ID"
-
-        const val SCOPES =
-            "keepass2android.EXTRA_SCOPES"
-
-        const val PLUGIN_PACKAGE =
-            "keepass2android.EXTRA_PLUGIN_PACKAGE"
-
-        const val SENDER =
-            "keepass2android.EXTRA_SENDER"
-
-        const val REQUEST_TOKEN =
-            "keepass2android.EXTRA_REQUEST_TOKEN"
-
-        const val ACCESS_TOKEN =
-            "keepass2android.EXTRA_ACCESS_TOKEN"
+            "keepass2android.EXTRA_ENTRY_DATA"
     }
 
-    object Scopes {
-        const val DATABASE_ACTIONS =
-            "keepass2android.SCOPE_DATABASE_ACTIONS"
+    fun createQueryEntryIntent(searchText: String?): Intent {
+        return Intent(Actions.QUERY_CREDENTIALS).apply {
+            val query = searchText?.trim().orEmpty()
 
-        const val CURRENT_ENTRY =
-            "keepass2android.SCOPE_CURRENT_ENTRY"
-
-        const val QUERY_CREDENTIALS =
-            "keepass2android.SCOPE_QUERY_CREDENTIALS"
-
-        const val QUERY_CREDENTIALS_FOR_OWN_PACKAGE =
-            "keepass2android.SCOPE_QUERY_CREDENTIALS_FOR_OWN_PACKAGE"
-    }
-
-    object FieldNames {
-        const val TITLE = "Title"
-        const val USERNAME = "UserName"
-        const val PASSWORD = "Password"
-        const val URL = "URL"
-        const val NOTES = "Notes"
-        const val TOTP = "TOTP"
-        const val OTP = "otp"
+            if (query.isNotEmpty()) {
+                putExtra(Extras.QUERY_STRING, query)
+            }
+        }
     }
 
     fun createQueryOwnPackageIntent(): Intent {
-        return Intent(Actions.QUERY_CREDENTIALS_FOR_OWN_PACKAGE).apply {
-            addCategory(Intent.CATEGORY_DEFAULT)
-        }
+        return Intent(Actions.QUERY_CREDENTIALS_FOR_OWN_PACKAGE)
     }
 
     fun isSuccessfulResult(
@@ -99,7 +52,7 @@ object Kp2aContract {
         data: Intent?,
     ): Boolean {
         return resultCode == Activity.RESULT_OK &&
-                data?.getStringExtra(Extras.ENTRY_OUTPUT_DATA).isNullOrBlank().not()
+                !data?.getStringExtra(Extras.ENTRY_OUTPUT_DATA).isNullOrBlank()
     }
 
     fun parseEntryResult(data: Intent?): Kp2aEntryResult {
@@ -133,7 +86,7 @@ object Kp2aContract {
                 }
             }
         } catch (_: JSONException) {
-            // KP2A 返回内容如果不是合法 JSON，只能视为选择失败；不能把原始内容写日志，里面可能包含敏感字段。
+            // KP2A 返回内容可能包含密码字段；解析失败时不要打印原始 JSON。
             emptyMap()
         }
     }
@@ -158,16 +111,17 @@ object Kp2aContract {
                 }
             }
         } catch (_: JSONException) {
-            // 受保护字段列表解析失败时，不影响基础字段读取；不要记录原始 JSON。
             emptySet()
         }
     }
 
-    fun defaultScopes(): ArrayList<String> {
-        return arrayListOf(
-            Scopes.CURRENT_ENTRY,
-            Scopes.QUERY_CREDENTIALS,
-            Scopes.QUERY_CREDENTIALS_FOR_OWN_PACKAGE,
-        )
+    fun appQuery(packageName: String?): String {
+        val safePackageName = packageName?.trim().orEmpty()
+
+        if (safePackageName.isEmpty()) {
+            return ""
+        }
+
+        return "androidapp://$safePackageName"
     }
 }

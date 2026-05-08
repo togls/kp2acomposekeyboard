@@ -6,6 +6,9 @@ sealed interface KeyboardEffect {
     data object DeleteBackward : KeyboardEffect
     data object SendEnter : KeyboardEffect
 
-    data object LaunchEntryPicker : KeyboardEffect
+    data class LaunchEntryPicker(
+        val targetPackageName: String?,
+    ) : KeyboardEffect
+
     data object LaunchSettings : KeyboardEffect
 }

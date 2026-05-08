@@ -37,9 +37,15 @@ fun EntryPickerScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             when (state.status) {
-                EntryPickerStatus.Selecting -> SelectingContent(
+                EntryPickerStatus.Idle,
+                EntryPickerStatus.Selecting,
+                    -> SelectingContent(
                     message = state.message,
                     onCancel = { onIntent(EntryPickerIntent.Cancel) },
+                )
+
+                EntryPickerStatus.Completed -> CompletedContent(
+                    message = state.message,
                 )
 
                 EntryPickerStatus.Failed -> FailedContent(
@@ -71,6 +77,16 @@ private fun SelectingContent(
     OutlinedButton(onClick = onCancel) {
         Text(text = "取消")
     }
+}
+
+@Composable
+private fun CompletedContent(
+    message: String?,
+) {
+    Text(
+        text = message ?: "选择完成",
+        style = MaterialTheme.typography.titleMedium,
+    )
 }
 
 @Composable

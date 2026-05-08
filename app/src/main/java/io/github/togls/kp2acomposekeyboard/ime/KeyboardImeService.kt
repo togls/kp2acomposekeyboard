@@ -1,5 +1,7 @@
 package io.github.togls.kp2acomposekeyboard.ime
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.inputmethodservice.InputMethodService
 import android.util.Log
 import android.view.View
@@ -21,6 +23,7 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.togls.kp2acomposekeyboard.feature.entrypicker.EntryPickerActivity
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardEffect
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardViewModel
@@ -33,9 +36,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import io.github.togls.kp2acomposekeyboard.feature.entrypicker.EntryPickerActivity
 
 /**
  * Main input method host for KP2A Compose Keyboard.
@@ -204,7 +204,7 @@ class KeyboardImeService :
                 inputConnectionDispatcher.sendEnter()
             }
 
-            KeyboardEffect.LaunchEntryPicker -> {
+            is KeyboardEffect.LaunchEntryPicker -> {
                 launchEntryPickerActivity()
                 SecureLog.debug(SecureLogEvent.LaunchEntryPickerRequested, TAG)
             }
@@ -218,9 +218,14 @@ class KeyboardImeService :
     private fun launchEntryPickerActivity() {
         SecureLog.debug(SecureLogEvent.EntryPickerActivityLaunchRequested, TAG)
 
+        val targetPackageName = currentInputEditorInfo?.packageName
+
         val intent = Intent(this, EntryPickerActivity::class.java).apply {
-            // InputMethodService 不是 Activity Context；从 Service 启动 Activity 必须使用新任务。
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            putExtra(
+                EntryPickerActivity.EXTRA_TARGET_PACKAGE_NAME,
+                targetPackageName,
+            )
         }
 
         try {

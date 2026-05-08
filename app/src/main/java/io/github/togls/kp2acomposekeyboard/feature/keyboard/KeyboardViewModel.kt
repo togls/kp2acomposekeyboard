@@ -41,7 +41,12 @@ class KeyboardViewModel(
             KeyboardIntent.DeleteBackward -> sendEffect(KeyboardEffect.DeleteBackward)
             KeyboardIntent.Enter -> sendEffect(KeyboardEffect.SendEnter)
 
-            KeyboardIntent.SelectEntry -> sendEffect(KeyboardEffect.LaunchEntryPicker)
+            KeyboardIntent.SelectEntry -> sendEffect(
+                // 真正的 targetPackageName 应由 KeyboardImeService 从 currentInputEditorInfo.packageName 补进去更合适，
+                // 因为 ViewModel 不应该持有 IME / EditorInfo
+                KeyboardEffect.LaunchEntryPicker(targetPackageName = null),
+            )
+
             KeyboardIntent.ClearEntry -> sessionTimeoutController.clearNow()
 
             KeyboardIntent.SwitchToDefaultLayout -> switchToDefaultLayout()
