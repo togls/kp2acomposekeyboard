@@ -43,11 +43,11 @@ fun LetterKeyboard(
             )
 
             "zxcvbnm".forEach { letter ->
-                val text = letter.toDisplayText(state.isUppercase)
-                KeyboardKey(
+                LetterKey(
                     modifier = Modifier.weight(1f),
-                    text = text,
-                    onClick = { onIntent(KeyboardIntent.CommitText(text)) },
+                    letter = letter,
+                    isUppercase = state.isUppercase,
+                    onIntent = onIntent,
                 )
             }
 
@@ -72,17 +72,33 @@ private fun LetterRow(
         horizontalArrangement = Arrangement.spacedBy(6.dpCompat),
     ) {
         letters.forEach { letter ->
-            val text = letter.toDisplayText(isUppercase)
-            KeyboardKey(
+            LetterKey(
                 modifier = Modifier.weight(1f),
-                text = text,
-                onClick = { onIntent(KeyboardIntent.CommitText(text)) },
+                letter = letter,
+                isUppercase = isUppercase,
+                onIntent = onIntent,
             )
         }
     }
 }
 
-private fun Char.toDisplayText(isUppercase: Boolean): String {
+@Composable
+private fun LetterKey(
+    letter: Char,
+    isUppercase: Boolean,
+    onIntent: (KeyboardIntent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val text = letter.toInputText(isUppercase)
+
+    KeyboardKey(
+        modifier = modifier,
+        text = text,
+        onClick = { onIntent(KeyboardIntent.CommitText(text)) },
+    )
+}
+
+private fun Char.toInputText(isUppercase: Boolean): String {
     return if (isUppercase) {
         uppercaseChar().toString()
     } else {
