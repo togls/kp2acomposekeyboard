@@ -3,6 +3,7 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -28,7 +29,9 @@ fun ExistingEntryHint(
         contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 12.dpCompat, end = 4.dpCompat),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -39,6 +42,7 @@ fun ExistingEntryHint(
                 text = "当前已有条目：$entryName",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.bodyMedium,
             )
 
             TextButton(

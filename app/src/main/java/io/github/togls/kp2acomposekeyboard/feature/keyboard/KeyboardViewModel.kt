@@ -1,6 +1,5 @@
 package io.github.togls.kp2acomposekeyboard.feature.keyboard
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldType
@@ -32,10 +31,8 @@ class KeyboardViewModel : ViewModel() {
             KeyboardIntent.DeleteBackward -> sendEffect(KeyboardEffect.DeleteBackward)
             KeyboardIntent.Enter -> sendEffect(KeyboardEffect.SendEnter)
 
-            KeyboardIntent.SelectEntry -> {
-                loadFakeEntryForPagedMode()
-                Log.d("Kp2aKeyboardIme", "SelectEntry clicked, load fake entry")
-            }
+            KeyboardIntent.SelectEntry -> loadFakeEntryForPagedMode()
+
             KeyboardIntent.ClearEntry -> clearEntry()
 
             KeyboardIntent.SwitchToDefaultLayout -> switchToDefaultLayout()
@@ -147,7 +144,7 @@ class KeyboardViewModel : ViewModel() {
             state.copy(
                 mainLayout = MainKeyboardLayout.Entry,
                 entryFieldDisplayMode = EntryFieldDisplayMode.Paged,
-                currentEntryName = "GitHub",
+                currentEntryName = "GitHub - Personal Account",
                 hasActiveSession = true,
                 fixedFields = fixedFields,
                 extraFields = extraFields,

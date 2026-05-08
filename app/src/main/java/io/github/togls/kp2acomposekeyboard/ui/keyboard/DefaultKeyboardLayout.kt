@@ -25,9 +25,11 @@ fun DefaultKeyboardLayout(
             .padding(horizontal = 8.dpCompat, vertical = 8.dpCompat),
         verticalArrangement = Arrangement.spacedBy(8.dpCompat),
     ) {
-        if (state.hasActiveSession && state.currentEntryName != null) {
+        val entryName = state.currentEntryName
+
+        if (state.hasActiveSession) {
             ExistingEntryHint(
-                entryName = state.currentEntryName,
+                entryName = entryName?.takeIf { it.isNotBlank() } ?: "未命名条目",
                 onIntent = onIntent,
             )
         }
