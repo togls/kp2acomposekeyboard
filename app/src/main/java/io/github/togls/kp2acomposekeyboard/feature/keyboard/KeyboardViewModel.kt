@@ -2,11 +2,8 @@ package io.github.togls.kp2acomposekeyboard.feature.keyboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.togls.kp2acomposekeyboard.domain.KeyboardField
-import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldType
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
 import io.github.togls.kp2acomposekeyboard.security.SecureLogEvent
-import io.github.togls.kp2acomposekeyboard.session.KeyboardSession
 import io.github.togls.kp2acomposekeyboard.session.KeyboardSessionRepository
 import io.github.togls.kp2acomposekeyboard.session.KeyboardSessionSnapshot
 import io.github.togls.kp2acomposekeyboard.session.SessionTimeoutController
@@ -44,7 +41,7 @@ class KeyboardViewModel(
             KeyboardIntent.DeleteBackward -> sendEffect(KeyboardEffect.DeleteBackward)
             KeyboardIntent.Enter -> sendEffect(KeyboardEffect.SendEnter)
 
-            KeyboardIntent.SelectEntry -> loadFakeSession()
+            KeyboardIntent.SelectEntry -> sendEffect(KeyboardEffect.LaunchEntryPicker)
             KeyboardIntent.ClearEntry -> sessionTimeoutController.clearNow()
 
             KeyboardIntent.SwitchToDefaultLayout -> switchToDefaultLayout()
@@ -134,110 +131,6 @@ class KeyboardViewModel(
         }
 
         sendEffect(KeyboardEffect.CommitText(text))
-    }
-
-    private fun loadFakeSession() {
-        sessionRepository.setSession(
-            KeyboardSession(
-                entryId = "fake_entry_github",
-                entryName = "GitHub - Personal Account",
-                fields = createFakeFields(),
-                createdAtMillis = System.currentTimeMillis(),
-            ),
-        )
-    }
-
-    private fun createFakeFields(): List<KeyboardField> {
-        return listOf(
-            KeyboardField(
-                id = "fake_username",
-                key = "username",
-                label = "Username",
-                value = "octocat",
-                type = KeyboardFieldType.Username,
-                sensitive = false,
-            ),
-            KeyboardField(
-                id = "fake_password",
-                key = "password",
-                label = "Password",
-                value = "fake-password-for-dev-only",
-                type = KeyboardFieldType.Password,
-                sensitive = true,
-            ),
-            KeyboardField(
-                id = "fake_totp",
-                key = "totp",
-                label = "TOTP",
-                value = "123456",
-                type = KeyboardFieldType.Totp,
-                sensitive = true,
-            ),
-            KeyboardField(
-                id = "fake_url",
-                key = "url",
-                label = "URL",
-                value = "https://github.com",
-                type = KeyboardFieldType.Url,
-                sensitive = false,
-            ),
-            KeyboardField(
-                id = "fake_email",
-                key = "email",
-                label = "Email",
-                value = "octocat@example.com",
-                type = KeyboardFieldType.Email,
-                sensitive = false,
-            ),
-            KeyboardField(
-                id = "fake_recovery",
-                key = "recovery",
-                label = "Recovery",
-                value = "fake-recovery-code",
-                type = KeyboardFieldType.Recovery,
-                sensitive = true,
-            ),
-            KeyboardField(
-                id = "fake_phone",
-                key = "phone",
-                label = "Phone",
-                value = "+1 000 000 0000",
-                type = KeyboardFieldType.Phone,
-                sensitive = false,
-            ),
-            KeyboardField(
-                id = "fake_address",
-                key = "address",
-                label = "Address",
-                value = "Fake Address",
-                type = KeyboardFieldType.Address,
-                sensitive = false,
-            ),
-            KeyboardField(
-                id = "fake_notes",
-                key = "notes",
-                label = "Notes",
-                value = "Fake notes",
-                type = KeyboardFieldType.Notes,
-                sensitive = false,
-            ),
-            KeyboardField(
-                id = "fake_custom_1",
-                key = "custom1",
-                label = "Custom1",
-                value = "Fake custom 1",
-                type = KeyboardFieldType.Custom,
-                sensitive = false,
-            ),
-            KeyboardField(
-                id = "fake_custom_2",
-                key = "custom2",
-                label = "Custom2",
-                value = "Fake custom 2",
-                type = KeyboardFieldType.Custom,
-                sensitive = false,
-            ),
-        )
     }
 
     private fun switchToDefaultLayout() {

@@ -70,4 +70,12 @@ sealed interface SecureLogEvent {
     data object LaunchSettingsRequested : SecureLogEvent {
         override val message = "Launch settings requested"
     }
+
+    data object EntryPickerActivityLaunchRequested : SecureLogEvent {
+        override val message = "Entry picker activity launch requested"
+    }
+
+    data object EntryPickerActivityLaunchFailed : SecureLogEvent {
+        override val message = "Entry picker activity launch failed"
+    }
 }

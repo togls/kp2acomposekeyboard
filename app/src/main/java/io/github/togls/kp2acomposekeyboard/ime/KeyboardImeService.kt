@@ -33,6 +33,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import io.github.togls.kp2acomposekeyboard.feature.entrypicker.EntryPickerActivity
 
 /**
  * Main input method host for KP2A Compose Keyboard.
@@ -202,13 +205,38 @@ class KeyboardImeService :
             }
 
             KeyboardEffect.LaunchEntryPicker -> {
-                // 这里只记录安全事件，不启动真实选择页；真正 KP2A 接入留到阶段 6。
+                launchEntryPickerActivity()
                 SecureLog.debug(SecureLogEvent.LaunchEntryPickerRequested, TAG)
             }
 
             KeyboardEffect.LaunchSettings -> {
                 SecureLog.debug(SecureLogEvent.LaunchSettingsRequested, TAG)
             }
+        }
+    }
+
+    private fun launchEntryPickerActivity() {
+        SecureLog.debug(SecureLogEvent.EntryPickerActivityLaunchRequested, TAG)
+
+        val intent = Intent(this, EntryPickerActivity::class.java).apply {
+            // InputMethodService 不是 Activity Context；从 Service 启动 Activity 必须使用新任务。
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+
+        try {
+            startActivity(intent)
+        } catch (error: ActivityNotFoundException) {
+            SecureLog.warn(
+                event = SecureLogEvent.EntryPickerActivityLaunchFailed,
+                tag = TAG,
+                throwable = error,
+            )
+        } catch (error: SecurityException) {
+            SecureLog.warn(
+                event = SecureLogEvent.EntryPickerActivityLaunchFailed,
+                tag = TAG,
+                throwable = error,
+            )
         }
     }
 
