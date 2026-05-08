@@ -22,7 +22,10 @@ import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardEffect
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardViewModel
+import io.github.togls.kp2acomposekeyboard.security.SecureLog
+import io.github.togls.kp2acomposekeyboard.security.SecureLogEvent
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardRoot
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -75,7 +78,7 @@ class KeyboardImeService :
 
         collectKeyboardEffects()
 
-        Log.d(TAG, "onCreate")
+        SecureLog.debug(SecureLogEvent.ImeCreated, TAG)
     }
 
     override fun onBindInput() {
@@ -85,7 +88,7 @@ class KeyboardImeService :
     }
 
     override fun onCreateInputView(): View {
-        Log.d(TAG, "onCreateInputView")
+        SecureLog.debug(SecureLogEvent.InputViewCreated, TAG)
 
         installViewTreeOwners(window?.window?.decorView)
 
@@ -136,12 +139,12 @@ class KeyboardImeService :
         super.onStartInputView(info, restarting)
         lifecycleRegistry.currentState = Lifecycle.State.RESUMED
         installViewTreeOwners(window?.window?.decorView)
-        Log.d(TAG, "onStartInputView restarting=$restarting inputType=${info?.inputType}")
+        SecureLog.debug(SecureLogEvent.InputViewStarted, TAG)
     }
 
     override fun onFinishInputView(finishingInput: Boolean) {
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
-        Log.d(TAG, "onFinishInputView finishingInput=$finishingInput")
+        SecureLog.debug(SecureLogEvent.InputViewFinished, TAG)
         super.onFinishInputView(finishingInput)
     }
 
@@ -164,10 +167,14 @@ class KeyboardImeService :
     }
 
     override fun onDestroy() {
+        if (::viewModel.isInitialized) {
+            viewModel.onIntent(KeyboardIntent.ClearEntry)
+        }
+
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         serviceScope.cancel()
         viewModelStore.clear()
-        Log.d(TAG, "onDestroy")
+        SecureLog.debug(SecureLogEvent.ImeDestroyed, TAG)
         super.onDestroy()
     }
 
@@ -196,11 +203,11 @@ class KeyboardImeService :
 
             KeyboardEffect.LaunchEntryPicker -> {
                 // 这里只记录安全事件，不启动真实选择页；真正 KP2A 接入留到阶段 6。
-                Log.d(TAG, "LaunchEntryPicker requested")
+                SecureLog.debug(SecureLogEvent.LaunchEntryPickerRequested, TAG)
             }
 
             KeyboardEffect.LaunchSettings -> {
-                Log.d(TAG, "LaunchSettings is not implemented yet")
+                SecureLog.debug(SecureLogEvent.LaunchSettingsRequested, TAG)
             }
         }
     }

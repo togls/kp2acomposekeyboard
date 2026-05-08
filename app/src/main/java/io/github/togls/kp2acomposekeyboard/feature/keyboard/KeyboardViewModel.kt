@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.togls.kp2acomposekeyboard.domain.KeyboardField
 import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldType
+import io.github.togls.kp2acomposekeyboard.security.SecureLog
+import io.github.togls.kp2acomposekeyboard.security.SecureLogEvent
 import io.github.togls.kp2acomposekeyboard.session.KeyboardSession
 import io.github.togls.kp2acomposekeyboard.session.KeyboardSessionRepository
 import io.github.togls.kp2acomposekeyboard.session.KeyboardSessionSnapshot
+import io.github.togls.kp2acomposekeyboard.session.SessionTimeoutController
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +22,7 @@ import kotlinx.coroutines.launch
 
 class KeyboardViewModel(
     private val sessionRepository: KeyboardSessionRepository,
+    private val sessionTimeoutController: SessionTimeoutController,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(KeyboardUiState())
@@ -41,7 +45,7 @@ class KeyboardViewModel(
             KeyboardIntent.Enter -> sendEffect(KeyboardEffect.SendEnter)
 
             KeyboardIntent.SelectEntry -> loadFakeSession()
-            KeyboardIntent.ClearEntry -> sessionRepository.clear()
+            KeyboardIntent.ClearEntry -> sessionTimeoutController.clearNow()
 
             KeyboardIntent.SwitchToDefaultLayout -> switchToDefaultLayout()
             KeyboardIntent.SwitchToEntryLayout -> switchToEntryLayout()
@@ -72,6 +76,12 @@ class KeyboardViewModel(
             sessionRepository.session.collect { session ->
                 val snapshot = sessionRepository.getSnapshot()
 
+                if (session != null) {
+                    sessionTimeoutController.restartTimeout(viewModelScope)
+                } else {
+                    sessionTimeoutController.cancelTimeout()
+                }
+
                 _uiState.update { state ->
                     when {
                         snapshot != null -> state.withSessionSnapshot(snapshot)
@@ -83,6 +93,11 @@ class KeyboardViewModel(
                 }
             }
         }
+    }
+
+    override fun onCleared() {
+        sessionTimeoutController.cancelTimeout()
+        super.onCleared()
     }
 
     private fun KeyboardUiState.withSessionSnapshot(
@@ -254,9 +269,10 @@ class KeyboardViewModel(
     }
 
     private fun commitField(fieldId: String) {
-        val value = sessionRepository.getFieldValue(fieldId) ?: return
+        val value = sessionRepository.getFieldValue(fieldId)
 
-        if (value.isEmpty()) {
+        if (value.isNullOrEmpty()) {
+            SecureLog.debug(SecureLogEvent.FieldCommitIgnored)
             return
         }
 

@@ -55,6 +55,13 @@ fun PagedEntryActionRow(
 
         KeyboardKey(
             modifier = Modifier.weight(1f),
+            text = "清除",
+            onClick = { onIntent(KeyboardIntent.ClearEntry) },
+            emphasis = KeyboardKeyEmphasis.Action,
+        )
+
+        KeyboardKey(
+            modifier = Modifier.weight(1f),
             text = "⌫",
             onClick = { onIntent(KeyboardIntent.DeleteBackward) },
             emphasis = KeyboardKeyEmphasis.Action,
@@ -116,6 +123,13 @@ fun ExpandedEntryActionRows(
                 modifier = Modifier.weight(1.5f),
                 text = "选择条目",
                 onClick = { onIntent(KeyboardIntent.SelectEntry) },
+                emphasis = KeyboardKeyEmphasis.Action,
+            )
+
+            KeyboardKey(
+                modifier = Modifier.weight(1f),
+                text = "清除",
+                onClick = { onIntent(KeyboardIntent.ClearEntry) },
                 emphasis = KeyboardKeyEmphasis.Action,
             )
 
