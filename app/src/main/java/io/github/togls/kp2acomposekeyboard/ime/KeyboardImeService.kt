@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.lifecycle.Lifecycle
@@ -12,6 +13,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.SavedStateRegistry
@@ -19,8 +21,14 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardEffect
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 /**
  * Main input method host for KP2A Compose Keyboard.
@@ -32,8 +40,14 @@ class KeyboardImeService :
     SavedStateRegistryOwner,
     ViewModelStoreOwner {
 
+    @Inject
+    lateinit var viewModelFactory: KeyboardViewModelFactory
+
+    private lateinit var viewModel: KeyboardViewModel
+
     private val lifecycleRegistry = LifecycleRegistry(this)
     private val savedStateRegistryController = SavedStateRegistryController.create(this)
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     override val lifecycle: Lifecycle
         get() = lifecycleRegistry
@@ -42,11 +56,6 @@ class KeyboardImeService :
         get() = savedStateRegistryController.savedStateRegistry
 
     override val viewModelStore = ViewModelStore()
-
-    @Inject
-    lateinit var viewModelFactory: KeyboardViewModelFactory
-
-    private lateinit var viewModel: KeyboardViewModel
 
     private val inputConnectionDispatcher by lazy {
         InputConnectionDispatcher(
@@ -62,6 +71,9 @@ class KeyboardImeService :
 
         viewModel = viewModelFactory.create()
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
+
+        collectKeyboardEffects()
+
         Log.d(TAG, "onCreate")
     }
 
@@ -97,10 +109,11 @@ class KeyboardImeService :
 
             setContent {
                 MaterialTheme {
+                    val state by viewModel.uiState.collectAsStateWithLifecycle()
+
                     KeyboardInputView(
-                        onCommitText = inputConnectionDispatcher::commitText,
-                        onDeleteBackward = inputConnectionDispatcher::deleteBackward,
-                        onSendEnter = inputConnectionDispatcher::sendEnter,
+                        state = state,
+                        onIntent = viewModel::onIntent,
                     )
                 }
             }
@@ -151,9 +164,48 @@ class KeyboardImeService :
 
     override fun onDestroy() {
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+        serviceScope.cancel()
         viewModelStore.clear()
         Log.d(TAG, "onDestroy")
         super.onDestroy()
+    }
+
+    private fun collectKeyboardEffects() {
+        serviceScope.launch {
+            viewModel.effect.collect { effect ->
+                handleKeyboardEffect(effect)
+            }
+        }
+    }
+
+    private fun handleKeyboardEffect(effect: KeyboardEffect) {
+        when (effect) {
+            is KeyboardEffect.CommitText -> {
+                // effect.text 后续可能是密码、TOTP 或恢复码，禁止打印。
+                inputConnectionDispatcher.commitText(effect.text)
+            }
+
+            KeyboardEffect.DeleteBackward -> {
+                inputConnectionDispatcher.deleteBackward()
+            }
+
+            KeyboardEffect.SendEnter -> {
+                inputConnectionDispatcher.sendEnter()
+            }
+
+            KeyboardEffect.LaunchEntryPicker -> {
+                Log.d(TAG, "LaunchEntryPicker is not implemented yet")
+            }
+
+            KeyboardEffect.LaunchSettings -> {
+                Log.d(TAG, "LaunchSettings is not implemented yet")
+            }
+
+            is KeyboardEffect.ScrollExpandedFields -> {
+                // 展开字段滚动需要等字段区域组件存在后再处理。
+                Log.d(TAG, "ScrollExpandedFields is not implemented yet")
+            }
+        }
     }
 
     private fun installViewTreeOwners(view: View?) {

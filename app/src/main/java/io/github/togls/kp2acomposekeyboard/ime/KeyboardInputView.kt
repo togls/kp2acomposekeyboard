@@ -16,12 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.DefaultInputMode
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 
 @Composable
 fun KeyboardInputView(
-    onCommitText: (String) -> Unit,
-    onDeleteBackward: () -> Unit,
-    onSendEnter: () -> Unit,
+    state: KeyboardUiState,
+    onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -40,7 +42,9 @@ fun KeyboardInputView(
                 fontWeight = FontWeight.SemiBold,
             )
 
-            Text(text = "Plan 1.4 最小输入验证")
+            Text(
+                text = "Plan 2.4 MVI 输入链路：${state.defaultInputMode.name}",
+            )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -48,14 +52,14 @@ fun KeyboardInputView(
             ) {
                 Button(
                     modifier = Modifier.weight(1f),
-                    onClick = { onCommitText("a") },
+                    onClick = { onIntent(KeyboardIntent.CommitText("a")) },
                 ) {
-                    Text(text = "a")
+                    Text(text = if (state.isUppercase) "A" else "a")
                 }
 
                 Button(
                     modifier = Modifier.weight(1f),
-                    onClick = onDeleteBackward,
+                    onClick = { onIntent(KeyboardIntent.DeleteBackward) },
                 ) {
                     Text(text = "⌫")
                 }
@@ -67,16 +71,52 @@ fun KeyboardInputView(
             ) {
                 Button(
                     modifier = Modifier.weight(1f),
-                    onClick = { onCommitText(" ") },
+                    onClick = { onIntent(KeyboardIntent.CommitText(" ")) },
                 ) {
                     Text(text = "空格")
                 }
 
                 Button(
                     modifier = Modifier.weight(1f),
-                    onClick = onSendEnter,
+                    onClick = { onIntent(KeyboardIntent.Enter) },
                 ) {
                     Text(text = "换行")
+                }
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Button(
+                    modifier = Modifier.weight(1f),
+                    onClick = { onIntent(KeyboardIntent.SwitchToLetters) },
+                    enabled = state.defaultInputMode != DefaultInputMode.Letters,
+                ) {
+                    Text(text = "ABC")
+                }
+
+                Button(
+                    modifier = Modifier.weight(1f),
+                    onClick = { onIntent(KeyboardIntent.SwitchToNumbers) },
+                    enabled = state.defaultInputMode != DefaultInputMode.Numbers,
+                ) {
+                    Text(text = "123")
+                }
+
+                Button(
+                    modifier = Modifier.weight(1f),
+                    onClick = { onIntent(KeyboardIntent.SwitchToSymbols) },
+                    enabled = state.defaultInputMode != DefaultInputMode.Symbols,
+                ) {
+                    Text(text = "符号")
+                }
+
+                Button(
+                    modifier = Modifier.weight(1f),
+                    onClick = { onIntent(KeyboardIntent.ToggleUppercase) },
+                ) {
+                    Text(text = "⇧")
                 }
             }
         }
@@ -88,9 +128,8 @@ fun KeyboardInputView(
 private fun KeyboardInputViewPreview() {
     MaterialTheme {
         KeyboardInputView(
-            onCommitText = {},
-            onDeleteBackward = {},
-            onSendEnter = {},
+            state = KeyboardUiState(),
+            onIntent = {},
         )
     }
 }
