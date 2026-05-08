@@ -19,6 +19,8 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardViewModel
+import javax.inject.Inject
 
 /**
  * Main input method host for KP2A Compose Keyboard.
@@ -41,6 +43,11 @@ class KeyboardImeService :
 
     override val viewModelStore = ViewModelStore()
 
+    @Inject
+    lateinit var viewModelFactory: KeyboardViewModelFactory
+
+    private lateinit var viewModel: KeyboardViewModel
+
     private val inputConnectionDispatcher by lazy {
         InputConnectionDispatcher(
             inputConnectionProvider = { currentInputConnection },
@@ -53,6 +60,7 @@ class KeyboardImeService :
 
         super.onCreate()
 
+        viewModel = viewModelFactory.create()
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         Log.d(TAG, "onCreate")
     }
