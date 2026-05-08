@@ -29,12 +29,13 @@ class KeyboardViewModel : ViewModel() {
             KeyboardIntent.DeleteBackward -> sendEffect(KeyboardEffect.DeleteBackward)
             KeyboardIntent.Enter -> sendEffect(KeyboardEffect.SendEnter)
 
+            KeyboardIntent.SelectEntry -> sendEffect(KeyboardEffect.LaunchEntryPicker)
+
             KeyboardIntent.SwitchToLetters -> updateDefaultInputMode(DefaultInputMode.Letters)
             KeyboardIntent.SwitchToNumbers -> updateDefaultInputMode(DefaultInputMode.Numbers)
             KeyboardIntent.SwitchToSymbols -> updateDefaultInputMode(DefaultInputMode.Symbols)
             KeyboardIntent.ToggleUppercase -> toggleUppercase()
 
-            KeyboardIntent.SelectEntry,
             KeyboardIntent.OpenSettings,
             KeyboardIntent.ClearEntry,
             KeyboardIntent.SwitchToDefaultLayout,

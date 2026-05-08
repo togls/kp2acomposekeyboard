@@ -195,7 +195,8 @@ class KeyboardImeService :
             }
 
             KeyboardEffect.LaunchEntryPicker -> {
-                Log.d(TAG, "LaunchEntryPicker is not implemented yet")
+                // 这里只记录安全事件，不启动真实选择页；真正 KP2A 接入留到阶段 6。
+                Log.d(TAG, "LaunchEntryPicker requested")
             }
 
             KeyboardEffect.LaunchSettings -> {
