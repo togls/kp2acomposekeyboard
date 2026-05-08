@@ -1,6 +1,7 @@
 package io.github.togls.kp2acomposekeyboard.ui.keyboard
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,8 +22,9 @@ fun ExtraFieldPagedPanel(
     modifier: Modifier = Modifier,
 ) {
     val safePageSize = pageSize.coerceAtLeast(1)
+    val safePageIndex = pageIndex.coerceAtLeast(0)
     val pageFields = fields
-        .drop(pageIndex.coerceAtLeast(0) * safePageSize)
+        .drop(safePageIndex * safePageSize)
         .take(safePageSize)
 
     Column(
@@ -43,23 +45,22 @@ fun ExtraFieldPagedPanel(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            return
-        }
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(6.dpCompat),
+            ) {
+                pageFields.forEach { field ->
+                    FieldButton(
+                        modifier = Modifier.weight(1f),
+                        field = field,
+                        onIntent = onIntent,
+                    )
+                }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(6.dpCompat),
-        ) {
-            pageFields.forEach { field ->
-                FieldButton(
-                    modifier = Modifier.weight(1f),
-                    field = field,
-                    onIntent = onIntent,
-                )
-            }
-
-            repeat(safePageSize - pageFields.size) {
-                EmptyFieldSlot(modifier = Modifier.weight(1f))
+                repeat(safePageSize - pageFields.size) {
+                    EmptyFieldSlot(modifier = Modifier.weight(1f))
+                }
             }
         }
     }
@@ -69,5 +70,5 @@ fun ExtraFieldPagedPanel(
 private fun EmptyFieldSlot(
     modifier: Modifier = Modifier,
 ) {
-    androidx.compose.foundation.layout.Box(modifier = modifier)
+    Box(modifier = modifier)
 }
