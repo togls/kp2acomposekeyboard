@@ -3,4 +3,5 @@
     <string name="app_name">KP2A Compose Keyboard</string>
     <string name="ime_name">KP2A Compose Keyboard</string>
     <string name="ime_subtype_en_us">English (US)</string>
+    <string name="entry_picker_title">选择条目</string>
 </resources>

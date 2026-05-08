@@ -10,6 +10,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Kp2aComposeKeyboard">
 
+        <activity
+            android:name=".feature.entrypicker.EntryPickerActivity"
+            android:exported="false"
+            android:label="@string/entry_picker_title" />
+
         <service
             android:name=".ime.KeyboardImeService"
             android:enabled="true"
