@@ -202,11 +202,6 @@ class KeyboardImeService :
             KeyboardEffect.LaunchSettings -> {
                 Log.d(TAG, "LaunchSettings is not implemented yet")
             }
-
-            is KeyboardEffect.ScrollExpandedFields -> {
-                // 展开字段滚动需要等字段区域组件存在后再处理。
-                Log.d(TAG, "ScrollExpandedFields is not implemented yet")
-            }
         }
     }
 

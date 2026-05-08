@@ -8,8 +8,4 @@ sealed interface KeyboardEffect {
 
     data object LaunchEntryPicker : KeyboardEffect
     data object LaunchSettings : KeyboardEffect
-
-    data class ScrollExpandedFields(
-        val direction: ScrollDirection,
-    ) : KeyboardEffect
 }

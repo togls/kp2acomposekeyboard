@@ -66,6 +66,8 @@ fun PagedEntryActionRow(
 fun ExpandedEntryActionRows(
     canScrollUp: Boolean,
     canScrollDown: Boolean,
+    onScrollUp: () -> Unit,
+    onScrollDown: () -> Unit,
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -81,14 +83,14 @@ fun ExpandedEntryActionRows(
                 modifier = Modifier.weight(1f),
                 text = "prev",
                 enabled = canScrollUp,
-                onClick = { onIntent(KeyboardIntent.ScrollExpandedFieldsUp) },
+                onClick = onScrollUp,
             )
 
             KeyboardKey(
                 modifier = Modifier.weight(1f),
                 text = "next",
                 enabled = canScrollDown,
-                onClick = { onIntent(KeyboardIntent.ScrollExpandedFieldsDown) },
+                onClick = onScrollDown,
             )
 
             KeyboardKey(

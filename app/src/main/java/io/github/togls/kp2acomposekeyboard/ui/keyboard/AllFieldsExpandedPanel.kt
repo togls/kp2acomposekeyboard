@@ -1,11 +1,12 @@
 package io.github.togls.kp2acomposekeyboard.ui.keyboard
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,6 +18,7 @@ import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 @Composable
 fun AllFieldsExpandedPanel(
     fields: List<KeyboardFieldUiModel>,
+    scrollState: ScrollState,
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -35,7 +37,7 @@ fun AllFieldsExpandedPanel(
                 .fillMaxWidth()
                 // 展开模式必须限制高度，否则字段过多时会把整个 IME 窗口撑高。
                 .heightIn(max = 150.dpCompat)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(6.dpCompat),
         ) {
             fields.chunked(FIELDS_PER_ROW).forEach { rowFields ->
@@ -64,7 +66,7 @@ fun AllFieldsExpandedPanel(
 private fun EmptyExpandedFieldSlot(
     modifier: Modifier = Modifier,
 ) {
-    androidx.compose.foundation.layout.Box(modifier = modifier)
+    Box(modifier = modifier)
 }
 
 private const val FIELDS_PER_ROW = 3
