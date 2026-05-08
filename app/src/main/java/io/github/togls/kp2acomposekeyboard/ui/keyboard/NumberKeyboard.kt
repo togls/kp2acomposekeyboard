@@ -17,12 +17,12 @@ fun NumberKeyboard(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(6.dpCompat),
     ) {
-        KeyRow(
+        NumberKeyRow(
             keys = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0"),
             onIntent = onIntent,
         )
 
-        KeyRow(
+        NumberKeyRow(
             keys = listOf("-", "/", ":", ";", "(", ")", "¥", "&", "@", "\""),
             onIntent = onIntent,
         )
@@ -50,7 +50,7 @@ fun NumberKeyboard(
 }
 
 @Composable
-private fun KeyRow(
+private fun NumberKeyRow(
     keys: List<String>,
     onIntent: (KeyboardIntent) -> Unit,
 ) {
