@@ -2,7 +2,6 @@ package io.github.togls.kp2acomposekeyboard.feature.entrypicker
 
 import android.content.ActivityNotFoundException
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,17 +12,20 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aContract
+import io.github.togls.kp2acomposekeyboard.security.SecureLog
+import io.github.togls.kp2acomposekeyboard.security.SecureLogEvent
 
 @AndroidEntryPoint
 class EntryPickerActivity : ComponentActivity() {
 
     private val viewModel: EntryPickerViewModel by viewModels()
 
+    private var kp2aLaunchStarted = false
+
     private val kp2aLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
     ) { result ->
         val data = result.data
-        Log.d("Kp2aKeyboardIme", "receive Kp2a")
 
         when {
             result.resultCode == RESULT_CANCELED -> {
@@ -47,11 +49,6 @@ class EntryPickerActivity : ComponentActivity() {
         }
     }
 
-    companion object {
-        const val EXTRA_TARGET_PACKAGE_NAME =
-            "io.github.togls.kp2acomposekeyboard.extra.TARGET_PACKAGE_NAME"
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -61,12 +58,12 @@ class EntryPickerActivity : ComponentActivity() {
 
                 LaunchedEffect(Unit) {
                     viewModel.onIntent(EntryPickerIntent.StartSelection)
+                    launchKp2aOnce()
                 }
 
                 LaunchedEffect(viewModel) {
                     viewModel.effect.collect { effect ->
                         when (effect) {
-                            EntryPickerEffect.LaunchKp2a -> launchKp2a()
                             EntryPickerEffect.Finish -> finish()
                         }
                     }
@@ -80,10 +77,18 @@ class EntryPickerActivity : ComponentActivity() {
         }
     }
 
-    private fun launchKp2a() {
+    private fun launchKp2aOnce() {
+        if (kp2aLaunchStarted) {
+            return
+        }
+
+        kp2aLaunchStarted = true
+
         try {
             val targetPackageName = intent.getStringExtra(EXTRA_TARGET_PACKAGE_NAME)
             val searchText = Kp2aContract.appQuery(targetPackageName)
+
+            SecureLog.debug(SecureLogEvent.Kp2aLaunchRequested)
 
             kp2aLauncher.launch(
                 Kp2aContract.createQueryEntryIntent(searchText),
@@ -93,5 +98,10 @@ class EntryPickerActivity : ComponentActivity() {
         } catch (_: SecurityException) {
             viewModel.onIntent(EntryPickerIntent.Kp2aLaunchFailed)
         }
+    }
+
+    companion object {
+        const val EXTRA_TARGET_PACKAGE_NAME =
+            "io.github.togls.kp2acomposekeyboard.extra.TARGET_PACKAGE_NAME"
     }
 }

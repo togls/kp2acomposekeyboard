@@ -58,7 +58,6 @@ class EntryPickerViewModel @Inject constructor() : ViewModel() {
         )
 
         SecureLog.debug(SecureLogEvent.Kp2aLaunchRequested)
-        sendEffect(EntryPickerEffect.LaunchKp2a)
     }
 
     private fun restartSelection() {

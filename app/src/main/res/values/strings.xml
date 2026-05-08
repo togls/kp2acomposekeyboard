@@ -4,4 +4,7 @@
     <string name="ime_name">KP2A Compose Keyboard</string>
     <string name="ime_subtype_en_us">English (US)</string>
     <string name="entry_picker_title">选择条目</string>
+    <string name="app_description">
+    KP2A Compose Keyboard uses Keepass2Android Plugin API to let the user choose an entry and input selected fields through the keyboard without using the clipboard.
+</string>
 </resources>

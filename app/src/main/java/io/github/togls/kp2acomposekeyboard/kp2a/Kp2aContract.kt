@@ -15,8 +15,17 @@ object Kp2aContract {
         const val QUERY_CREDENTIALS_FOR_OWN_PACKAGE =
             "keepass2android.ACTION_QUERY_CREDENTIALS_FOR_OWN_PACKAGE"
 
-        const val START_WITH_TASK =
-            "keepass2android.ACTION_START_WITH_TASK"
+        const val TRIGGER_REQUEST_ACCESS =
+            "keepass2android.ACTION_TRIGGER_REQUEST_ACCESS"
+
+        const val REQUEST_ACCESS =
+            "keepass2android.ACTION_REQUEST_ACCESS"
+
+        const val RECEIVE_ACCESS =
+            "keepass2android.ACTION_RECEIVE_ACCESS"
+
+        const val REVOKE_ACCESS =
+            "keepass2android.ACTION_REVOKE_ACCESS"
     }
 
     object Extras {
@@ -31,6 +40,29 @@ object Kp2aContract {
 
         const val ENTRY_ID =
             "keepass2android.EXTRA_ENTRY_DATA"
+
+        const val SCOPES =
+            "keepass2android.EXTRA_SCOPES"
+
+        const val PLUGIN_PACKAGE =
+            "keepass2android.EXTRA_PLUGIN_PACKAGE"
+
+        const val SENDER =
+            "keepass2android.EXTRA_SENDER"
+
+        const val REQUEST_TOKEN =
+            "keepass2android.EXTRA_REQUEST_TOKEN"
+
+        const val ACCESS_TOKEN =
+            "keepass2android.EXTRA_ACCESS_TOKEN"
+    }
+
+    object Scopes {
+        const val QUERY_CREDENTIALS =
+            "keepass2android.SCOPE_QUERY_CREDENTIALS"
+
+        const val QUERY_CREDENTIALS_FOR_OWN_PACKAGE =
+            "keepass2android.SCOPE_QUERY_CREDENTIALS_FOR_OWN_PACKAGE"
     }
 
     fun createQueryEntryIntent(searchText: String?): Intent {

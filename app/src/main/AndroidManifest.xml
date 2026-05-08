@@ -10,13 +10,18 @@
         </intent>
 
         <intent>
-            <action android:name="keepass2android.ACTION_QUERY_CREDENTIALS_FOR_OWN_PACKAGE" />
+            <action android:name="keepass2android.ACTION_TRIGGER_REQUEST_ACCESS" />
+        </intent>
+
+        <intent>
+            <action android:name="keepass2android.ACTION_REQUEST_ACCESS" />
         </intent>
     </queries>
 
     <application
         android:name=".Kp2aComposeKeyboardApp"
-        android:allowBackup="false"
+        android:allowBackup="true"
+        android:description="@string/app_description"
         android:icon="@drawable/ic_keyboard_icon"
         android:label="@string/app_name"
         android:roundIcon="@drawable/ic_keyboard_icon"
@@ -42,6 +47,16 @@
                 android:name="android.view.im"
                 android:resource="@xml/method" />
         </service>
+
+        <receiver
+            android:name=".kp2a.Kp2aPluginAccessReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="keepass2android.ACTION_TRIGGER_REQUEST_ACCESS" />
+                <action android:name="keepass2android.ACTION_RECEIVE_ACCESS" />
+                <action android:name="keepass2android.ACTION_REVOKE_ACCESS" />
+            </intent-filter>
+        </receiver>
 
     </application>
 </manifest>
