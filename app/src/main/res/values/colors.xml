@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="keyboard_accent">#6750A4</color>
+    <color name="keyboard_icon_background">#F4EFFA</color>
+    <color name="keyboard_icon_key">#6750A4</color>
+</resources>
