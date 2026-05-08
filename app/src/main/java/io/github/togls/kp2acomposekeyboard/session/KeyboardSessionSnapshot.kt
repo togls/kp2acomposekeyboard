@@ -7,4 +7,7 @@ data class KeyboardSessionSnapshot(
     val fixedFields: List<KeyboardFieldUiModel>,
     val extraFields: List<KeyboardFieldUiModel>,
     val allFields: List<KeyboardFieldUiModel>,
-)
+) {
+    val hasFields: Boolean
+        get() = allFields.isNotEmpty()
+}
