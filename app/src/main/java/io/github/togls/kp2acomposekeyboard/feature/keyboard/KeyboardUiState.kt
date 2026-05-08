@@ -1,5 +1,7 @@
 package io.github.togls.kp2acomposekeyboard.feature.keyboard
 
+import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldUiModel
+
 data class KeyboardUiState(
     val mainLayout: MainKeyboardLayout = MainKeyboardLayout.Default,
     val defaultInputMode: DefaultInputMode = DefaultInputMode.Letters,
