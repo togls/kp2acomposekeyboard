@@ -71,12 +71,16 @@ private fun DefaultKeyboardActionRow(
     ) {
         KeyboardKey(
             modifier = Modifier.weight(1f),
-            text = if (state.defaultInputMode == DefaultInputMode.Numbers) "ABC" else "123",
+            text = when (state.defaultInputMode) {
+                DefaultInputMode.Letters -> "123"
+                DefaultInputMode.Numbers -> "ABC"
+                DefaultInputMode.Symbols -> "ABC"
+            },
             onClick = {
-                if (state.defaultInputMode == DefaultInputMode.Numbers) {
-                    onIntent(KeyboardIntent.SwitchToLetters)
-                } else {
-                    onIntent(KeyboardIntent.SwitchToNumbers)
+                when (state.defaultInputMode) {
+                    DefaultInputMode.Letters -> onIntent(KeyboardIntent.SwitchToNumbers)
+                    DefaultInputMode.Numbers -> onIntent(KeyboardIntent.SwitchToLetters)
+                    DefaultInputMode.Symbols -> onIntent(KeyboardIntent.SwitchToLetters)
                 }
             },
             emphasis = KeyboardKeyEmphasis.Action,
@@ -84,12 +88,16 @@ private fun DefaultKeyboardActionRow(
 
         KeyboardKey(
             modifier = Modifier.weight(1f),
-            text = if (state.defaultInputMode == DefaultInputMode.Symbols) "ABC" else "符号",
+            text = when (state.defaultInputMode) {
+                DefaultInputMode.Letters -> "符号"
+                DefaultInputMode.Numbers -> "符号"
+                DefaultInputMode.Symbols -> "123"
+            },
             onClick = {
-                if (state.defaultInputMode == DefaultInputMode.Symbols) {
-                    onIntent(KeyboardIntent.SwitchToLetters)
-                } else {
-                    onIntent(KeyboardIntent.SwitchToSymbols)
+                when (state.defaultInputMode) {
+                    DefaultInputMode.Letters -> onIntent(KeyboardIntent.SwitchToSymbols)
+                    DefaultInputMode.Numbers -> onIntent(KeyboardIntent.SwitchToSymbols)
+                    DefaultInputMode.Symbols -> onIntent(KeyboardIntent.SwitchToNumbers)
                 }
             },
             emphasis = KeyboardKeyEmphasis.Action,

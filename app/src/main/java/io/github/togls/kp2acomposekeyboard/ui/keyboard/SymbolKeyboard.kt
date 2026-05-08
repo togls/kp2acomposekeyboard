@@ -17,12 +17,12 @@ fun SymbolKeyboard(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(6.dpCompat),
     ) {
-        KeyRow(
+        SymbolKeyRow(
             keys = listOf("[", "]", "{", "}", "#", "%", "^", "*", "+", "="),
             onIntent = onIntent,
         )
 
-        KeyRow(
+        SymbolKeyRow(
             keys = listOf("_", "\\", "|", "~", "<", ">", "€", "£", "$", "·"),
             onIntent = onIntent,
         )
@@ -50,7 +50,7 @@ fun SymbolKeyboard(
 }
 
 @Composable
-private fun KeyRow(
+private fun SymbolKeyRow(
     keys: List<String>,
     onIntent: (KeyboardIntent) -> Unit,
 ) {
