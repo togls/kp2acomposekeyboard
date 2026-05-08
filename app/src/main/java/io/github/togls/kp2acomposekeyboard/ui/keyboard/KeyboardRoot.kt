@@ -31,17 +31,11 @@ fun KeyboardRoot(
             }
 
             MainKeyboardLayout.Entry -> {
-                EntryKeyboardPlaceholder()
+                EntryKeyboardLayout(
+                    state = state,
+                    onIntent = onIntent,
+                )
             }
         }
-    }
-}
-
-@Composable
-private fun EntryKeyboardPlaceholder(
-    modifier: Modifier = Modifier,
-) {
-    Box(modifier = modifier.fillMaxWidth()) {
-        Text(text = "条目布局将在 Plan 4.2 实现")
     }
 }
