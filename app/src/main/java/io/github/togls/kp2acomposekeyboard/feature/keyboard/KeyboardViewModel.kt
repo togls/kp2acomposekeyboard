@@ -52,7 +52,7 @@ class KeyboardViewModel(
 
             KeyboardIntent.ToggleUppercase -> toggleUppercase()
 
-            is KeyboardIntent.CommitField -> Unit
+            is KeyboardIntent.CommitField -> commitField(intent.fieldId)
 
             KeyboardIntent.PrevExtraFieldPage -> previousExtraFieldPage()
             KeyboardIntent.NextExtraFieldPage -> nextExtraFieldPage()
@@ -251,6 +251,17 @@ class KeyboardViewModel(
         _uiState.update { state ->
             state.copy(isUppercase = !state.isUppercase)
         }
+    }
+
+    private fun commitField(fieldId: String) {
+        val value = sessionRepository.getFieldValue(fieldId) ?: return
+
+        if (value.isEmpty()) {
+            return
+        }
+
+        // value 可能是 Password / TOTP / Recovery Code，不能写入 UiState，也不能打印日志。
+        sendEffect(KeyboardEffect.CommitText(value))
     }
 
     private fun previousExtraFieldPage() {
