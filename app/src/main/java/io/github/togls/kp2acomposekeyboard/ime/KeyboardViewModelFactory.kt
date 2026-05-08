@@ -1,13 +1,16 @@
 package io.github.togls.kp2acomposekeyboard.ime
 
-import androidx.lifecycle.ViewModelProvider
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardViewModel
+import io.github.togls.kp2acomposekeyboard.session.KeyboardSessionRepository
 import javax.inject.Inject
 
-class KeyboardViewModelFactory @Inject constructor() {
+class KeyboardViewModelFactory @Inject constructor(
+    private val sessionRepository: KeyboardSessionRepository,
+) {
 
     fun create(): KeyboardViewModel {
-        return ViewModelProvider.NewInstanceFactory()
-            .create(KeyboardViewModel::class.java)
+        return KeyboardViewModel(
+            sessionRepository = sessionRepository,
+        )
     }
 }
