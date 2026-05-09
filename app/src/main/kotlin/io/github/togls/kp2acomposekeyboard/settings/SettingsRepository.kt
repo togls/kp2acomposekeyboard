@@ -23,7 +23,7 @@ private val Context.keyboardSettingsDataStore: DataStore<Preferences> by prefere
 
 @Singleton
 class SettingsRepository @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
 ) {
 
     val settings: Flow<KeyboardSettings> = context.keyboardSettingsDataStore.data
