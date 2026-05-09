@@ -7,6 +7,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.ClearEntryKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.DeleteKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.SelectEntryKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.SettingsKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.SwitchToDefaultLayoutKey
 
 @Composable
 fun PagedEntryActionRow(
@@ -19,25 +24,19 @@ fun PagedEntryActionRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
     ) {
-        KeyboardKey(
+        SwitchToDefaultLayoutKey(
+            onIntent = onIntent,
             modifier = Modifier.weight(1.4f),
-            text = "默认布局",
-            onClick = { onIntent(KeyboardIntent.SwitchToDefaultLayout) },
-            emphasis = KeyboardKeyEmphasis.Action,
         )
 
-        KeyboardKey(
+        SelectEntryKey(
+            onIntent = onIntent,
             modifier = Modifier.weight(1.5f),
-            text = "选择条目",
-            onClick = { onIntent(KeyboardIntent.SelectEntry) },
-            emphasis = KeyboardKeyEmphasis.Action,
         )
 
-        KeyboardKey(
+        SettingsKey(
+            onIntent = onIntent,
             modifier = Modifier.weight(1f),
-            text = "设置",
-            onClick = { onIntent(KeyboardIntent.OpenSettings) },
-            emphasis = KeyboardKeyEmphasis.Action,
         )
 
         KeyboardKey(
@@ -60,18 +59,14 @@ fun PagedEntryActionRow(
             onClick = { onIntent(KeyboardIntent.ExpandFields) },
         )
 
-        KeyboardKey(
+        ClearEntryKey(
+            onIntent = onIntent,
             modifier = Modifier.weight(1f),
-            text = "清除",
-            onClick = { onIntent(KeyboardIntent.ClearEntry) },
-            emphasis = KeyboardKeyEmphasis.Action,
         )
 
-        KeyboardKey(
+        DeleteKey(
             modifier = Modifier.weight(1f),
-            text = "⌫",
-            onClick = { onIntent(KeyboardIntent.DeleteBackward) },
-            emphasis = KeyboardKeyEmphasis.Action,
+            onIntent = onIntent,
         )
     }
 }
@@ -119,32 +114,24 @@ fun ExpandedEntryActionRows(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
         ) {
-            KeyboardKey(
+            SwitchToDefaultLayoutKey(
+                onIntent = onIntent,
                 modifier = Modifier.weight(1.8f),
-                text = "默认布局",
-                onClick = { onIntent(KeyboardIntent.SwitchToDefaultLayout) },
-                emphasis = KeyboardKeyEmphasis.Action,
             )
 
-            KeyboardKey(
+            SelectEntryKey(
+                onIntent = onIntent,
                 modifier = Modifier.weight(1.5f),
-                text = "选择条目",
-                onClick = { onIntent(KeyboardIntent.SelectEntry) },
-                emphasis = KeyboardKeyEmphasis.Action,
             )
 
-            KeyboardKey(
+            ClearEntryKey(
+                onIntent = onIntent,
                 modifier = Modifier.weight(1f),
-                text = "清除",
-                onClick = { onIntent(KeyboardIntent.ClearEntry) },
-                emphasis = KeyboardKeyEmphasis.Action,
             )
 
-            KeyboardKey(
+            DeleteKey(
                 modifier = Modifier.weight(1f),
-                text = "⌫",
-                onClick = { onIntent(KeyboardIntent.DeleteBackward) },
-                emphasis = KeyboardKeyEmphasis.Action,
+                onIntent = onIntent,
             )
         }
     }

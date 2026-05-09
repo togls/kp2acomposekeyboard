@@ -1,0 +1,97 @@
+package io.github.togls.kp2acomposekeyboard.ui.keyboard.keys
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardKeyEmphasis
+
+@Composable
+internal fun DeleteKey(
+    onIntent: (KeyboardIntent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    KeyboardKey(
+        modifier = modifier,
+        text = "⌫",
+        onClick = { onIntent(KeyboardIntent.DeleteBackward) },
+        emphasis = KeyboardKeyEmphasis.Action,
+    )
+}
+
+@Composable
+internal fun SettingsKey(
+    onIntent: (KeyboardIntent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    KeyboardKey(
+        modifier = modifier,
+        text = "设置",
+        onClick = { onIntent(KeyboardIntent.OpenSettings) },
+        emphasis = KeyboardKeyEmphasis.Action,
+    )
+}
+
+@Composable
+internal fun SelectEntryKey(
+    onIntent: (KeyboardIntent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    KeyboardKey(
+        modifier = modifier,
+        text = "选择条目",
+        onClick = { onIntent(KeyboardIntent.SelectEntry) },
+        emphasis = KeyboardKeyEmphasis.Action,
+    )
+}
+
+@Composable
+internal fun SwitchToDefaultLayoutKey(
+    onIntent: (KeyboardIntent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    KeyboardKey(
+        modifier = modifier,
+        text = "默认布局",
+        onClick = { onIntent(KeyboardIntent.SwitchToDefaultLayout) },
+        emphasis = KeyboardKeyEmphasis.Action,
+    )
+}
+
+@Composable
+internal fun ClearEntryKey(
+    onIntent: (KeyboardIntent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    KeyboardKey(
+        modifier = modifier,
+        text = "清除",
+        onClick = { onIntent(KeyboardIntent.ClearEntry) },
+        emphasis = KeyboardKeyEmphasis.Action,
+    )
+}
+
+@Composable
+internal fun EnterKey(
+    onIntent: (KeyboardIntent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    KeyboardKey(
+        modifier = modifier,
+        text = "换行",
+        onClick = { onIntent(KeyboardIntent.Enter) },
+        emphasis = KeyboardKeyEmphasis.Action,
+    )
+}
+
+@Composable
+internal fun SpaceKey(
+    onIntent: (KeyboardIntent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    KeyboardKey(
+        modifier = modifier,
+        text = "空格",
+        onClick = { onIntent(KeyboardIntent.CommitText(" ")) },
+    )
+}

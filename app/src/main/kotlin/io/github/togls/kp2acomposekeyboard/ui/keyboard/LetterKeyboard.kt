@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.DeleteKey
 
 @Composable
 fun LetterKeyboard(
@@ -51,11 +52,9 @@ fun LetterKeyboard(
                 )
             }
 
-            KeyboardKey(
+            DeleteKey(
                 modifier = Modifier.weight(1.2f),
-                text = "⌫",
-                onClick = { onIntent(KeyboardIntent.DeleteBackward) },
-                emphasis = KeyboardKeyEmphasis.Action,
+                onIntent = onIntent,
             )
         }
     }

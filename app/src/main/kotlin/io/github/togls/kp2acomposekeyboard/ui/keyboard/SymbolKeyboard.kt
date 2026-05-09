@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.DeleteKey
 
 @Composable
 fun SymbolKeyboard(
@@ -39,11 +40,9 @@ fun SymbolKeyboard(
                 )
             }
 
-            KeyboardKey(
+            DeleteKey(
                 modifier = Modifier.weight(1.5f),
-                text = "⌫",
-                onClick = { onIntent(KeyboardIntent.DeleteBackward) },
-                emphasis = KeyboardKeyEmphasis.Action,
+                onIntent = onIntent,
             )
         }
     }
