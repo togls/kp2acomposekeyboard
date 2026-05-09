@@ -1,4 +1,4 @@
-package io.github.togls.kp2acomposekeyboard.ui.keyboard
+package io.github.togls.kp2acomposekeyboard.ui.keyboard.keys
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
@@ -19,12 +19,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.LocalKeyboardAdaptiveMetrics
 
 @Composable
 internal fun KeyboardKey(
@@ -147,9 +150,9 @@ private fun keyboardKeyColors(
 }
 
 private data class KeyboardKeyColors(
-    val containerColor: androidx.compose.ui.graphics.Color,
-    val pressedContainerColor: androidx.compose.ui.graphics.Color,
-    val contentColor: androidx.compose.ui.graphics.Color,
+    val containerColor: Color,
+    val pressedContainerColor: Color,
+    val contentColor: Color,
 )
 
 enum class KeyboardKeyEmphasis {

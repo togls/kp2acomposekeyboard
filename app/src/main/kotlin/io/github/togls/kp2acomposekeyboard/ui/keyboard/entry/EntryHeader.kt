@@ -1,4 +1,4 @@
-package io.github.togls.kp2acomposekeyboard.ui.keyboard
+package io.github.togls.kp2acomposekeyboard.ui.keyboard.entry
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.dpCompat
 
 @Composable
 fun EntryHeader(

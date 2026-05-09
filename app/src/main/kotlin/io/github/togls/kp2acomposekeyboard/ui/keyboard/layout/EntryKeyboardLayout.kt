@@ -1,4 +1,4 @@
-package io.github.togls.kp2acomposekeyboard.ui.keyboard
+package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +14,14 @@ import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.EntryFieldDisplayMode
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.entry.AllFieldsExpandedPanel
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.entry.EntryHeader
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.entry.ExtraFieldPagedPanel
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.entry.FixedFieldRow
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.ExpandedEntryActionRows
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.PagedEntryActionRow
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardBottomSafeSpacer
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardMetrics
 import kotlinx.coroutines.launch
 
 @Composable

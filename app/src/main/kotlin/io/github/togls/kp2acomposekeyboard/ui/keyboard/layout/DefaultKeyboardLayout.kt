@@ -1,4 +1,4 @@
-package io.github.togls.kp2acomposekeyboard.ui.keyboard
+package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +12,12 @@ import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.DefaultInputMode
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.entry.ExistingEntryHint
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardBottomSafeSpacer
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.KeyboardKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.KeyboardKeyEmphasis
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.isKeyboardLandscape
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.EnterKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.SelectEntryKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.SettingsKey

@@ -1,4 +1,4 @@
-package io.github.togls.kp2acomposekeyboard.ui.keyboard
+package io.github.togls.kp2acomposekeyboard.ui.keyboard.keys
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,11 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.ClearEntryKey
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.DeleteKey
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.SelectEntryKey
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.SettingsKey
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.SwitchToDefaultLayoutKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardMetrics
 
 @Composable
 fun PagedEntryActionRow(

@@ -1,4 +1,4 @@
-package io.github.togls.kp2acomposekeyboard.ui.keyboard
+package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,12 +7,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardMetrics
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.CommitTextKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.DeleteKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.TextKeyRow
 
 @Composable
-fun SymbolKeyboard(
+internal fun NumberKeyboard(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -21,12 +22,12 @@ fun SymbolKeyboard(
         verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
     ) {
         TextKeyRow(
-            keys = SymbolKeyboardRows[0],
+            keys = NumberKeyboardRows[0],
             onIntent = onIntent,
         )
 
         TextKeyRow(
-            keys = SymbolKeyboardRows[1],
+            keys = NumberKeyboardRows[1],
             onIntent = onIntent,
         )
 
@@ -34,11 +35,11 @@ fun SymbolKeyboard(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
         ) {
-            SymbolKeyboardLastRow.forEach { text ->
-                KeyboardKey(
+            NumberKeyboardLastRow.forEach { text ->
+                CommitTextKey(
                     modifier = Modifier.weight(1f),
                     text = text,
-                    onClick = { onIntent(KeyboardIntent.CommitText(text)) },
+                    onIntent = onIntent,
                 )
             }
 
@@ -50,28 +51,9 @@ fun SymbolKeyboard(
     }
 }
 
-private val SymbolKeyboardRows = listOf(
-    listOf("[", "]", "{", "}", "#", "%", "^", "*", "+", "="),
-    listOf("_", "\\", "|", "~", "<", ">", "€", "£", "$", "·"),
+private val NumberKeyboardRows = listOf(
+    listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0"),
+    listOf("-", "/", ":", ";", "(", ")", "¥", "&", "@", "\""),
 )
 
-private val SymbolKeyboardLastRow = listOf("/", ";", ":", "\"", "'", "`")
-
-@Composable
-private fun SymbolKeyRow(
-    keys: List<String>,
-    onIntent: (KeyboardIntent) -> Unit,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
-    ) {
-        keys.forEach { text ->
-            CommitTextKey(
-                text = text,
-                onIntent = onIntent,
-                modifier = Modifier.weight(1f),
-            )
-        }
-    }
-}
+private val NumberKeyboardLastRow = listOf(".", ",", "?", "!", "'")
