@@ -29,6 +29,11 @@
         android:theme="@style/Theme.Kp2aComposeKeyboard">
 
         <activity
+            android:name=".feature.settings.SettingsActivity"
+            android:exported="false"
+            android:label="@string/settings_title" />
+
+        <activity
             android:name=".feature.entrypicker.EntryPickerActivity"
             android:excludeFromRecents="true"
             android:exported="false"

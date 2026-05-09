@@ -27,6 +27,7 @@ import io.github.togls.kp2acomposekeyboard.feature.entrypicker.EntryPickerActivi
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardEffect
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardViewModel
+import io.github.togls.kp2acomposekeyboard.feature.settings.SettingsActivity
 import io.github.togls.kp2acomposekeyboard.security.DebugLog
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
 import io.github.togls.kp2acomposekeyboard.security.SecureLogEvent
@@ -220,6 +221,7 @@ class KeyboardImeService :
             }
 
             KeyboardEffect.LaunchSettings -> {
+                launchSettingsActivity()
                 SecureLog.debug(SecureLogEvent.LaunchSettingsRequested, TAG)
             }
         }
@@ -264,6 +266,33 @@ class KeyboardImeService :
         view.setViewTreeLifecycleOwner(this)
         view.setViewTreeSavedStateRegistryOwner(this)
         view.setViewTreeViewModelStoreOwner(this)
+    }
+
+    private fun launchSettingsActivity() {
+        val intent = Intent(this, SettingsActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+
+        DebugLog.intent(
+            message = "launch settings activity",
+            intent = intent,
+        )
+
+        try {
+            startActivity(intent)
+        } catch (error: ActivityNotFoundException) {
+            DebugLog.w(
+                message = "settings activity launch failed",
+                throwable = error,
+                "errorType" to error::class.java.simpleName,
+            )
+        } catch (error: SecurityException) {
+            DebugLog.w(
+                message = "settings activity launch failed",
+                throwable = error,
+                "errorType" to error::class.java.simpleName,
+            )
+        }
     }
 
     companion object {
