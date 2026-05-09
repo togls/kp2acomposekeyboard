@@ -15,7 +15,6 @@ android {
 
     defaultConfig {
         applicationId = "io.github.togls.kp2acomposekeyboard"
-        // applicationId = "keepass2android.plugin.qr"
         minSdk = minSdkVersion
         targetSdk = targetSdkVersion
         versionCode = 1
@@ -30,6 +29,12 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
     }
 }
 
@@ -65,4 +70,7 @@ dependencies {
     ksp(libs.hilt.compiler)
 
     implementation(project(":kp2a-plugin-sdk"))
+
+    testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
 }
