@@ -23,7 +23,7 @@ fun FixedFieldRow(
 
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(6.dpCompat),
+        verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
     ) {
         Text(
             text = "固定字段：",
@@ -33,7 +33,7 @@ fun FixedFieldRow(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(6.dpCompat),
+            horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
         ) {
             fields.forEach { field ->
                 FieldButton(

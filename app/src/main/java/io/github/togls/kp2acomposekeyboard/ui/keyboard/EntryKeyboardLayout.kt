@@ -3,18 +3,18 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.EntryFieldDisplayMode
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.rememberCoroutineScope
 
 @Composable
 fun EntryKeyboardLayout(
@@ -34,7 +34,7 @@ fun EntryKeyboardLayout(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 220.dpCompat)
+            .fillMaxHeight()
             .padding(
                 horizontal = KeyboardMetrics.OuterPaddingHorizontal,
                 vertical = KeyboardMetrics.OuterPaddingVertical,
@@ -48,6 +48,7 @@ fun EntryKeyboardLayout(
                 PagedEntryContent(
                     state = state,
                     onIntent = onIntent,
+                    modifier = Modifier.weight(1f),
                 )
             }
 
@@ -72,6 +73,7 @@ fun EntryKeyboardLayout(
                         }
                     },
                     onIntent = onIntent,
+                    modifier = Modifier.weight(1f),
                 )
             }
         }
@@ -82,24 +84,31 @@ fun EntryKeyboardLayout(
 private fun PagedEntryContent(
     state: KeyboardUiState,
     onIntent: (KeyboardIntent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    FixedFieldRow(
-        fields = state.fixedFields,
-        onIntent = onIntent,
-    )
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
+    ) {
+        FixedFieldRow(
+            fields = state.fixedFields,
+            onIntent = onIntent,
+        )
 
-    ExtraFieldPagedPanel(
-        fields = state.extraFields,
-        pageIndex = state.extraFieldPageIndex,
-        pageSize = state.extraFieldPageSize,
-        onIntent = onIntent,
-    )
+        ExtraFieldPagedPanel(
+            fields = state.extraFields,
+            pageIndex = state.extraFieldPageIndex,
+            pageSize = state.extraFieldPageSize,
+            onIntent = onIntent,
+            modifier = Modifier.weight(1f),
+        )
 
-    PagedEntryActionRow(
-        canGoPrevious = state.extraFieldPageIndex > 0,
-        canGoNext = hasNextPage(state),
-        onIntent = onIntent,
-    )
+        PagedEntryActionRow(
+            canGoPrevious = state.extraFieldPageIndex > 0,
+            canGoNext = hasNextPage(state),
+            onIntent = onIntent,
+        )
+    }
 }
 
 @Composable
@@ -109,20 +118,27 @@ private fun ExpandedEntryContent(
     onScrollUp: () -> Unit,
     onScrollDown: () -> Unit,
     onIntent: (KeyboardIntent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    AllFieldsExpandedPanel(
-        fields = state.allFields,
-        scrollState = scrollState,
-        onIntent = onIntent,
-    )
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
+    ) {
+        AllFieldsExpandedPanel(
+            fields = state.allFields,
+            scrollState = scrollState,
+            onIntent = onIntent,
+            modifier = Modifier.weight(1f),
+        )
 
-    ExpandedEntryActionRows(
-        canScrollUp = scrollState.value > 0,
-        canScrollDown = scrollState.value < scrollState.maxValue,
-        onScrollUp = onScrollUp,
-        onScrollDown = onScrollDown,
-        onIntent = onIntent,
-    )
+        ExpandedEntryActionRows(
+            canScrollUp = scrollState.value > 0,
+            canScrollDown = scrollState.value < scrollState.maxValue,
+            onScrollUp = onScrollUp,
+            onScrollDown = onScrollDown,
+            onIntent = onIntent,
+        )
+    }
 }
 
 private fun hasNextPage(state: KeyboardUiState): Boolean {
@@ -131,5 +147,5 @@ private fun hasNextPage(state: KeyboardUiState): Boolean {
     return nextPageStart < state.extraFields.size
 }
 
-// 这里用固定像素步长作为 P0 辅助滚动阈值，避免引入复杂布局测量逻辑。
+// 固定滚动步长用于 P0，避免为了 prev/next 引入复杂布局测量。
 private const val EXPANDED_SCROLL_PAGE_SIZE_PX = 220

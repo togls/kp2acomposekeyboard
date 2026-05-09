@@ -139,6 +139,7 @@ class KeyboardImeService :
                 KeyboardTheme(settings = settings) {
                     KeyboardRoot(
                         state = state,
+                        settings = settings,
                         onIntent = viewModel::onIntent,
                     )
                 }

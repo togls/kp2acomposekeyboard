@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,7 +24,7 @@ fun AllFieldsExpandedPanel(
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(6.dpCompat),
+        verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
     ) {
         Text(
             text = "全部字段：",
@@ -35,15 +35,14 @@ fun AllFieldsExpandedPanel(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                // 展开模式必须限制高度，否则字段过多时会把整个 IME 窗口撑高。
-                .heightIn(max = 150.dpCompat)
+                .fillMaxHeight()
                 .verticalScroll(scrollState),
-            verticalArrangement = Arrangement.spacedBy(6.dpCompat),
+            verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
         ) {
             fields.chunked(FIELDS_PER_ROW).forEach { rowFields ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(6.dpCompat),
+                    horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
                 ) {
                     rowFields.forEach { field ->
                         FieldButton(

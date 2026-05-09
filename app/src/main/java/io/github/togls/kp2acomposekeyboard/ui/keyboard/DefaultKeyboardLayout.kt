@@ -3,8 +3,9 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,18 +22,16 @@ fun DefaultKeyboardLayout(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 220.dpCompat)
+            .fillMaxHeight()
             .padding(
                 horizontal = KeyboardMetrics.OuterPaddingHorizontal,
                 vertical = KeyboardMetrics.OuterPaddingVertical,
             ),
         verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
     ) {
-        val entryName = state.currentEntryName?.takeIf { it.isNotBlank() } ?: "未命名条目"
-
         if (state.hasActiveSession) {
             ExistingEntryHint(
-                entryName = entryName,
+                entryName = state.currentEntryName?.takeIf { it.isNotBlank() } ?: "未命名条目",
                 onIntent = onIntent,
             )
         }
@@ -61,6 +60,8 @@ fun DefaultKeyboardLayout(
                 )
             }
         }
+
+        Spacer(modifier = Modifier.weight(1f))
 
         DefaultKeyboardActionRow(
             state = state,
