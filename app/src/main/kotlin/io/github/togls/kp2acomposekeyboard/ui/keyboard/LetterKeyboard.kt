@@ -8,7 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.CommitTextKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.DeleteKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.ShiftKey
 
 @Composable
 fun LetterKeyboard(
@@ -36,11 +38,9 @@ fun LetterKeyboard(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
         ) {
-            KeyboardKey(
+            ShiftKey(
+                onIntent = onIntent,
                 modifier = Modifier.weight(1.2f),
-                text = "⇧",
-                onClick = { onIntent(KeyboardIntent.ToggleUppercase) },
-                emphasis = KeyboardKeyEmphasis.Action,
             )
 
             "zxcvbnm".forEach { letter ->
@@ -90,10 +90,10 @@ private fun LetterKey(
 ) {
     val text = letter.toInputText(isUppercase)
 
-    KeyboardKey(
-        modifier = modifier,
+    CommitTextKey(
         text = text,
-        onClick = { onIntent(KeyboardIntent.CommitText(text)) },
+        onIntent = onIntent,
+        modifier = modifier,
     )
 }
 

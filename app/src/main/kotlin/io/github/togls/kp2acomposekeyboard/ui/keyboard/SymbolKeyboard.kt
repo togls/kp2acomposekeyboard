@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.CommitTextKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.DeleteKey
 
 @Composable
@@ -58,10 +59,10 @@ private fun SymbolKeyRow(
         horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
     ) {
         keys.forEach { text ->
-            KeyboardKey(
-                modifier = Modifier.weight(1f),
+            CommitTextKey(
                 text = text,
-                onClick = { onIntent(KeyboardIntent.CommitText(text)) },
+                onIntent = onIntent,
+                modifier = Modifier.weight(1f),
             )
         }
     }
