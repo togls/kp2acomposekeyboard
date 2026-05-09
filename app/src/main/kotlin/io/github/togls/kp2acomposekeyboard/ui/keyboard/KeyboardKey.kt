@@ -21,15 +21,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun KeyboardKey(
+internal fun KeyboardKey(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    contentDescription: String? = null,
     emphasis: KeyboardKeyEmphasis = KeyboardKeyEmphasis.Normal,
 ) {
     val adaptiveMetrics = LocalKeyboardAdaptiveMetrics.current
@@ -75,6 +78,11 @@ fun KeyboardKey(
     Surface(
         modifier = modifier
             .defaultMinSize(minHeight = adaptiveMetrics.keyMinHeight)
+            .semantics {
+                if (contentDescription != null) {
+                    this.contentDescription = contentDescription
+                }
+            }
             .graphicsLayer {
                 scaleX = scale
                 scaleY = scale
