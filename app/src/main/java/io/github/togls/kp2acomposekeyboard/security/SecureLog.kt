@@ -15,8 +15,6 @@ import io.github.togls.kp2acomposekeyboard.BuildConfig
  */
 object SecureLog {
 
-    private const val DEFAULT_TAG = "Kp2aKeyboard"
-
     fun debug(
         event: SecureLogEvent,
         tag: String = DEFAULT_TAG,
