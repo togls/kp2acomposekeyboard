@@ -270,6 +270,7 @@ class KeyboardImeService :
 
     private fun launchSettingsActivity() {
         val intent = Intent(this, SettingsActivity::class.java).apply {
+            // InputMethodService 不是 Activity Context，从 IME 启动设置页必须新建任务。
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
 

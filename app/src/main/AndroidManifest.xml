@@ -30,8 +30,12 @@
 
         <activity
             android:name=".feature.settings.SettingsActivity"
-            android:exported="false"
-            android:label="@string/settings_title" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".feature.entrypicker.EntryPickerActivity"
@@ -44,10 +48,6 @@
         <activity
             android:name=".feature.plugin.Kp2aPluginActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <service

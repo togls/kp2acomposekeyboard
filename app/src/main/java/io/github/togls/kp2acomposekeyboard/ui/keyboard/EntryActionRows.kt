@@ -20,8 +20,8 @@ fun PagedEntryActionRow(
         horizontalArrangement = Arrangement.spacedBy(6.dpCompat),
     ) {
         KeyboardKey(
-            modifier = Modifier.weight(1.8f),
-            text = "切换默认布局",
+            modifier = Modifier.weight(1.4f),
+            text = "默认布局",
             onClick = { onIntent(KeyboardIntent.SwitchToDefaultLayout) },
             emphasis = KeyboardKeyEmphasis.Action,
         )
@@ -30,6 +30,13 @@ fun PagedEntryActionRow(
             modifier = Modifier.weight(1.5f),
             text = "选择条目",
             onClick = { onIntent(KeyboardIntent.SelectEntry) },
+            emphasis = KeyboardKeyEmphasis.Action,
+        )
+
+        KeyboardKey(
+            modifier = Modifier.weight(1f),
+            text = "设置",
+            onClick = { onIntent(KeyboardIntent.OpenSettings) },
             emphasis = KeyboardKeyEmphasis.Action,
         )
 

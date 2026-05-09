@@ -25,14 +25,18 @@ fun DefaultKeyboardLayout(
             .padding(horizontal = 8.dpCompat, vertical = 8.dpCompat),
         verticalArrangement = Arrangement.spacedBy(8.dpCompat),
     ) {
-        val entryName = state.currentEntryName
+        val entryName = state.currentEntryName?.takeIf { it.isNotBlank() } ?: "未命名条目"
 
         if (state.hasActiveSession) {
             ExistingEntryHint(
-                entryName = entryName?.takeIf { it.isNotBlank() } ?: "未命名条目",
+                entryName = entryName,
                 onIntent = onIntent,
             )
         }
+
+        DefaultKeyboardUtilityRow(
+            onIntent = onIntent,
+        )
 
         when (state.defaultInputMode) {
             DefaultInputMode.Letters -> {
@@ -122,6 +126,23 @@ private fun DefaultKeyboardActionRow(
             modifier = Modifier.weight(1.2f),
             text = "换行",
             onClick = { onIntent(KeyboardIntent.Enter) },
+            emphasis = KeyboardKeyEmphasis.Action,
+        )
+    }
+}
+
+@Composable
+private fun DefaultKeyboardUtilityRow(
+    onIntent: (KeyboardIntent) -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End,
+    ) {
+        KeyboardKey(
+            modifier = Modifier.weight(1f),
+            text = "设置",
+            onClick = { onIntent(KeyboardIntent.OpenSettings) },
             emphasis = KeyboardKeyEmphasis.Action,
         )
     }
