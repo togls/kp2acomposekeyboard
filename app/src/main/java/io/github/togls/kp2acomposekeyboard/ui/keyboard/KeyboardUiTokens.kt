@@ -25,4 +25,10 @@ internal object KeyboardMetrics {
     val NormalElevation = 1.dp
     val ActionElevation = 2.dp
     val PressedElevation = 0.dp
+
+    // 底部按钮不能贴住手势导航条 / 三键导航栏；这里保留一个基础呼吸空间。
+    val BottomSafePadding = 10.dp
+
+    // 不直接吃完整 navigationBars inset，避免部分 IME 窗口中重复避让导航栏导致键盘过矮。
+    val MaxNavigationAwareBottomPadding = 18.dp
 }

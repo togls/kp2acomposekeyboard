@@ -108,6 +108,8 @@ private fun PagedEntryContent(
             canGoNext = hasNextPage(state),
             onIntent = onIntent,
         )
+
+        KeyboardBottomSafeSpacer()
     }
 }
 
@@ -138,6 +140,8 @@ private fun ExpandedEntryContent(
             onScrollDown = onScrollDown,
             onIntent = onIntent,
         )
+
+        KeyboardBottomSafeSpacer()
     }
 }
 
