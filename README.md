@@ -1,51 +1,184 @@
-# kp2acomposekeyboard
+# KP2A Compose Keyboard
 
-基于 Keepass2Android Plugin API 的现代 Compose 安全输入法。
+KP2A Compose Keyboard is an Android input method designed to work with Keepass2Android through the Keepass2Android Plugin SDK2.
 
-当前进度：Plan 0.4 接入 Hilt 基础骨架。
+The keyboard lets the user select a KeePass entry from Keepass2Android and then input selected entry fields directly into the active text field through `InputConnection`, without using the clipboard.
 
-## 已完成
+> This project is primarily built for personal devices and personal requirements. It does not guarantee compatibility with all Android versions, HyperOS versions, MIUI versions, OEM ROMs, or Keepass2Android configurations.
 
-### Plan 0.1 创建项目
+## Current Status
 
-- Android Application 单 app module 骨架。
-- 包名：`io.github.togls.kp2acomposekeyboard`。
-- `minSdk = 26`、`targetSdk = 36`、`compileSdk = 36`。
-- 输入法 `KeyboardImeService` 最小类。
-- Manifest 输入法 Service 注册。
-- `res/xml/method.xml` 输入法 metadata。
+Implemented:
 
-### Plan 0.2 配置 Version Catalog
+- Android `InputMethodService` host.
+- Jetpack Compose keyboard UI.
+- Material 3 theme.
+- Light theme, dark theme, system theme, and Android 12+ dynamic color.
+- Default keyboard layout: letters, numbers, and symbols.
+- Entry keyboard layout: current entry header, fixed fields, paged extra fields, and expanded all-fields mode.
+- Keepass2Android Plugin SDK2 integration.
+- Keepass2Android plugin access flow.
+- Entry selection through Keepass2Android.
+- Field mapping from KP2A result to in-memory session.
+- Field input through `InputConnection.commitText()`.
+- In-memory session repository.
+- Default 60-second session timeout.
+- Settings page.
+- Keyboard height settings.
+- Basic portrait / landscape adaptation.
+- Basic unit tests for parsing, mapping, classification, sensitivity detection, settings, and safe snapshots.
 
-- 创建 `gradle/libs.versions.toml`。
-- 添加 AGP、Kotlin、Compose BOM、Compose Compiler、Hilt、KSP、Lifecycle、Activity Compose、DataStore 版本声明。
-- root `build.gradle.kts` 使用 plugin alias。
-- app `build.gradle.kts` 的现有插件使用 plugin alias。
+## Project Goals
 
-### Plan 0.3 配置 Gradle
+The project is designed around these constraints:
 
-- app module 应用 Android Application、Kotlin Android、Compose Compiler、KSP、Hilt 插件。
-- 启用 Compose。
-- 添加 Compose、Material 3、Lifecycle、Activity Compose、DataStore、Hilt 依赖。
-- Hilt 编译器使用 KSP。
-- 依赖版本继续集中在 Version Catalog 中管理。
+- Do not use the clipboard to transfer passwords or secrets.
+- Do not show field values in the keyboard UI.
+- Do not log passwords, TOTP codes, recovery codes, tokens, secrets, credentials, or access tokens.
+- Do not persist entry field values to DataStore, SharedPreferences, files, or databases.
+- Keep entry field values only in memory for a short period.
+- Clear the active entry session automatically after a timeout.
+- Allow the user to manually clear the session.
 
-### Plan 0.4 接入 Hilt
+## Basic Usage
 
-- 创建 `Kp2aComposeKeyboardApp`。
-- 添加 `@HiltAndroidApp`。
-- Manifest 注册 Application。
-- 创建基础 `di/AppModule.kt`。
-- `KeyboardImeService` 添加 `@AndroidEntryPoint`。
+1. Install Keepass2Android.
+2. Install KP2A Compose Keyboard.
+3. Enable KP2A Compose Keyboard in Android input method settings.
+4. Open the app from the launcher icon to configure keyboard settings.
+5. Switch to KP2A Compose Keyboard in any text field.
+6. Tap `[Select Entry]`.
+7. Grant plugin access in Keepass2Android if prompted.
+8. Select an entry in Keepass2Android.
+9. Return to the keyboard.
+10. Tap field buttons such as `[Username]`, `[Password]`, `[TOTP]`, or custom fields to input values.
 
-## 本地验证建议
+## Keyboard Layouts
+
+### Default Layout
+
+The default layout supports letter mode, number mode, and symbol mode.
+
+Bottom action row:
+
+```text
+[123/ABC] [Symbols/123] [Space] [Select Entry] [Enter]
+```
+
+If an active session exists, the default layout shows a top hint:
+
+```text
+Current entry: {entryName} [Back to Entry Layout]
+```
+
+### Entry Layout
+
+The entry layout supports:
+
+- Current entry header.
+- Fixed fields: Username, Password, and TOTP.
+- Extra fields with paging.
+- Expanded all-fields mode.
+- Bottom action rows.
+
+Sensitive field buttons use a cautious visual style, but still show only the field label, never the field value.
+
+## Security Model
+
+Field values are allowed only inside the in-memory session:
+
+```text
+KeyboardSessionRepository
+└─ KeyboardSession
+   └─ KeyboardField.value
+```
+
+Field values must not enter:
+
+- `KeyboardUiState`
+- `KeyboardFieldUiModel`
+- Compose UI
+- DataStore
+- SharedPreferences
+- Logcat
+- Crash reports
+
+See [`docs/security.md`](docs/security.md) for details.
+
+## Settings
+
+The settings page currently supports:
+
+- Theme mode: System, Light, or Dark.
+- Dynamic color.
+- Session timeout.
+- Keyboard height.
+- Haptic feedback toggle.
+- Key sound toggle.
+- Key preview toggle.
+
+Some settings may be reserved for later behavior integration.
+
+## Known Limitations
+
+- The project is not a full general-purpose keyboard.
+- It does not support pinyin, suggestions, autocorrect, candidate words, handwriting, or voice input.
+- Landscape mode currently uses a compressed version of the same layout.
+- Dedicated landscape layout is planned for a later phase.
+- OEM ROMs may behave differently around IME window height, navigation bars, activity launching, and input method lifecycle.
+- Keepass2Android Plugin SDK2 is required.
+- KeePassDX is not supported by this project.
+- Field classification for custom fields is heuristic and may need tuning.
+
+See [`docs/known-limitations.md`](docs/known-limitations.md) for details.
+
+## Tested Device
+
+Primary test device:
+
+```text
+Device: Xiaomi 15 Ultra / Xiaomi 15U
+ROM: HyperOS 3.0.303.0
+Password manager: Keepass2Android
+```
+
+See [`docs/test-devices.md`](docs/test-devices.md) for details.
+
+## Build and Test
+
+Build:
 
 ```bash
-./gradlew :app:kspDebugKotlin
 ./gradlew :app:assembleDebug
 ```
 
-## 后续
+Run unit tests:
 
-- Plan 1.1：创建输入法 Service 的完整 Compose 宿主。
-- Plan 1.2：在 `onCreateInputView()` 中返回 `ComposeView` 并显示静态测试布局。
+```bash
+./gradlew :app:testDebugUnitTest
+```
+
+Install debug build:
+
+```bash
+adb uninstall io.github.togls.kp2acomposekeyboard
+./gradlew :app:installDebug
+```
+
+Open settings page directly:
+
+```bash
+adb shell am start -n io.github.togls.kp2acomposekeyboard/.feature.settings.SettingsActivity
+```
+
+## Log Safety Check
+
+Runtime logs should not contain real field values.
+
+Example check:
+
+```bash
+adb logcat | rg "password|token|secret|totp|otp|recovery"
+```
+
+The output may contain event names or labels, but must not contain actual secret values.
