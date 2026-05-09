@@ -31,7 +31,10 @@ import io.github.togls.kp2acomposekeyboard.feature.settings.SettingsActivity
 import io.github.togls.kp2acomposekeyboard.security.DebugLog
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
 import io.github.togls.kp2acomposekeyboard.security.SecureLogEvent
+import io.github.togls.kp2acomposekeyboard.settings.KeyboardSettings
+import io.github.togls.kp2acomposekeyboard.settings.SettingsRepository
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardRoot
+import io.github.togls.kp2acomposekeyboard.ui.theme.KeyboardTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -51,6 +54,9 @@ class KeyboardImeService :
 
     @Inject
     lateinit var viewModelFactory: KeyboardViewModelFactory
+
+    @Inject
+    lateinit var settingsRepository: SettingsRepository
 
     private lateinit var viewModel: KeyboardViewModel
 
@@ -125,9 +131,12 @@ class KeyboardImeService :
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnDetachedFromWindow)
 
             setContent {
-                MaterialTheme {
-                    val state by viewModel.uiState.collectAsStateWithLifecycle()
+                val state by viewModel.uiState.collectAsStateWithLifecycle()
+                val settings by settingsRepository.settings.collectAsStateWithLifecycle(
+                    initialValue = KeyboardSettings(),
+                )
 
+                KeyboardTheme(settings = settings) {
                     KeyboardRoot(
                         state = state,
                         onIntent = viewModel::onIntent,

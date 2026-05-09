@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.togls.kp2acomposekeyboard.ui.theme.KeyboardTheme
 
 @AndroidEntryPoint
 class SettingsActivity : ComponentActivity() {
@@ -21,10 +22,10 @@ class SettingsActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MaterialTheme {
-                val state by viewModel.uiState.collectAsStateWithLifecycle()
-                val snackbarHostState = remember { SnackbarHostState() }
+            val state by viewModel.uiState.collectAsStateWithLifecycle()
+            val snackbarHostState = remember { SnackbarHostState() }
 
+            KeyboardTheme(settings = state.settings) {
                 LaunchedEffect(viewModel) {
                     viewModel.effect.collect { effect ->
                         when (effect) {

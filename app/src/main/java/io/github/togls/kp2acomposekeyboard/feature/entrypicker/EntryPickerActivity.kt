@@ -16,6 +16,9 @@ import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aContract
 import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aEntryResultParser
 import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aPluginAccess
 import io.github.togls.kp2acomposekeyboard.security.DebugLog
+import io.github.togls.kp2acomposekeyboard.settings.KeyboardSettings
+import io.github.togls.kp2acomposekeyboard.settings.SettingsRepository
+import io.github.togls.kp2acomposekeyboard.ui.theme.KeyboardTheme
 import keepass2android.pluginsdk.Strings
 import javax.inject.Inject
 
@@ -24,6 +27,9 @@ class EntryPickerActivity : ComponentActivity() {
 
     @Inject
     lateinit var resultParser: Kp2aEntryResultParser
+
+    @Inject
+    lateinit var settingsRepository: SettingsRepository
 
     private val viewModel: EntryPickerViewModel by viewModels()
     private var kp2aLaunchStarted = false
@@ -42,9 +48,12 @@ class EntryPickerActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MaterialTheme {
-                val state by viewModel.uiState.collectAsStateWithLifecycle()
+            val state by viewModel.uiState.collectAsStateWithLifecycle()
+            val settings by settingsRepository.settings.collectAsStateWithLifecycle(
+                initialValue = KeyboardSettings(),
+            )
 
+            KeyboardTheme(settings = settings) {
                 LaunchedEffect(Unit) {
                     viewModel.onIntent(EntryPickerIntent.StartSelection)
                     launchKp2aOnce()
