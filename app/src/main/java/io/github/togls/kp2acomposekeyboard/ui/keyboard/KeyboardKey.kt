@@ -34,6 +34,8 @@ fun KeyboardKey(
     enabled: Boolean = true,
     emphasis: KeyboardKeyEmphasis = KeyboardKeyEmphasis.Normal,
 ) {
+    val adaptiveMetrics = LocalKeyboardAdaptiveMetrics.current
+
     val interactionSource = remember { MutableInteractionSource() }
     val pressed by interactionSource.collectIsPressedAsState()
 
@@ -74,7 +76,7 @@ fun KeyboardKey(
 
     Surface(
         modifier = modifier
-            .defaultMinSize(minHeight = KeyboardMetrics.KeyMinHeight)
+            .defaultMinSize(minHeight = adaptiveMetrics.keyMinHeight)
             .graphicsLayer{
                 scaleX = scale
                 scaleY = scale
@@ -87,7 +89,7 @@ fun KeyboardKey(
                 indication = ripple(),
                 onClick = onClick,
             ),
-        shape = RoundedCornerShape(KeyboardMetrics.KeyCornerRadius),
+        shape = RoundedCornerShape(adaptiveMetrics.keyCornerRadius),
         color = containerColor,
         contentColor = contentColor,
         tonalElevation = elevation,
@@ -96,7 +98,7 @@ fun KeyboardKey(
         Text(
             modifier = Modifier.padding(
                 PaddingValues(
-                    horizontal = KeyboardMetrics.KeyHorizontalPadding,
+                    horizontal = adaptiveMetrics.keyHorizontalPadding,
                     vertical = KeyboardMetrics.KeyVerticalPadding,
                 ),
             ),

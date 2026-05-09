@@ -22,16 +22,17 @@ internal fun KeyboardBottomSafeSpacer(
 @Composable
 private fun keyboardBottomSafePadding(): Dp {
     val density = LocalDensity.current
+    val adaptiveMetrics = LocalKeyboardAdaptiveMetrics.current
     val navigationBottomPadding = with(density) {
         WindowInsets.navigationBars.getBottom(this).toDp()
     }
 
-    if (navigationBottomPadding <= KeyboardMetrics.BottomSafePadding) {
-        return KeyboardMetrics.BottomSafePadding
+    if (navigationBottomPadding <= adaptiveMetrics.bottomSafePadding) {
+        return adaptiveMetrics.bottomSafePadding
     }
 
     // IME 窗口在不同系统上可能已经避开导航栏；限制最大值避免双重 padding。
     return navigationBottomPadding.coerceAtMost(
-        KeyboardMetrics.MaxNavigationAwareBottomPadding,
+        adaptiveMetrics.maxNavigationAwareBottomPadding,
     )
 }

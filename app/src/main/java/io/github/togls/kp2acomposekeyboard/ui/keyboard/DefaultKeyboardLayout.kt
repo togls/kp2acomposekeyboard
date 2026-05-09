@@ -29,6 +29,8 @@ fun DefaultKeyboardLayout(
             ),
         verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
     ) {
+        val isLandscape = isKeyboardLandscape()
+
         if (state.hasActiveSession) {
             ExistingEntryHint(
                 entryName = state.currentEntryName?.takeIf { it.isNotBlank() } ?: "未命名条目",
@@ -36,9 +38,11 @@ fun DefaultKeyboardLayout(
             )
         }
 
-        DefaultKeyboardUtilityRow(
-            onIntent = onIntent,
-        )
+        if (!isLandscape) {
+            DefaultKeyboardUtilityRow(
+                onIntent = onIntent,
+            )
+        }
 
         when (state.defaultInputMode) {
             DefaultInputMode.Letters -> {
