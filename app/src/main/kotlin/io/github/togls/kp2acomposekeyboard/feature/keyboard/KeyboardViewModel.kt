@@ -3,7 +3,6 @@ package io.github.togls.kp2acomposekeyboard.feature.keyboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
-import io.github.togls.kp2acomposekeyboard.security.SecureLogEvent
 import io.github.togls.kp2acomposekeyboard.session.KeyboardSessionRepository
 import io.github.togls.kp2acomposekeyboard.session.KeyboardSessionSnapshot
 import io.github.togls.kp2acomposekeyboard.session.SessionTimeoutController
@@ -170,7 +169,7 @@ class KeyboardViewModel(
         val value = sessionRepository.getFieldValue(fieldId)
 
         if (value.isNullOrEmpty()) {
-            SecureLog.debug(SecureLogEvent.FieldCommitIgnored)
+            SecureLog.d("Field commit ignored")
             return
         }
 

@@ -1,7 +1,6 @@
 package io.github.togls.kp2acomposekeyboard.session
 
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
-import io.github.togls.kp2acomposekeyboard.security.SecureLogEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,17 +15,17 @@ class KeyboardSessionRepository @Inject constructor() {
 
     fun setSession(session: KeyboardSession) {
         _session.value = session
-        SecureLog.debug(SecureLogEvent.SessionCreated)
+        SecureLog.d("Session created")
     }
 
     fun clear() {
         _session.value = null
-        SecureLog.debug(SecureLogEvent.SessionCleared)
+        SecureLog.d("Session cleared")
     }
 
     fun getFieldValue(fieldId: String): String? {
         if (fieldId.isBlank()) {
-            SecureLog.debug(SecureLogEvent.FieldCommitIgnored)
+            SecureLog.d("Field commit ignored")
             return null
         }
 

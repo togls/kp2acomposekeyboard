@@ -1,13 +1,13 @@
 package io.github.togls.kp2acomposekeyboard.kp2a
 
-import io.github.togls.kp2acomposekeyboard.security.DebugLog
+import io.github.togls.kp2acomposekeyboard.security.SecureLog
 import keepass2android.pluginsdk.PluginAccessBroadcastReceiver
 import keepass2android.pluginsdk.Strings
 
 class Kp2aPluginAccessReceiver : PluginAccessBroadcastReceiver() {
 
     override fun getScopes(): ArrayList<String> {
-        DebugLog.d(
+        SecureLog.d(
             message = "kp2a access scopes requested",
             "scopeCount" to REQUIRED_SCOPES.size,
         )

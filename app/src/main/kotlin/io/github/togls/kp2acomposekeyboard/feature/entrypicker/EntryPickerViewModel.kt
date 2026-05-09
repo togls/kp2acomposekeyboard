@@ -6,9 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aEntryMapper
 import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aEntryResult
-import io.github.togls.kp2acomposekeyboard.security.DebugLog
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
-import io.github.togls.kp2acomposekeyboard.security.SecureLogEvent
 import io.github.togls.kp2acomposekeyboard.session.KeyboardSessionRepository
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -73,7 +71,7 @@ class EntryPickerViewModel @Inject constructor(
             message = "正在打开 Keepass2Android...",
         )
 
-        SecureLog.debug(SecureLogEvent.Kp2aLaunchRequested)
+        SecureLog.d("KP2A launch requested")
     }
 
     private fun restartSelection() {
@@ -87,7 +85,7 @@ class EntryPickerViewModel @Inject constructor(
             message = "已取消选择",
         )
 
-        SecureLog.debug(SecureLogEvent.Kp2aSelectionCancelled)
+        SecureLog.d("KP2A selection cancelled")
         sendEffect(EntryPickerEffect.Finish)
     }
 
@@ -106,14 +104,14 @@ class EntryPickerViewModel @Inject constructor(
             message = "已选择 Keepass2Android 条目",
         )
 
-        DebugLog.d(
+        SecureLog.d(
             message = "kp2a entry mapped",
             "fieldCount" to result.fields.size,
             "protectedFieldCount" to result.protectedFields.size,
             "hasEntryId" to (result.entryId != null),
         )
 
-        SecureLog.debug(SecureLogEvent.Kp2aResultReceived)
+        SecureLog.d("KP2A result received")
         sendEffect(EntryPickerEffect.Finish)
     }
 
@@ -124,7 +122,7 @@ class EntryPickerViewModel @Inject constructor(
         )
 
         // 用户取消选择时不能清除旧 Session，避免破坏当前可用条目。
-        SecureLog.debug(SecureLogEvent.Kp2aSelectionCancelled)
+        SecureLog.d("KP2A selection cancelled")
         sendEffect(EntryPickerEffect.Finish)
     }
 
@@ -135,7 +133,7 @@ class EntryPickerViewModel @Inject constructor(
             message = "未能从 Keepass2Android 获取条目",
         )
 
-        SecureLog.debug(SecureLogEvent.Kp2aSelectionFailed)
+        SecureLog.d("KP2A selection failed")
     }
 
     private fun handleKp2aLaunchFailed() {
@@ -145,7 +143,7 @@ class EntryPickerViewModel @Inject constructor(
             message = "无法打开 Keepass2Android",
         )
 
-        SecureLog.debug(SecureLogEvent.Kp2aLaunchFailed)
+        SecureLog.d("KP2A launch failed")
     }
 
     private fun sendEffect(effect: EntryPickerEffect) {

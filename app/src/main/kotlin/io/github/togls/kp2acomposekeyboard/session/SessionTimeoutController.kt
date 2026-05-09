@@ -1,7 +1,6 @@
 package io.github.togls.kp2acomposekeyboard.session
 
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
-import io.github.togls.kp2acomposekeyboard.security.SecureLogEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -23,7 +22,7 @@ class SessionTimeoutController @Inject constructor(
         timeoutJob?.cancel()
 
         timeoutJob = scope.launch {
-            SecureLog.debug(SecureLogEvent.SessionTimeoutScheduled)
+            SecureLog.d("Session timeout scheduled")
             delay(timeoutMillis)
             sessionRepository.clear()
         }
@@ -32,7 +31,7 @@ class SessionTimeoutController @Inject constructor(
     fun cancelTimeout() {
         timeoutJob?.cancel()
         timeoutJob = null
-        SecureLog.debug(SecureLogEvent.SessionTimeoutCanceled)
+        SecureLog.d("Session timeout canceled")
     }
 
     fun clearNow() {

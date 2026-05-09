@@ -6,7 +6,6 @@ import android.inputmethodservice.InputMethodService
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -28,9 +27,7 @@ import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardEffect
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardViewModel
 import io.github.togls.kp2acomposekeyboard.feature.settings.SettingsActivity
-import io.github.togls.kp2acomposekeyboard.security.DebugLog
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
-import io.github.togls.kp2acomposekeyboard.security.SecureLogEvent
 import io.github.togls.kp2acomposekeyboard.settings.KeyboardSettings
 import io.github.togls.kp2acomposekeyboard.settings.SettingsRepository
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardRoot
@@ -97,7 +94,7 @@ class KeyboardImeService :
 
         collectKeyboardEffects()
 
-        SecureLog.debug(SecureLogEvent.ImeCreated, TAG)
+        SecureLog.d("IME created")
     }
 
     override fun onBindInput() {
@@ -107,7 +104,7 @@ class KeyboardImeService :
     }
 
     override fun onCreateInputView(): View {
-        SecureLog.debug(SecureLogEvent.InputViewCreated, TAG)
+        SecureLog.d("Input view created")
 
         installViewTreeOwners(window?.window?.decorView)
 
@@ -163,12 +160,12 @@ class KeyboardImeService :
         lifecycleRegistry.currentState = Lifecycle.State.RESUMED
         installViewTreeOwners(window?.window?.decorView)
         entryPickerFlowActive = false
-        DebugLog.d("input view started")
+        SecureLog.d("input view started")
     }
 
     override fun onFinishInputView(finishingInput: Boolean) {
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
-        SecureLog.debug(SecureLogEvent.InputViewFinished, TAG)
+        SecureLog.d("Input view finished")
         super.onFinishInputView(finishingInput)
     }
 
@@ -198,7 +195,7 @@ class KeyboardImeService :
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         serviceScope.cancel()
         viewModelStore.clear()
-        DebugLog.d("ime destroyed")
+        SecureLog.d("ime destroyed")
         super.onDestroy()
     }
 
@@ -227,12 +224,12 @@ class KeyboardImeService :
 
             is KeyboardEffect.LaunchEntryPicker -> {
                 launchEntryPickerActivity()
-                SecureLog.debug(SecureLogEvent.LaunchEntryPickerRequested, TAG)
+                SecureLog.d("Launch entry picker requested")
             }
 
             KeyboardEffect.LaunchSettings -> {
                 launchSettingsActivity()
-                SecureLog.debug(SecureLogEvent.LaunchSettingsRequested, TAG)
+                SecureLog.d("Launch settings requested")
             }
         }
     }
@@ -246,7 +243,7 @@ class KeyboardImeService :
             addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
         }
 
-        DebugLog.intent(
+        SecureLog.intent(
             message = "launch entry picker activity",
             intent = intent,
         )
@@ -255,13 +252,13 @@ class KeyboardImeService :
             startActivity(intent)
         } catch (error: ActivityNotFoundException) {
             entryPickerFlowActive = false
-            DebugLog.w(
+            SecureLog.w(
                 message = "entry picker activity launch failed",
                 throwable = error,
             )
         } catch (error: SecurityException) {
             entryPickerFlowActive = false
-            DebugLog.w(
+            SecureLog.w(
                 message = "entry picker activity launch failed",
                 throwable = error,
             )
@@ -284,7 +281,7 @@ class KeyboardImeService :
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
 
-        DebugLog.intent(
+        SecureLog.intent(
             message = "launch settings activity",
             intent = intent,
         )
@@ -292,13 +289,13 @@ class KeyboardImeService :
         try {
             startActivity(intent)
         } catch (error: ActivityNotFoundException) {
-            DebugLog.w(
+            SecureLog.w(
                 message = "settings activity launch failed",
                 throwable = error,
                 "errorType" to error::class.java.simpleName,
             )
         } catch (error: SecurityException) {
-            DebugLog.w(
+            SecureLog.w(
                 message = "settings activity launch failed",
                 throwable = error,
                 "errorType" to error::class.java.simpleName,

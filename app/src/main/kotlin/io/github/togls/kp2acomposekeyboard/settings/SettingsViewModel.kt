@@ -3,10 +3,8 @@ package io.github.togls.kp2acomposekeyboard.feature.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.togls.kp2acomposekeyboard.security.DebugLog
-import io.github.togls.kp2acomposekeyboard.settings.KeyboardSettings
+import io.github.togls.kp2acomposekeyboard.security.SecureLog
 import io.github.togls.kp2acomposekeyboard.settings.SettingsRepository
-import javax.inject.Inject
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +14,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
@@ -110,7 +109,7 @@ class SettingsViewModel @Inject constructor(
             }.onSuccess {
                 _effect.emit(SettingsEffect.ShowSavedMessage)
             }.onFailure { throwable ->
-                DebugLog.w(
+                SecureLog.w(
                     message = "settings save failed",
                     throwable = throwable,
                     "errorType" to throwable::class.java.simpleName,

@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -77,7 +75,7 @@ fun KeyboardKey(
     Surface(
         modifier = modifier
             .defaultMinSize(minHeight = adaptiveMetrics.keyMinHeight)
-            .graphicsLayer{
+            .graphicsLayer {
                 scaleX = scale
                 scaleY = scale
             }
