@@ -13,7 +13,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.MainKeyboardLayout
-import io.github.togls.kp2acomposekeyboard.settings.KeyboardSettings
+import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.layout.DefaultKeyboardLayout
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.layout.EntryKeyboardLayout
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardAdaptiveMetrics

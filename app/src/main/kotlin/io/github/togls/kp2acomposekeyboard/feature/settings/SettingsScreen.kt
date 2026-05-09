@@ -29,9 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.togls.kp2acomposekeyboard.settings.KeyboardHeightMode
-import io.github.togls.kp2acomposekeyboard.settings.KeyboardSettings
-import io.github.togls.kp2acomposekeyboard.settings.KeyboardThemeMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

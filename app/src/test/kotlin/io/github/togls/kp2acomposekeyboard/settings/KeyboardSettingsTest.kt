@@ -1,5 +1,8 @@
 package io.github.togls.kp2acomposekeyboard.settings
 
+import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardHeightMode
+import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
+import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardThemeMode
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

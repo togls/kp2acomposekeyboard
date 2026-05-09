@@ -11,12 +11,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
+import io.github.togls.kp2acomposekeyboard.feature.settings.SettingsRepository
 import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aContract
 import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aEntryResultParser
 import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aPluginAccess
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
-import io.github.togls.kp2acomposekeyboard.settings.KeyboardSettings
-import io.github.togls.kp2acomposekeyboard.settings.SettingsRepository
 import io.github.togls.kp2acomposekeyboard.ui.theme.KeyboardTheme
 import keepass2android.pluginsdk.Strings
 import javax.inject.Inject

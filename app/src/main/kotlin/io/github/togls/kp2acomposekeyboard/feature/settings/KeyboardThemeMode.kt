@@ -1,4 +1,4 @@
-package io.github.togls.kp2acomposekeyboard.settings
+package io.github.togls.kp2acomposekeyboard.feature.settings
 
 enum class KeyboardThemeMode {
     System,

@@ -26,10 +26,10 @@ import io.github.togls.kp2acomposekeyboard.feature.entrypicker.EntryPickerActivi
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardEffect
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardViewModel
+import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
 import io.github.togls.kp2acomposekeyboard.feature.settings.SettingsActivity
+import io.github.togls.kp2acomposekeyboard.feature.settings.SettingsRepository
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
-import io.github.togls.kp2acomposekeyboard.settings.KeyboardSettings
-import io.github.togls.kp2acomposekeyboard.settings.SettingsRepository
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardRoot
 import io.github.togls.kp2acomposekeyboard.ui.theme.KeyboardTheme
 import kotlinx.coroutines.CoroutineScope
