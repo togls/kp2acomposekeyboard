@@ -16,8 +16,8 @@ internal data class KeyboardAdaptiveMetrics(
             keyMinHeight = 46.dp,
             keyHorizontalPadding = 8.dp,
             keyCornerRadius = 18.dp,
-            bottomSafePadding = 10.dp,
-            maxNavigationAwareBottomPadding = 18.dp,
+            bottomSafePadding = 30.dp,
+            maxNavigationAwareBottomPadding = 30.dp,
         )
 
         val Landscape = KeyboardAdaptiveMetrics(
