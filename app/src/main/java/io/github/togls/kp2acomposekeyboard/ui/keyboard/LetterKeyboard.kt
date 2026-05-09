@@ -17,7 +17,7 @@ fun LetterKeyboard(
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(6.dpCompat),
+        verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
     ) {
         LetterRow(
             letters = "qwertyuiop",
@@ -33,7 +33,7 @@ fun LetterKeyboard(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(6.dpCompat),
+            horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
         ) {
             KeyboardKey(
                 modifier = Modifier.weight(1.2f),

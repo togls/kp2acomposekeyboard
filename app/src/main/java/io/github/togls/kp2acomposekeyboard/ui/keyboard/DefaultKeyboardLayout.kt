@@ -22,8 +22,11 @@ fun DefaultKeyboardLayout(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 220.dpCompat)
-            .padding(horizontal = 8.dpCompat, vertical = 8.dpCompat),
-        verticalArrangement = Arrangement.spacedBy(8.dpCompat),
+            .padding(
+                horizontal = KeyboardMetrics.OuterPaddingHorizontal,
+                vertical = KeyboardMetrics.OuterPaddingVertical,
+            ),
+        verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
     ) {
         val entryName = state.currentEntryName?.takeIf { it.isNotBlank() } ?: "未命名条目"
 
@@ -73,7 +76,7 @@ private fun DefaultKeyboardActionRow(
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(6.dpCompat),
+        horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
     ) {
         KeyboardKey(
             modifier = Modifier.weight(1f),

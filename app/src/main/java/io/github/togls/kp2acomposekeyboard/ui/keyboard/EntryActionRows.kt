@@ -17,7 +17,7 @@ fun PagedEntryActionRow(
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(6.dpCompat),
+        horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
     ) {
         KeyboardKey(
             modifier = Modifier.weight(1.4f),
@@ -87,11 +87,11 @@ fun ExpandedEntryActionRows(
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(6.dpCompat),
+        verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(6.dpCompat),
+            horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
         ) {
             KeyboardKey(
                 modifier = Modifier.weight(1f),
@@ -117,11 +117,11 @@ fun ExpandedEntryActionRows(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(6.dpCompat),
+            horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
         ) {
             KeyboardKey(
                 modifier = Modifier.weight(1.8f),
-                text = "切换默认布局",
+                text = "默认布局",
                 onClick = { onIntent(KeyboardIntent.SwitchToDefaultLayout) },
                 emphasis = KeyboardKeyEmphasis.Action,
             )

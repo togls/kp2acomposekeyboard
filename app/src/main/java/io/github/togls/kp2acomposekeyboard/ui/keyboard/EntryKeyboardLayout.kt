@@ -35,8 +35,11 @@ fun EntryKeyboardLayout(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 220.dpCompat)
-            .padding(horizontal = 8.dpCompat, vertical = 8.dpCompat),
-        verticalArrangement = Arrangement.spacedBy(8.dpCompat),
+            .padding(
+                horizontal = KeyboardMetrics.OuterPaddingHorizontal,
+                vertical = KeyboardMetrics.OuterPaddingVertical,
+            ),
+        verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
     ) {
         EntryHeader(entryName = state.currentEntryName)
 

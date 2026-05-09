@@ -15,7 +15,7 @@ fun SymbolKeyboard(
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(6.dpCompat),
+        verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
     ) {
         SymbolKeyRow(
             keys = listOf("[", "]", "{", "}", "#", "%", "^", "*", "+", "="),
@@ -29,7 +29,7 @@ fun SymbolKeyboard(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(6.dpCompat),
+            horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
         ) {
             listOf("/", ";", ":", "\"", "'", "`").forEach { text ->
                 KeyboardKey(
@@ -56,7 +56,7 @@ private fun SymbolKeyRow(
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(6.dpCompat),
+        horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
     ) {
         keys.forEach { text ->
             KeyboardKey(

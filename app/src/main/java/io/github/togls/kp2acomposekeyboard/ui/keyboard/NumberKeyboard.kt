@@ -15,7 +15,7 @@ fun NumberKeyboard(
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(6.dpCompat),
+        verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
     ) {
         NumberKeyRow(
             keys = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0"),
@@ -29,7 +29,7 @@ fun NumberKeyboard(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(6.dpCompat),
+            horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
         ) {
             listOf(".", ",", "?", "!", "'").forEach { text ->
                 KeyboardKey(
@@ -56,7 +56,7 @@ private fun NumberKeyRow(
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(6.dpCompat),
+        horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
     ) {
         keys.forEach { text ->
             KeyboardKey(

@@ -13,12 +13,22 @@ fun FieldButton(
 ) {
     KeyboardKey(
         modifier = modifier,
-        text = field.label.ifBlank { "未命名字段" },
+        text = field.safeDisplayLabel(),
         onClick = { onIntent(KeyboardIntent.CommitField(field.id)) },
         emphasis = if (field.sensitive) {
-            KeyboardKeyEmphasis.Action
+            KeyboardKeyEmphasis.Sensitive
         } else {
             KeyboardKeyEmphasis.Normal
         },
     )
+}
+
+private fun KeyboardFieldUiModel.safeDisplayLabel(): String {
+    val label = label.trim()
+
+    if (label.isBlank()) {
+        return "未命名字段"
+    }
+
+    return label
 }
