@@ -20,9 +20,14 @@ import io.github.togls.kp2acomposekeyboard.security.SecureLogEvent
 import keepass2android.pluginsdk.AccessManager
 import keepass2android.pluginsdk.Kp2aControl
 import keepass2android.pluginsdk.Strings
+import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aEntryResultParser
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class EntryPickerActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var resultParser: Kp2aEntryResultParser
 
     private val viewModel: EntryPickerViewModel by viewModels()
 
@@ -34,49 +39,27 @@ class EntryPickerActivity : ComponentActivity() {
                 "KP2A result received: resultCode=${result.resultCode}, data=${result.data != null}",
             )
 
-            if (result.resultCode != Activity.RESULT_OK) {
-                DebugLog.d("KP2A result canceled or failed")
-
-                viewModel.onIntent(
-                    EntryPickerIntent.Kp2aLaunchFailed,
-                )
-                return@registerForActivityResult
-            }
-
             val data = result.data
 
-            if (data == null) {
-                viewModel.onIntent(
-                    EntryPickerIntent.Kp2aLaunchFailed,
-                )
-                return@registerForActivityResult
-            }
-
-            runCatching {
-                Kp2aControl.getEntryFieldsFromIntent(data)
-            }.onSuccess { fields ->
-                DebugLog.d("$fields")
-
-                if (fields.isEmpty()) {
-                    DebugLog.d("KP2A returned empty fields")
-
-                    viewModel.onIntent(
-                        EntryPickerIntent.Kp2aLaunchFailed,
-                    )
-                    return@onSuccess
+            when {
+                result.resultCode == RESULT_CANCELED -> {
+                    viewModel.onIntent(EntryPickerIntent.Kp2aResultCancelled)
                 }
 
-                viewModel.onIntent(
-                    EntryPickerIntent.Kp2aEntrySelected(fields = fields),
-                )
-            }.onFailure { throwable ->
-                DebugLog.d(
-                    "Failed to parse KP2A result: ${throwable::class.java.simpleName}: ${throwable.message}",
-                )
+                Kp2aContract.isSuccessfulResult(
+                    resultCode = result.resultCode,
+                    data = data,
+                ) -> {
+                    viewModel.onIntent(
+                        EntryPickerIntent.Kp2aResultSucceeded(
+                            result = resultParser.parse(data),
+                        ),
+                    )
+                }
 
-                viewModel.onIntent(
-                    EntryPickerIntent.Kp2aLaunchFailed,
-                )
+                else -> {
+                    viewModel.onIntent(EntryPickerIntent.Kp2aResultFailed)
+                }
             }
         }
 

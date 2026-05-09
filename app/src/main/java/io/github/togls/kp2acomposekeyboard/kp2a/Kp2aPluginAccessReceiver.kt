@@ -31,10 +31,6 @@ class Kp2aPluginAccessReceiver : PluginAccessBroadcastReceiver() {
         when (intent.action) {
             Kp2aContract.Actions.TRIGGER_REQUEST_ACCESS -> {
                 // 授权成功，不需要处理
-                // keyboardRequestAccess(
-                //     context = context,
-                //     triggerIntent = intent,
-                // )
             }
 
             Kp2aContract.Actions.RECEIVE_ACCESS -> {
@@ -53,35 +49,6 @@ class Kp2aPluginAccessReceiver : PluginAccessBroadcastReceiver() {
 
             else -> DebugLog.d("not implemented intent action")
         }
-    }
-
-    private fun keyboardRequestAccess(
-        context: Context,
-        triggerIntent: Intent,
-    ) {
-        val requestToken = triggerIntent.getStringExtra(Kp2aContract.Extras.REQUEST_TOKEN)
-            ?: return
-
-        val hostPackage = triggerIntent.getStringExtra(Kp2aContract.Extras.SENDER)
-
-        val scopes = listOf(
-            Kp2aContract.Scopes.QUERY_CREDENTIALS,
-            Kp2aContract.Scopes.QUERY_CREDENTIALS_FOR_OWN_PACKAGE,
-        )
-
-        val requestIntent = Intent(Kp2aContract.Actions.REQUEST_ACCESS).apply {
-            putExtra(Kp2aContract.Extras.REQUEST_TOKEN, requestToken)
-            putExtra(Kp2aContract.Extras.PLUGIN_PACKAGE, context.packageName)
-            putExtra(Kp2aContract.Extras.SENDER, context.packageName)
-            putExtra(Kp2aContract.Extras.SCOPES, JSONArray(scopes).toString())
-
-            // KP2A 发来的 sender 是授权宿主包名；设置 package 可以避免广播被无关应用接收。
-            if (!hostPackage.isNullOrBlank()) {
-                setPackage(hostPackage)
-            }
-        }
-
-        context.sendBroadcast(requestIntent)
     }
 
     private fun keyboardReceiveAccess(

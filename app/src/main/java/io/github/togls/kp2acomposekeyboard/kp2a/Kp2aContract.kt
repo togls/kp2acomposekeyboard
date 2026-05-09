@@ -2,6 +2,7 @@ package io.github.togls.kp2acomposekeyboard.kp2a
 
 import android.app.Activity
 import android.content.Intent
+import keepass2android.pluginsdk.Kp2aControl
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -66,13 +67,7 @@ object Kp2aContract {
     }
 
     fun createQueryEntryIntent(searchText: String?): Intent {
-        return Intent(Actions.QUERY_CREDENTIALS).apply {
-            val query = searchText?.trim().orEmpty()
-
-            if (query.isNotEmpty()) {
-                putExtra(Extras.QUERY_STRING, query)
-            }
-        }
+        return Kp2aControl.getQueryEntryIntent(searchText)
     }
 
     fun createQueryOwnPackageIntent(): Intent {

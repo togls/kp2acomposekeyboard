@@ -4,9 +4,12 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aEntryMapper
 import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aEntryResult
+import io.github.togls.kp2acomposekeyboard.security.DebugLog
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
 import io.github.togls.kp2acomposekeyboard.security.SecureLogEvent
+import io.github.togls.kp2acomposekeyboard.session.KeyboardSessionRepository
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +21,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class EntryPickerViewModel @Inject constructor() : ViewModel() {
+class EntryPickerViewModel @Inject constructor(
+    private val sessionRepository: KeyboardSessionRepository,
+    private val entryMapper: Kp2aEntryMapper,
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(EntryPickerUiState())
     val uiState: StateFlow<EntryPickerUiState> = _uiState.asStateFlow()
@@ -86,17 +92,27 @@ class EntryPickerViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun handleKp2aSuccess(result: Kp2aEntryResult) {
-        if (result.isEmpty) {
+        val session = entryMapper.mapToSession(result)
+
+        if (session == null) {
             handleKp2aFailed()
             return
         }
 
+        sessionRepository.setSession(session)
+
         _uiState.value = EntryPickerUiState(
             status = EntryPickerStatus.Completed,
-            message = "已收到 Keepass2Android 返回结果",
+            message = "已选择 Keepass2Android 条目",
         )
 
-        // 这里只确认 KP2A 返回成功，不打印字段名或字段值；字段映射和写入 Session 留到 Plan 6.5。
+        DebugLog.d(
+            message = "kp2a entry mapped",
+            "fieldCount" to result.fields.size,
+            "protectedFieldCount" to result.protectedFields.size,
+            "hasEntryId" to (result.entryId != null),
+        )
+
         SecureLog.debug(SecureLogEvent.Kp2aResultReceived)
         sendEffect(EntryPickerEffect.Finish)
     }
