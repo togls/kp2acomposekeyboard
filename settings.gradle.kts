@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "kp2acomposekeyboard"
 include(":app")
+include(":kp2a-plugin-sdk")

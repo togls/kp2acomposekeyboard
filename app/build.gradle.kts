@@ -5,14 +5,19 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
+val compileSdkVersion = providers.gradleProperty("android.compileSdk").get().toInt()
+val targetSdkVersion = providers.gradleProperty("android.targetSdk").get().toInt()
+val minSdkVersion = providers.gradleProperty("android.minSdk").get().toInt()
+
 android {
     namespace = "io.github.togls.kp2acomposekeyboard"
-    compileSdk = 37
+    compileSdk = compileSdkVersion
 
     defaultConfig {
         applicationId = "io.github.togls.kp2acomposekeyboard"
-        minSdk = 26
-        targetSdk = 37
+        // applicationId = "keepass2android.plugin.qr"
+        minSdk = minSdkVersion
+        targetSdk = targetSdkVersion
         versionCode = 1
         versionName = "0.1.0"
     }
@@ -57,4 +62,6 @@ dependencies {
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+
+    implementation(project(":kp2a-plugin-sdk"))
 }
