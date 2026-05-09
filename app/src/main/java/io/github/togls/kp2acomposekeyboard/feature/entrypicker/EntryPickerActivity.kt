@@ -1,6 +1,5 @@
 package io.github.togls.kp2acomposekeyboard.feature.entrypicker
 
-import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
@@ -14,13 +13,10 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aContract
-import io.github.togls.kp2acomposekeyboard.security.DebugLog
-import io.github.togls.kp2acomposekeyboard.security.SecureLog
-import io.github.togls.kp2acomposekeyboard.security.SecureLogEvent
-import keepass2android.pluginsdk.AccessManager
-import keepass2android.pluginsdk.Kp2aControl
-import keepass2android.pluginsdk.Strings
 import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aEntryResultParser
+import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aPluginAccess
+import io.github.togls.kp2acomposekeyboard.security.DebugLog
+import keepass2android.pluginsdk.Strings
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -30,37 +26,16 @@ class EntryPickerActivity : ComponentActivity() {
     lateinit var resultParser: Kp2aEntryResultParser
 
     private val viewModel: EntryPickerViewModel by viewModels()
-
     private var kp2aLaunchStarted = false
 
     private val kp2aLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            DebugLog.d(
-                "KP2A result received: resultCode=${result.resultCode}, data=${result.data != null}",
-            )
+            handleKp2aResult(result.resultCode, result.data)
+        }
 
-            val data = result.data
-
-            when {
-                result.resultCode == RESULT_CANCELED -> {
-                    viewModel.onIntent(EntryPickerIntent.Kp2aResultCancelled)
-                }
-
-                Kp2aContract.isSuccessfulResult(
-                    resultCode = result.resultCode,
-                    data = data,
-                ) -> {
-                    viewModel.onIntent(
-                        EntryPickerIntent.Kp2aResultSucceeded(
-                            result = resultParser.parse(data),
-                        ),
-                    )
-                }
-
-                else -> {
-                    viewModel.onIntent(EntryPickerIntent.Kp2aResultFailed)
-                }
-            }
+    private val kp2aPluginSettingsLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            handleReturnedFromPluginSettings()
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,6 +66,39 @@ class EntryPickerActivity : ComponentActivity() {
         }
     }
 
+    private fun handleKp2aResult(
+        resultCode: Int,
+        data: Intent?,
+    ) {
+        DebugLog.bundleKeys(
+            message = "kp2a result received",
+            bundle = data?.extras,
+            "resultCode" to resultCode,
+            "hasData" to (data != null),
+        )
+
+        when {
+            resultCode == RESULT_CANCELED -> {
+                viewModel.onIntent(EntryPickerIntent.Kp2aResultCancelled)
+            }
+
+            Kp2aContract.isSuccessfulResult(
+                resultCode = resultCode,
+                data = data,
+            ) -> {
+                viewModel.onIntent(
+                    EntryPickerIntent.Kp2aResultSucceeded(
+                        result = resultParser.parse(data),
+                    ),
+                )
+            }
+
+            else -> {
+                viewModel.onIntent(EntryPickerIntent.Kp2aResultFailed)
+            }
+        }
+    }
+
     private fun launchKp2aOnce() {
         if (kp2aLaunchStarted) {
             DebugLog.d("skip launch KP2A because launch already started")
@@ -100,74 +108,44 @@ class EntryPickerActivity : ComponentActivity() {
         kp2aLaunchStarted = true
 
         try {
-            if (AccessManager.getAllHostPackages(this).isEmpty()) {
-                DebugLog.d("kp2a: plugin access not granted, open plugin settings")
+            if (!Kp2aPluginAccess.hasRequiredAccess(this)) {
+                DebugLog.d("kp2a plugin access not granted")
                 openKp2aPluginSettings()
                 return
             }
 
-            val targetPackageName = intent.getStringExtra(EXTRA_TARGET_PACKAGE_NAME)
-            val searchText = Kp2aContract.appQuery(targetPackageName)
+            val intent = Kp2aContract.createQueryEntryIntent(searchText = null)
 
-            DebugLog.d(
-                "launch KP2A query entry: targetPackageName=$targetPackageName, searchText=$searchText",
+            DebugLog.intent(
+                message = "launch kp2a query entry",
+                intent = intent,
+                "queryMode" to "manual",
             )
 
-            SecureLog.debug(SecureLogEvent.Kp2aLaunchRequested)
-
-            val kp2aIntent = Kp2aControl.getQueryEntryIntent(searchText)
-
-            DebugLog.d(
-                "KP2A intent created: action=${kp2aIntent.action}, package=${kp2aIntent.`package`}, component=${kp2aIntent.component}",
-            )
-
-            kp2aLauncher.launch(kp2aIntent)
-
-            DebugLog.d("KP2A launcher.launch() called")
+            kp2aLauncher.launch(intent)
         } catch (throwable: ActivityNotFoundException) {
-            DebugLog.d("KP2A launch failed: ActivityNotFoundException")
-
-            kp2aLaunchStarted = false
-
-            viewModel.onIntent(
-                EntryPickerIntent.Kp2aLaunchFailed,
-            )
+            handleKp2aLaunchFailure(throwable)
         } catch (throwable: SecurityException) {
-            DebugLog.d("KP2A launch failed: SecurityException: ${throwable.message}")
-
-            kp2aLaunchStarted = false
-
-            viewModel.onIntent(
-                EntryPickerIntent.Kp2aLaunchFailed,
-            )
+            handleKp2aLaunchFailure(throwable)
         } catch (throwable: Throwable) {
-            DebugLog.d(
-                "KP2A launch failed: ${throwable::class.java.simpleName}: ${throwable.message}",
-            )
-
-            kp2aLaunchStarted = false
-
-            viewModel.onIntent(
-                EntryPickerIntent.Kp2aLaunchFailed,
-            )
+            handleKp2aLaunchFailure(throwable)
         }
     }
 
-    private val kp2aPluginSettingsLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            DebugLog.d("kp2a: returned from plugin settings")
+    private fun handleReturnedFromPluginSettings() {
+        DebugLog.d("returned from kp2a plugin settings")
 
-            kp2aLaunchStarted = false
+        kp2aLaunchStarted = false
 
-            if (AccessManager.getAllHostPackages(this).isEmpty()) {
-                DebugLog.d("kp2a: plugin access still not granted")
-                viewModel.onIntent(EntryPickerIntent.Kp2aLaunchFailed)
-                return@registerForActivityResult
-            }
-
-            DebugLog.d("kp2a: plugin access granted, launch query again")
-            launchKp2aOnce()
+        if (!Kp2aPluginAccess.hasRequiredAccess(this)) {
+            DebugLog.d("kp2a plugin access still not granted")
+            viewModel.onIntent(EntryPickerIntent.Kp2aLaunchFailed)
+            return
         }
+
+        DebugLog.d("kp2a plugin access granted")
+        launchKp2aOnce()
+    }
 
     private fun openKp2aPluginSettings() {
         try {
@@ -175,32 +153,31 @@ class EntryPickerActivity : ComponentActivity() {
                 putExtra(Strings.EXTRA_PLUGIN_PACKAGE, packageName)
             }
 
-            DebugLog.d(
-                "kp2a: open KP2A plugin settings: " +
-                        "action=${intent.action}, pluginPackage=$packageName",
+            DebugLog.intent(
+                message = "open kp2a plugin settings",
+                intent = intent,
+                "pluginPackage" to packageName,
             )
 
             kp2aPluginSettingsLauncher.launch(intent)
         } catch (throwable: ActivityNotFoundException) {
-            kp2aLaunchStarted = false
-            DebugLog.d("kp2a: plugin settings ActivityNotFoundException")
-            viewModel.onIntent(EntryPickerIntent.Kp2aLaunchFailed)
+            handleKp2aLaunchFailure(throwable)
         } catch (throwable: SecurityException) {
-            kp2aLaunchStarted = false
-            DebugLog.d("kp2a: plugin settings SecurityException: ${throwable.message}")
-            viewModel.onIntent(EntryPickerIntent.Kp2aLaunchFailed)
+            handleKp2aLaunchFailure(throwable)
         } catch (throwable: Throwable) {
-            kp2aLaunchStarted = false
-            DebugLog.d(
-                "kp2a: plugin settings failed: " +
-                        "${throwable::class.java.simpleName}: ${throwable.message}",
-            )
-            viewModel.onIntent(EntryPickerIntent.Kp2aLaunchFailed)
+            handleKp2aLaunchFailure(throwable)
         }
     }
 
-    companion object {
-        const val EXTRA_TARGET_PACKAGE_NAME =
-            "io.github.togls.kp2acomposekeyboard.extra.TARGET_PACKAGE_NAME"
+    private fun handleKp2aLaunchFailure(throwable: Throwable) {
+        kp2aLaunchStarted = false
+
+        DebugLog.w(
+            message = "kp2a launch failed",
+            throwable = throwable,
+            "errorType" to throwable::class.java.simpleName,
+        )
+
+        viewModel.onIntent(EntryPickerIntent.Kp2aLaunchFailed)
     }
 }
