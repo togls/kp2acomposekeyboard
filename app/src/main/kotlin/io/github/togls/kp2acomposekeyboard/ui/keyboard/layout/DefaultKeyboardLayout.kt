@@ -81,8 +81,6 @@ fun DefaultKeyboardLayout(
             state = state,
             onIntent = onIntent,
         )
-
-        KeyboardBottomSafeSpacer()
     }
 }
 
