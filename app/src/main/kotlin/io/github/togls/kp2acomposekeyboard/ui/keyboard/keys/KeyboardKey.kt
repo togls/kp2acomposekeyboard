@@ -54,7 +54,7 @@ internal fun KeyboardKey(
     )
 
     val contentColor by animateColorAsState(
-        targetValue = keyColors.contentColor,
+        targetValue = keyColors.onContainerColor,
         label = "keyboard-key-content-color",
     )
 

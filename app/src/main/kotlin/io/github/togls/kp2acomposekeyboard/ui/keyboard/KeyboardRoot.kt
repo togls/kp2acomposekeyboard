@@ -44,7 +44,7 @@ fun KeyboardRoot(
                 .height(settings.keyboardHeightMode.toKeyboardHeight(isLandscape))
                 // 横屏空间更紧张，先裁剪溢出内容，避免异常撑高 IME 窗口。
                 .clipToBounds(),
-            color = MaterialTheme.colorScheme.surface,
+            color = MaterialTheme.colorScheme.surfaceContainer,
             contentColor = MaterialTheme.colorScheme.onSurface,
         ) {
             when (state.mainLayout) {
