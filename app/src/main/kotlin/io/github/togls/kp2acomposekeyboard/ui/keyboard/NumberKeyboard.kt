@@ -9,9 +9,10 @@ import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.CommitTextKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.DeleteKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.TextKeyRow
 
 @Composable
-fun NumberKeyboard(
+internal fun NumberKeyboard(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -19,25 +20,25 @@ fun NumberKeyboard(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
     ) {
-        NumberKeyRow(
-            keys = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0"),
+        TextKeyRow(
+            keys = NumberKeyboardRows[0],
             onIntent = onIntent,
         )
 
-        NumberKeyRow(
-            keys = listOf("-", "/", ":", ";", "(", ")", "¥", "&", "@", "\""),
+        TextKeyRow(
+            keys = NumberKeyboardRows[1],
             onIntent = onIntent,
         )
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
+            horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
         ) {
-            listOf(".", ",", "?", "!", "'").forEach { text ->
-                KeyboardKey(
+            NumberKeyboardLastRow.forEach { text ->
+                CommitTextKey(
                     modifier = Modifier.weight(1f),
                     text = text,
-                    onClick = { onIntent(KeyboardIntent.CommitText(text)) },
+                    onIntent = onIntent,
                 )
             }
 
@@ -49,21 +50,9 @@ fun NumberKeyboard(
     }
 }
 
-@Composable
-private fun NumberKeyRow(
-    keys: List<String>,
-    onIntent: (KeyboardIntent) -> Unit,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
-    ) {
-        keys.forEach { text ->
-            CommitTextKey(
-                text = text,
-                onIntent = onIntent,
-                modifier = Modifier.weight(1f),
-            )
-        }
-    }
-}
+private val NumberKeyboardRows = listOf(
+    listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0"),
+    listOf("-", "/", ":", ";", "(", ")", "¥", "&", "@", "\""),
+)
+
+private val NumberKeyboardLastRow = listOf(".", ",", "?", "!", "'")

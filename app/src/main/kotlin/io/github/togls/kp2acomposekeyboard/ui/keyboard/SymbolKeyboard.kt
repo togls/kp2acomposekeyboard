@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.CommitTextKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.DeleteKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.TextKeyRow
 
 @Composable
 fun SymbolKeyboard(
@@ -19,13 +20,13 @@ fun SymbolKeyboard(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
     ) {
-        SymbolKeyRow(
-            keys = listOf("[", "]", "{", "}", "#", "%", "^", "*", "+", "="),
+        TextKeyRow(
+            keys = SymbolKeyboardRows[0],
             onIntent = onIntent,
         )
 
-        SymbolKeyRow(
-            keys = listOf("_", "\\", "|", "~", "<", ">", "€", "£", "$", "·"),
+        TextKeyRow(
+            keys = SymbolKeyboardRows[1],
             onIntent = onIntent,
         )
 
@@ -33,7 +34,7 @@ fun SymbolKeyboard(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
         ) {
-            listOf("/", ";", ":", "\"", "'", "`").forEach { text ->
+            SymbolKeyboardLastRow.forEach { text ->
                 KeyboardKey(
                     modifier = Modifier.weight(1f),
                     text = text,
@@ -48,6 +49,13 @@ fun SymbolKeyboard(
         }
     }
 }
+
+private val SymbolKeyboardRows = listOf(
+    listOf("[", "]", "{", "}", "#", "%", "^", "*", "+", "="),
+    listOf("_", "\\", "|", "~", "<", ">", "€", "£", "$", "·"),
+)
+
+private val SymbolKeyboardLastRow = listOf("/", ";", ":", "\"", "'", "`")
 
 @Composable
 private fun SymbolKeyRow(
