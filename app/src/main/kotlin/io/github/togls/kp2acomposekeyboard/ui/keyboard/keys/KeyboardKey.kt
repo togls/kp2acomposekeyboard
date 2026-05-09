@@ -19,7 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -43,7 +42,7 @@ internal fun KeyboardKey(
     val interactionSource = remember { MutableInteractionSource() }
     val pressed by interactionSource.collectIsPressedAsState()
 
-    val keyColors = keyboardKeyColors(emphasis)
+    val keyColors = KeyboardKeyColors.from(emphasis)
 
     val containerColor by animateColorAsState(
         targetValue = if (pressed && enabled) {
@@ -120,45 +119,6 @@ internal fun KeyboardKey(
             }
         )
     }
-}
-
-@Composable
-private fun keyboardKeyColors(
-    emphasis: KeyboardKeyEmphasis,
-): KeyboardKeyColors {
-    val colorScheme = MaterialTheme.colorScheme
-
-    return when (emphasis) {
-        KeyboardKeyEmphasis.Normal -> KeyboardKeyColors(
-            containerColor = colorScheme.surfaceContainerHighest,
-            pressedContainerColor = colorScheme.surfaceContainerHigh,
-            contentColor = colorScheme.onSurface,
-        )
-
-        KeyboardKeyEmphasis.Action -> KeyboardKeyColors(
-            contentColor = colorScheme.primaryContainer,
-            pressedContainerColor = colorScheme.primary.copy(alpha = 0.24f),
-            containerColor = colorScheme.onPrimaryContainer,
-        )
-
-        KeyboardKeyEmphasis.Sensitive -> KeyboardKeyColors(
-            containerColor = colorScheme.tertiaryContainer.copy(alpha = 0.72f),
-            pressedContainerColor = colorScheme.tertiary.copy(alpha = 0.22f),
-            contentColor = colorScheme.onTertiaryContainer,
-        )
-    }
-}
-
-private data class KeyboardKeyColors(
-    val containerColor: Color,
-    val pressedContainerColor: Color,
-    val contentColor: Color,
-)
-
-enum class KeyboardKeyEmphasis {
-    Normal,
-    Action,
-    Sensitive,
 }
 
 private const val DisabledKeyAlpha = 0.38f
