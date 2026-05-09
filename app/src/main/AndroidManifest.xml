@@ -30,8 +30,11 @@
 
         <activity
             android:name=".feature.entrypicker.EntryPickerActivity"
+            android:excludeFromRecents="true"
             android:exported="false"
-            android:label="@string/entry_picker_title" />
+            android:finishOnTaskLaunch="true"
+            android:label="@string/entry_picker_title"
+            android:launchMode="singleTop" />
 
         <activity
             android:name=".feature.plugin.Kp2aPluginActivity"

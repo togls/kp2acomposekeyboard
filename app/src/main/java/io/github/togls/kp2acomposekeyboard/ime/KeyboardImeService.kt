@@ -27,6 +27,7 @@ import io.github.togls.kp2acomposekeyboard.feature.entrypicker.EntryPickerActivi
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardEffect
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardViewModel
+import io.github.togls.kp2acomposekeyboard.security.DebugLog
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
 import io.github.togls.kp2acomposekeyboard.security.SecureLogEvent
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardRoot
@@ -69,6 +70,14 @@ class KeyboardImeService :
             inputConnectionProvider = { currentInputConnection },
         )
     }
+
+    /**
+     * 普通销毁 IME -> 清理 Session
+     * 启动 EntryPicker 导致 IME 临时销毁 -> 不清理 Session
+     * 用户取消 KP2A -> 旧 Session 保留
+     * 用户成功选择新条目 -> Repository 覆盖旧 Session
+     */
+    private var entryPickerFlowActive = false
 
     override fun onCreate() {
         savedStateRegistryController.performAttach()
@@ -142,7 +151,8 @@ class KeyboardImeService :
         super.onStartInputView(info, restarting)
         lifecycleRegistry.currentState = Lifecycle.State.RESUMED
         installViewTreeOwners(window?.window?.decorView)
-        SecureLog.debug(SecureLogEvent.InputViewStarted, TAG)
+        entryPickerFlowActive = false
+        DebugLog.d("input view started")
     }
 
     override fun onFinishInputView(finishingInput: Boolean) {
@@ -170,14 +180,14 @@ class KeyboardImeService :
     }
 
     override fun onDestroy() {
-        if (::viewModel.isInitialized) {
+        if (::viewModel.isInitialized && !entryPickerFlowActive) {
             viewModel.onIntent(KeyboardIntent.ClearEntry)
         }
 
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         serviceScope.cancel()
         viewModelStore.clear()
-        SecureLog.debug(SecureLogEvent.ImeDestroyed, TAG)
+        DebugLog.d("ime destroyed")
         super.onDestroy()
     }
 
@@ -216,30 +226,31 @@ class KeyboardImeService :
     }
 
     private fun launchEntryPickerActivity() {
-        SecureLog.debug(SecureLogEvent.EntryPickerActivityLaunchRequested, TAG)
-
-        val targetPackageName = currentInputEditorInfo?.packageName
+        entryPickerFlowActive = true
 
         val intent = Intent(this, EntryPickerActivity::class.java).apply {
+            // InputMethodService 不是 Activity Context；从 Service 启动 Activity 必须使用新任务。
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            putExtra(
-                EntryPickerActivity.EXTRA_TARGET_PACKAGE_NAME,
-                targetPackageName,
-            )
+            addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
         }
+
+        DebugLog.intent(
+            message = "launch entry picker activity",
+            intent = intent,
+        )
 
         try {
             startActivity(intent)
         } catch (error: ActivityNotFoundException) {
-            SecureLog.warn(
-                event = SecureLogEvent.EntryPickerActivityLaunchFailed,
-                tag = TAG,
+            entryPickerFlowActive = false
+            DebugLog.w(
+                message = "entry picker activity launch failed",
                 throwable = error,
             )
         } catch (error: SecurityException) {
-            SecureLog.warn(
-                event = SecureLogEvent.EntryPickerActivityLaunchFailed,
-                tag = TAG,
+            entryPickerFlowActive = false
+            DebugLog.w(
+                message = "entry picker activity launch failed",
                 throwable = error,
             )
         }
