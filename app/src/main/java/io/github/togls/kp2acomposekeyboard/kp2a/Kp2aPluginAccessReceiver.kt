@@ -1,41 +1,61 @@
 package io.github.togls.kp2acomposekeyboard.kp2a
 
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import io.github.togls.kp2acomposekeyboard.security.DebugLog
+import keepass2android.pluginsdk.PluginAccessBroadcastReceiver
+import keepass2android.pluginsdk.Strings
 import org.json.JSONArray
 
-class Kp2aPluginAccessReceiver : BroadcastReceiver() {
+class Kp2aPluginAccessReceiver : PluginAccessBroadcastReceiver() {
+
+    override fun getScopes(): ArrayList<String> {
+        DebugLog.d("kp2a: AccessReceiver getScopes called")
+
+        return arrayListOf(
+            Strings.SCOPE_CURRENT_ENTRY,
+            Strings.SCOPE_QUERY_CREDENTIALS_FOR_OWN_PACKAGE,
+            Strings.SCOPE_QUERY_CREDENTIALS,
+        )
+    }
 
     override fun onReceive(
         context: Context,
         intent: Intent,
     ) {
+        super.onReceive(context, intent)
+
+        DebugLog.d("receive access: ${intent.data}")
+
+
         when (intent.action) {
             Kp2aContract.Actions.TRIGGER_REQUEST_ACCESS -> {
-                requestAccess(
-                    context = context,
-                    triggerIntent = intent,
-                )
+                // 授权成功，不需要处理
+                // keyboardRequestAccess(
+                //     context = context,
+                //     triggerIntent = intent,
+                // )
             }
 
             Kp2aContract.Actions.RECEIVE_ACCESS -> {
-                receiveAccess(
+                keyboardReceiveAccess(
                     context = context,
                     intent = intent,
                 )
             }
 
             Kp2aContract.Actions.REVOKE_ACCESS -> {
-                revokeAccess(
+                keyboardRevokeAccess(
                     context = context,
                     intent = intent,
                 )
             }
+
+            else -> DebugLog.d("not implemented intent action")
         }
     }
 
-    private fun requestAccess(
+    private fun keyboardRequestAccess(
         context: Context,
         triggerIntent: Intent,
     ) {
@@ -64,7 +84,7 @@ class Kp2aPluginAccessReceiver : BroadcastReceiver() {
         context.sendBroadcast(requestIntent)
     }
 
-    private fun receiveAccess(
+    private fun keyboardReceiveAccess(
         context: Context,
         intent: Intent,
     ) {
@@ -84,7 +104,7 @@ class Kp2aPluginAccessReceiver : BroadcastReceiver() {
         )
     }
 
-    private fun revokeAccess(
+    private fun keyboardRevokeAccess(
         context: Context,
         intent: Intent,
     ) {

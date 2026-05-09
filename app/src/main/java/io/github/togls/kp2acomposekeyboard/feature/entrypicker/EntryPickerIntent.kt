@@ -11,6 +11,10 @@ sealed interface EntryPickerIntent {
         val result: Kp2aEntryResult,
     ) : EntryPickerIntent
 
+    data class Kp2aEntrySelected(
+        val fields: Map<String, String>
+    ) : EntryPickerIntent
+
     data object Kp2aResultCancelled : EntryPickerIntent
     data object Kp2aResultFailed : EntryPickerIntent
     data object Kp2aLaunchFailed : EntryPickerIntent

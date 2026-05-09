@@ -1,12 +1,12 @@
 package io.github.togls.kp2acomposekeyboard.feature.entrypicker
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aEntryResult
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
 import io.github.togls.kp2acomposekeyboard.security.SecureLogEvent
-import javax.inject.Inject
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class EntryPickerViewModel @Inject constructor() : ViewModel() {
@@ -40,10 +41,19 @@ class EntryPickerViewModel @Inject constructor() : ViewModel() {
                 handleKp2aSuccess(intent.result)
             }
 
+            is EntryPickerIntent.Kp2aEntrySelected -> {
+                handleKp2aEntrySelected(intent.fields)
+            }
+
             EntryPickerIntent.Kp2aResultCancelled -> handleKp2aCancelled()
             EntryPickerIntent.Kp2aResultFailed -> handleKp2aFailed()
             EntryPickerIntent.Kp2aLaunchFailed -> handleKp2aLaunchFailed()
         }
+    }
+
+    private fun handleKp2aEntrySelected(fields: Map<String, String>) {
+        // TODO
+        Log.d("Kp2aKeyboardIme", "handleKp2aEntrySelected not implemented!")
     }
 
     private fun startSelectionIfNeeded() {

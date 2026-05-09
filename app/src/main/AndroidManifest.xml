@@ -33,6 +33,15 @@
             android:exported="false"
             android:label="@string/entry_picker_title" />
 
+        <activity
+            android:name=".feature.plugin.Kp2aPluginActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <service
             android:name=".ime.KeyboardImeService"
             android:enabled="true"
@@ -55,6 +64,16 @@
                 <action android:name="keepass2android.ACTION_TRIGGER_REQUEST_ACCESS" />
                 <action android:name="keepass2android.ACTION_RECEIVE_ACCESS" />
                 <action android:name="keepass2android.ACTION_REVOKE_ACCESS" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".kp2a.Kp2aActionReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="keepass2android.ACTION_OPEN_ENTRY" />
+                <action android:name="keepass2android.ACTION_ENTRY_OUTPUT_MODIFIED" />
+                <action android:name="keepass2android.ACTION_ENTRY_ACTION_SELECTED" />
             </intent-filter>
         </receiver>
 
