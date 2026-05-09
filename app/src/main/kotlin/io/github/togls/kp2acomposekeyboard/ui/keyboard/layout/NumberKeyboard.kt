@@ -7,10 +7,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardMetrics
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.CommitTextKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.DeleteKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.TextKeyRow
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardMetrics
 
 @Composable
 internal fun NumberKeyboard(

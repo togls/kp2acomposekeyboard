@@ -100,3 +100,60 @@ internal fun SpaceKey(
         onClick = { onIntent(KeyboardIntent.CommitText(" ")) },
     )
 }
+
+@Composable
+internal fun PreviousPageKey(
+    enabled: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    KeyboardKey(
+        modifier = modifier,
+        text = "上一页",
+        contentDescription = "上一页",
+        enabled = enabled,
+        onClick = onClick,
+    )
+}
+
+@Composable
+internal fun NextPageKey(
+    enabled: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    KeyboardKey(
+        modifier = modifier,
+        text = "下一页",
+        contentDescription = "下一页",
+        enabled = enabled,
+        onClick = onClick,
+    )
+}
+
+@Composable
+internal fun ExpandFieldsKey(
+    onIntent: (KeyboardIntent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    KeyboardKey(
+        modifier = modifier,
+        text = "全部",
+        contentDescription = "展开全部字段",
+        onClick = { onIntent(KeyboardIntent.ExpandFields) },
+    )
+}
+
+@Composable
+internal fun CollapseFieldsKey(
+    onIntent: (KeyboardIntent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    KeyboardKey(
+        modifier = modifier,
+        text = "收起",
+        contentDescription = "收起字段列表",
+        onClick = { onIntent(KeyboardIntent.CollapseFields) },
+        emphasis = KeyboardKeyEmphasis.Action,
+    )
+}

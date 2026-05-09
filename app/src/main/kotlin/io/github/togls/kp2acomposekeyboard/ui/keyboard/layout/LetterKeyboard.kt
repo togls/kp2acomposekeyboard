@@ -8,11 +8,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardMetrics
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.dpCompat
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.CommitTextKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.DeleteKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.ShiftKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.dpCompat
 
 @Composable
 fun LetterKeyboard(

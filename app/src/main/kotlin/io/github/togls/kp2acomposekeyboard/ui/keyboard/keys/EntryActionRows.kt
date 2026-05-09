@@ -35,24 +35,21 @@ fun PagedEntryActionRow(
             modifier = Modifier.weight(1f),
         )
 
-        KeyboardKey(
-            modifier = Modifier.weight(1f),
-            text = "prev",
+        PreviousPageKey(
             enabled = canGoPrevious,
             onClick = { onIntent(KeyboardIntent.PrevExtraFieldPage) },
+            modifier = Modifier.weight(1f),
         )
 
-        KeyboardKey(
-            modifier = Modifier.weight(1f),
-            text = "next",
+        NextPageKey(
             enabled = canGoNext,
             onClick = { onIntent(KeyboardIntent.NextExtraFieldPage) },
+            modifier = Modifier.weight(1f),
         )
 
-        KeyboardKey(
+        ExpandFieldsKey(
+            onIntent = onIntent,
             modifier = Modifier.weight(1f),
-            text = "全部",
-            onClick = { onIntent(KeyboardIntent.ExpandFields) },
         )
 
         ClearEntryKey(
@@ -84,25 +81,21 @@ fun ExpandedEntryActionRows(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
         ) {
-            KeyboardKey(
-                modifier = Modifier.weight(1f),
-                text = "prev",
+            PreviousPageKey(
                 enabled = canScrollUp,
                 onClick = onScrollUp,
+                modifier = Modifier.weight(1f),
             )
 
-            KeyboardKey(
-                modifier = Modifier.weight(1f),
-                text = "next",
+            NextPageKey(
                 enabled = canScrollDown,
                 onClick = onScrollDown,
+                modifier = Modifier.weight(1f),
             )
 
-            KeyboardKey(
+            CollapseFieldsKey(
+                onIntent = onIntent,
                 modifier = Modifier.weight(1f),
-                text = "收起",
-                onClick = { onIntent(KeyboardIntent.CollapseFields) },
-                emphasis = KeyboardKeyEmphasis.Action,
             )
         }
 
