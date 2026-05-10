@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
@@ -19,6 +20,7 @@ internal fun UtilityPanel(
     modifier: Modifier = Modifier,
 ) {
     val adaptiveMetrics = LocalKeyboardAdaptiveMetrics.current
+    val panelItemWidth = adaptiveMetrics.keyHeight * PanelItemWidthScale
 
     Column(
         modifier = modifier
@@ -48,10 +50,12 @@ internal fun UtilityPanel(
                         )
                     },
                     modifier = Modifier
-                        .weight(1f)
+                        .width(panelItemWidth)
                         .height(adaptiveMetrics.keyHeight),
                 )
             }
         }
     }
 }
+
+private const val PanelItemWidthScale = 1.45f

@@ -19,6 +19,7 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUtilityItemId
 import io.github.togls.kp2acomposekeyboard.R
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
@@ -36,6 +37,11 @@ internal fun UtilityRow(
 ) {
     val adaptiveMetrics = LocalKeyboardAdaptiveMetrics.current
     val sideSlotSize = adaptiveMetrics.keyHeight * SideSlotScale
+    val centerSlotWidth = adaptiveMetrics.keyHeight * CenterSlotWidthScale
+    val showRightSlot = shouldShowRightUtilitySlot(
+        rightItemId = state.utilitySlots.rightItemId,
+        isUtilityPanelExpanded = state.isUtilityPanelExpanded,
+    )
     var centerContainerBounds by remember { mutableStateOf<Rect?>(null) }
     var rightSlotBounds by remember { mutableStateOf<Rect?>(null) }
     val centerItemBounds = remember { mutableStateMapOf<KeyboardUtilityItemId, Rect>() }
@@ -46,7 +52,7 @@ internal fun UtilityRow(
                 centerItemBounds[itemId]
             },
             centerContainerBounds = centerContainerBounds,
-            rightSlotBounds = rightSlotBounds,
+            rightSlotBounds = rightSlotBounds.takeIf { showRightSlot },
         )
     }
 
@@ -94,6 +100,7 @@ internal fun UtilityRow(
                 onItemBoundsChanged = { itemId, bounds ->
                     centerItemBounds[itemId] = bounds
                 },
+                itemWidth = centerSlotWidth,
                 modifier = Modifier
                     .weight(1f)
                     .onGloballyPositioned { coordinates ->
@@ -102,27 +109,29 @@ internal fun UtilityRow(
             )
         }
 
-        UtilityItemSlot(
-            itemId = state.utilitySlots.rightItemId,
-            onIntent = onIntent,
-            emptySlot = true,
-            dragState = dragState,
-            dragSource = UtilityDragSource.Pinned,
-            onDrop = { itemId, source, target ->
-                dispatchUtilityDrop(
-                    itemId = itemId,
-                    source = source,
-                    target = target,
-                    onIntent = onIntent,
-                )
-            },
-            modifier = Modifier
-                .width(sideSlotSize)
-                .height(sideSlotSize)
-                .onGloballyPositioned { coordinates ->
-                    rightSlotBounds = coordinates.boundsInRoot()
+        if (showRightSlot) {
+            UtilityItemSlot(
+                itemId = state.utilitySlots.rightItemId,
+                onIntent = onIntent,
+                emptySlot = true,
+                dragState = dragState,
+                dragSource = UtilityDragSource.Pinned,
+                onDrop = { itemId, source, target ->
+                    dispatchUtilityDrop(
+                        itemId = itemId,
+                        source = source,
+                        target = target,
+                        onIntent = onIntent,
+                    )
                 },
-        )
+                modifier = Modifier
+                    .width(sideSlotSize)
+                    .height(sideSlotSize)
+                    .onGloballyPositioned { coordinates ->
+                        rightSlotBounds = coordinates.boundsInRoot()
+                    },
+            )
+        }
     }
 }
 
@@ -132,6 +141,7 @@ private fun UtilityCenterSlots(
     dragState: UtilityDragState,
     onIntent: (KeyboardIntent) -> Unit,
     onItemBoundsChanged: (KeyboardUtilityItemId, Rect) -> Unit,
+    itemWidth: Dp,
     modifier: Modifier = Modifier,
 ) {
     val adaptiveMetrics = LocalKeyboardAdaptiveMetrics.current
@@ -165,7 +175,7 @@ private fun UtilityCenterSlots(
                         )
                     },
                     modifier = Modifier
-                        .weight(1f)
+                        .width(itemWidth)
                         .height(adaptiveMetrics.keyHeight),
                 )
             }
@@ -174,3 +184,4 @@ private fun UtilityCenterSlots(
 }
 
 private const val SideSlotScale = 0.82f
+private const val CenterSlotWidthScale = 1.45f
