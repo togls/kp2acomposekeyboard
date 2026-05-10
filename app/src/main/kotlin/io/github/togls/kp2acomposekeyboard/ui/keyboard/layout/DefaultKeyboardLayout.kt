@@ -3,9 +3,9 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,8 +19,8 @@ import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.KeyboardKeyEmphasis
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.SelectEntryKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.SettingsKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.SpaceKey
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardBottomSafeSpacer
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.LocalKeyboardAdaptiveMetrics
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.isKeyboardLandscape
 
 @Composable
@@ -29,6 +29,8 @@ fun DefaultKeyboardLayout(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val adaptiveMetrics = LocalKeyboardAdaptiveMetrics.current
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -45,6 +47,7 @@ fun DefaultKeyboardLayout(
             ExistingEntryHint(
                 entryName = state.currentEntryName?.takeIf { it.isNotBlank() } ?: "未命名条目",
                 onIntent = onIntent,
+                modifier = Modifier.height(adaptiveMetrics.keyHeight),
             )
         }
 
@@ -74,8 +77,6 @@ fun DefaultKeyboardLayout(
                 )
             }
         }
-
-        Spacer(modifier = Modifier.weight(1f))
 
         DefaultKeyboardActionRow(
             state = state,

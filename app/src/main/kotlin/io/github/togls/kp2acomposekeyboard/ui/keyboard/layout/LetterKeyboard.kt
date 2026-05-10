@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
@@ -22,7 +23,10 @@ fun LetterKeyboard(
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
+        verticalArrangement = Arrangement.spacedBy(
+            space = KeyboardMetrics.RowSpacing,
+            alignment = Alignment.CenterVertically,
+        ),
     ) {
         LetterRow(
             letters = "qwertyuiop",

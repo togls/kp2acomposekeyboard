@@ -3,33 +3,62 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardHeightMode
 
 internal data class KeyboardAdaptiveMetrics(
-    val keyMinHeight: Dp,
+    val keyHeight: Dp,
     val keyHorizontalPadding: Dp,
     val keyCornerRadius: Dp,
     val bottomSafePadding: Dp,
     val maxNavigationAwareBottomPadding: Dp,
 ) {
     companion object {
-        val Portrait = KeyboardAdaptiveMetrics(
-            keyMinHeight = 46.dp,
+        private val Portrait = KeyboardAdaptiveMetrics(
+            keyHeight = 46.dp,
             keyHorizontalPadding = 8.dp,
             keyCornerRadius = 18.dp,
             bottomSafePadding = 30.dp,
             maxNavigationAwareBottomPadding = 30.dp,
         )
 
-        val Landscape = KeyboardAdaptiveMetrics(
-            keyMinHeight = 38.dp,
+        private val Landscape = KeyboardAdaptiveMetrics(
+            keyHeight = 38.dp,
             keyHorizontalPadding = 6.dp,
             keyCornerRadius = 16.dp,
             bottomSafePadding = 6.dp,
             maxNavigationAwareBottomPadding = 12.dp,
         )
+
+        fun resolve(
+            heightMode: KeyboardHeightMode,
+            isLandscape: Boolean,
+        ): KeyboardAdaptiveMetrics {
+            val base = if (isLandscape) {
+                Landscape
+            } else {
+                Portrait
+            }
+
+            val scale = heightMode.keyHeightScale()
+
+            return base.copy(
+                keyHeight = base.keyHeight * scale,
+            )
+        }
+    }
+}
+
+private fun KeyboardHeightMode.keyHeightScale(): Float {
+    return when (this) {
+        KeyboardHeightMode.Compact -> 0.9f
+        KeyboardHeightMode.Normal -> 1.0f
+        KeyboardHeightMode.Tall -> 1.1f
     }
 }
 
 internal val LocalKeyboardAdaptiveMetrics = compositionLocalOf {
-    KeyboardAdaptiveMetrics.Portrait
+    KeyboardAdaptiveMetrics.resolve(
+        heightMode = KeyboardHeightMode.Normal,
+        isLandscape = false,
+    )
 }

@@ -1,0 +1,26 @@
+package io.github.togls.kp2acomposekeyboard.ui.keyboard
+
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+
+/**
+ * Reserves the bottom navigation bar area for the IME.
+ *
+ * The keyboard background still comes from the parent Surface, while the
+ * interactive key area stays above the system navigation bar.
+ */
+@Composable
+internal fun KeyboardNavigationBarSpacer(
+    modifier: Modifier = Modifier,
+) {
+    Spacer(
+        modifier = modifier
+            .fillMaxWidth()
+            .windowInsetsBottomHeight(WindowInsets.Companion.navigationBars),
+    )
+}
