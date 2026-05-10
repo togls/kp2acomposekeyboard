@@ -5,7 +5,10 @@ import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.boundsInRoot
@@ -47,10 +51,10 @@ internal fun UtilityItemSlot(
     onBoundsChanged: ((KeyboardUtilityItemId, Rect) -> Unit)? = null,
     onDrop: (
         (
-            itemId: KeyboardUtilityItemId,
-            source: UtilityDragSource,
-            target: UtilityDropTarget?,
-        ) -> Unit
+        itemId: KeyboardUtilityItemId,
+        source: UtilityDragSource,
+        target: UtilityDropTarget?,
+    ) -> Unit
     )? = null,
 ) {
     val item = itemId?.toKeyboardUtilityItem()
@@ -116,11 +120,13 @@ internal fun UtilityItemSlot(
 
             UtilityIconButton(
                 modifier = modifier
+                    .width(iconSize)
+                    .height(iconSize)
                     .alpha(sourceItemAlpha)
                     .then(draggableModifier),
                 iconRes = item.iconRes,
                 contentDescription = stringResource(item.contentDescriptionRes),
-                iconSize = iconSize,
+
                 onClick = { onIntent(KeyboardIntent.ClickUtilityItem(item.id)) },
             )
         }
@@ -140,12 +146,13 @@ internal fun UtilityIconButton(
     contentDescription: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    iconSize: Dp = 24.dp,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+    val shape = RoundedCornerShape(LocalKeyboardAdaptiveMetrics.current.keyCornerRadius)
 
-    Surface(
+    Box(
         modifier = modifier
+            .clip(shape)
             .semantics { this.contentDescription = contentDescription }
             .clickable(
                 role = Role.Button,
@@ -153,22 +160,16 @@ internal fun UtilityIconButton(
                 indication = ripple(),
                 onClick = onClick,
             ),
-        shape = RoundedCornerShape(LocalKeyboardAdaptiveMetrics.current.keyCornerRadius),
-        color = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-        tonalElevation = 0.dp,
-        shadowElevation = 1.dp,
+        contentAlignment = Alignment.Center,
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                modifier = Modifier.size(iconSize),
-                painter = painterResource(id = iconRes),
-                contentDescription = null,
-            )
-        }
+        Icon(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(4.dp),
+            painter = painterResource(id = iconRes),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurface,
+        )
     }
 }
 
