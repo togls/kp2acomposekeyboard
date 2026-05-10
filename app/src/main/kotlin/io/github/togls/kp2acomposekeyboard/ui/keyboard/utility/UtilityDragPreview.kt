@@ -29,6 +29,8 @@ internal fun UtilityDragPreview(
     val previewSize = LocalKeyboardAdaptiveMetrics.current.keyHeight * DragPreviewScale
     val previewSizePx = with(LocalDensity.current) { previewSize.toPx() }
 
+    // The drag state stores root coordinates, while this overlay is positioned
+    // inside KeyboardContentArea; subtract the container origin before drawing.
     Surface(
         modifier = modifier
             .offset {

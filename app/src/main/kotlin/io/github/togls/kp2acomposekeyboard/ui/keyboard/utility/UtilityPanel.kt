@@ -38,6 +38,8 @@ internal fun UtilityPanel(
             horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
         ) {
             availableKeyboardUtilityItems()
+                // Pinned utilities are already reachable from UtilityRow; keeping
+                // them in the panel would create two visible copies after drop.
                 .filter { item ->
                     shouldShowPanelUtilityItem(
                         itemId = item.id,

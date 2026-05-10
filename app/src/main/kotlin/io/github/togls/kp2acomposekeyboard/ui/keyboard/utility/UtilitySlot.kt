@@ -58,6 +58,8 @@ internal fun UtilityItemSlot(
     when {
         item != null -> {
             var itemBoundsInRoot by remember { mutableStateOf<Rect?>(null) }
+            // Keep the source slot composed during drag so pointerInput can
+            // finish the gesture, but hide it visually to avoid duplicate icons.
             val sourceItemAlpha = if (
                 shouldShowDraggedSourceItem(
                     itemId = item.id,

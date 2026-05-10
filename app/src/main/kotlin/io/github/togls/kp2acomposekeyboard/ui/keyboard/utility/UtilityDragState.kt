@@ -27,6 +27,8 @@ internal class UtilityDragState {
     private var centerContainerBounds by mutableStateOf<Rect?>(null)
     private var rightSlotBounds by mutableStateOf<Rect?>(null)
 
+    // Drop targets are kept in root coordinates so every draggable source can
+    // resolve hover state against the same coordinate space.
     fun updateDropTargets(
         centerItemBounds: List<Rect>,
         centerContainerBounds: Rect?,
@@ -46,12 +48,16 @@ internal class UtilityDragState {
         draggedItemId = itemId
         dragSource = source
         sourceBoundsInRoot = sourceBounds
+        // Pointer events report local positions; convert once from the source
+        // bounds so drag preview and drop detection stay in root coordinates.
         positionInRoot = sourceBounds.topLeft + localPointerPosition
         hoveredDropTarget = resolveDropTarget(positionInRoot)
     }
 
     fun updateDrag(localPointerPosition: Offset) {
         val sourceBounds = sourceBoundsInRoot ?: return
+        // Continue converting from the original source bounds because Compose
+        // keeps drag events local to the pointerInput node that started drag.
         positionInRoot = sourceBounds.topLeft + localPointerPosition
         hoveredDropTarget = resolveDropTarget(positionInRoot)
     }

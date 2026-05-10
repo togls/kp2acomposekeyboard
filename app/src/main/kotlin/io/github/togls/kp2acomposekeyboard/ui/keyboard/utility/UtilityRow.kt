@@ -47,6 +47,8 @@ internal fun UtilityRow(
     val centerItemBounds = remember { mutableStateMapOf<KeyboardUtilityItemId, Rect>() }
 
     SideEffect {
+        // Bounds are refreshed after composition so drop detection uses the
+        // latest row layout, including the optional right slot.
         dragState.updateDropTargets(
             centerItemBounds = state.utilitySlots.centerItemIds.mapNotNull { itemId ->
                 centerItemBounds[itemId]
