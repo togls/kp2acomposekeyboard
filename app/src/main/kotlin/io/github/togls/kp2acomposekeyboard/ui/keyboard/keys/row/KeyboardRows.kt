@@ -1,4 +1,4 @@
-package io.github.togls.kp2acomposekeyboard.ui.keyboard.keys
+package io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.row
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.CommitTextKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardMetrics
 
 @Composable

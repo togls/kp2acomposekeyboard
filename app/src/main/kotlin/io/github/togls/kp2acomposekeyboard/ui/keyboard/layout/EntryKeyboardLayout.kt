@@ -18,8 +18,8 @@ import io.github.togls.kp2acomposekeyboard.ui.keyboard.entry.AllFieldsExpandedPa
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.entry.EntryHeader
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.entry.ExtraFieldPagedPanel
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.entry.FixedFieldRow
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.ExpandedEntryActionRows
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.PagedEntryActionRow
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.row.ExpandedEntryActionRows
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.row.PagedEntryActionRow
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardMetrics
 import kotlinx.coroutines.launch
 

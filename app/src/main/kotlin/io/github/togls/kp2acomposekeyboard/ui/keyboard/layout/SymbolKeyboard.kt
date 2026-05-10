@@ -10,7 +10,7 @@ import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.CommitTextKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.DeleteKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.KeyboardKey
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.TextKeyRow
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.row.TextKeyRow
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardMetrics
 
 @Composable
