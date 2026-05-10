@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
@@ -19,46 +20,63 @@ internal fun NumberKeyboard(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
-    ) {
-        TextKeyRow(
-            keys = NumberKeyboardRows[0],
-            onIntent = onIntent,
+    KeyboardWidthLayout(
+        modifier = modifier,
+        referenceKeyCount = 10,
+    ) { widths ->
+        val keyWidth = widths.standardKeyWidth
+
+        val sideKeyWidth = widths.flexibleKeyWidth(
+            fixedKeyCount = NumberKeyboardLastRow.size,
+            flexibleKeyCount = 2,
         )
 
-        TextKeyRow(
-            keys = NumberKeyboardRows[1],
-            onIntent = onIntent,
-        )
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
+        Column(
+            modifier = modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
         ) {
-
-            KeyboardKey(
-                modifier = Modifier.weight(1f),
-                text = "=\\<",
-                onClick = {
-                    onIntent(KeyboardIntent.SwitchToLetters)
-                },
-                emphasis = KeyboardKeyEmphasis.Action,
+            TextKeyRow(
+                keys = NumberKeyboardRows[0],
+                keyWidth = keyWidth,
+                onIntent = onIntent,
             )
 
-            NumberKeyboardLastRow.forEach { text ->
-                CommitTextKey(
-                    modifier = Modifier.weight(1f),
-                    text = text,
+            TextKeyRow(
+                keys = NumberKeyboardRows[1],
+                keyWidth = keyWidth,
+                onIntent = onIntent,
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
+            ) {
+
+                KeyboardKey(
+                    text = "=\\<",
+                    onClick = {
+                        onIntent(KeyboardIntent.SwitchToSymbols)
+                    },
+                    emphasis = KeyboardKeyEmphasis.Action,
+                    modifier = Modifier
+                        .width(sideKeyWidth),
+                )
+
+                NumberKeyboardLastRow.forEach { text ->
+                    CommitTextKey(
+                        text = text,
+                        onIntent = onIntent,
+                        modifier = Modifier
+                            .width(keyWidth),
+                    )
+                }
+
+                DeleteKey(
+                    modifier = Modifier
+                        .width(sideKeyWidth),
                     onIntent = onIntent,
                 )
             }
-
-            DeleteKey(
-                modifier = Modifier.weight(1.5f),
-                onIntent = onIntent,
-            )
         }
     }
 }

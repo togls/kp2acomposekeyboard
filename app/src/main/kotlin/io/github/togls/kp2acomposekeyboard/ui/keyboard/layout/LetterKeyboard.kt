@@ -32,7 +32,6 @@ fun LetterKeyboard(
         val sideKeyWidth = widths.flexibleKeyWidth(
             fixedKeyCount = 7,
             flexibleKeyCount = 2,
-            gapCount = 8,
         )
 
         Column(

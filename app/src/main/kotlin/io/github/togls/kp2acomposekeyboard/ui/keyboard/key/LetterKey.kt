@@ -4,8 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 
-class LetterKey {
-}
+class LetterKey
 
 @Composable
 internal fun LetterKey(

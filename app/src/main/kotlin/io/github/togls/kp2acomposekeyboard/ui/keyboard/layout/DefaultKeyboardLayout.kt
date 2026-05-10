@@ -15,10 +15,10 @@ import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.entry.ExistingEntryHint
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.EnterKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.KeyboardKey
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardKeyEmphasis
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.SelectEntryKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.SettingsKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.SpaceKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardKeyEmphasis
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.KeyboardMetrics
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.LocalKeyboardAdaptiveMetrics
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.isKeyboardLandscape
@@ -98,8 +98,8 @@ private fun DefaultKeyboardActionRow(
             modifier = Modifier.weight(1f),
             text = when (state.defaultInputMode) {
                 DefaultInputMode.Letters -> "?123"
-                DefaultInputMode.Numbers -> "返回"
-                DefaultInputMode.Symbols -> "返回"
+                DefaultInputMode.Numbers -> "ABC"
+                DefaultInputMode.Symbols -> "ABC"
             },
             onClick = {
                 when (state.defaultInputMode) {

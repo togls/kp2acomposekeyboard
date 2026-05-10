@@ -24,11 +24,11 @@ internal data class KeyboardKeyWidths(
     fun flexibleKeyWidth(
         fixedKeyCount: Int,
         flexibleKeyCount: Int,
-        gapCount: Int,
     ): Dp {
         require(fixedKeyCount >= 0) { "fixedKeyCount must be >= 0." }
         require(flexibleKeyCount > 0) { "flexibleKeyCount must be > 0." }
-        require(gapCount >= 0) { "gapCount must be >= 0." }
+
+        val gapCount = fixedKeyCount + flexibleKeyCount - 1
 
         val fixedKeysWidth = standardKeyWidth * fixedKeyCount.toFloat()
         val gapsWidth = keySpacing * gapCount.toFloat()

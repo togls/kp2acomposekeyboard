@@ -18,17 +18,18 @@ internal fun LetterRow(
     keyWidth: Dp,
     isUppercase: Boolean,
     onIntent: (KeyboardIntent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = Modifier.Companion.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(
             space = KeyboardMetrics.KeySpacing,
-            alignment = Alignment.Companion.CenterHorizontally,
+            alignment = Alignment.CenterHorizontally,
         ),
     ) {
         letters.forEach { letter ->
             LetterKey(
-                modifier = Modifier.Companion.width(keyWidth),
+                modifier = Modifier.width(keyWidth),
                 letter = letter,
                 isUppercase = isUppercase,
                 onIntent = onIntent,
