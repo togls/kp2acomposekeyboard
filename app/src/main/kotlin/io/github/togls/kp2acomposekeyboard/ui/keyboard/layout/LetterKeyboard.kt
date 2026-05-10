@@ -1,19 +1,21 @@
 package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.CommitTextKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.DeleteKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.ShiftKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardMetrics
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.dpCompat
 
 @Composable
 fun LetterKeyboard(
@@ -21,47 +23,64 @@ fun LetterKeyboard(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
+    BoxWithConstraints(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(
-            space = KeyboardMetrics.RowSpacing,
-            alignment = Alignment.CenterVertically,
-        ),
     ) {
-        LetterRow(
-            letters = "qwertyuiop",
-            isUppercase = state.isUppercase,
-            onIntent = onIntent,
-        )
+        val keySpacing = KeyboardMetrics.KeySpacing
 
-        LetterRow(
-            letters = "asdfghjkl",
-            isUppercase = state.isUppercase,
-            onIntent = onIntent,
-        )
+        // Use the top row as the standard width reference.
+        // qwertyuiop has 10 letters and 9 gaps.
+        val letterKeyWidth = (maxWidth - keySpacing * 9) / 10
 
-        Row(
+        // The third row has:
+        // Shift + 7 letters + Delete = 9 items, therefore 8 gaps.
+        // Shift and Delete share the remaining width equally.
+        val sideKeyWidth = (maxWidth - letterKeyWidth * 7 - keySpacing * 8) / 2
+
+        Column(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
+            verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
         ) {
-            ShiftKey(
+            LetterRow(
+                letters = "qwertyuiop",
+                keyWidth = letterKeyWidth,
+                isUppercase = state.isUppercase,
                 onIntent = onIntent,
-                modifier = Modifier.weight(1.2f),
             )
 
-            "zxcvbnm".forEach { letter ->
-                LetterKey(
-                    modifier = Modifier.weight(1f),
-                    letter = letter,
-                    isUppercase = state.isUppercase,
+            LetterRow(
+                letters = "asdfghjkl",
+                keyWidth = letterKeyWidth,
+                isUppercase = state.isUppercase,
+                onIntent = onIntent,
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(
+                    space = keySpacing,
+                    alignment = Alignment.CenterHorizontally,
+                ),
+            ) {
+                ShiftKey(
+                    onIntent = onIntent,
+                    modifier = Modifier.width(letterKeyWidth * 1.2f),
+                )
+
+                "zxcvbnm".forEach { letter ->
+                    LetterKey(
+                        modifier = Modifier.width(sideKeyWidth),
+                        letter = letter,
+                        isUppercase = state.isUppercase,
+                        onIntent = onIntent,
+                    )
+                }
+
+                DeleteKey(
+                    modifier = Modifier.width(sideKeyWidth),
                     onIntent = onIntent,
                 )
             }
-
-            DeleteKey(
-                modifier = Modifier.weight(1.2f),
-                onIntent = onIntent,
-            )
         }
     }
 }
@@ -69,16 +88,20 @@ fun LetterKeyboard(
 @Composable
 private fun LetterRow(
     letters: String,
+    keyWidth: Dp,
     isUppercase: Boolean,
     onIntent: (KeyboardIntent) -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(6.dpCompat),
+        horizontalArrangement = Arrangement.spacedBy(
+            space = KeyboardMetrics.KeySpacing,
+            alignment = Alignment.CenterHorizontally,
+        ),
     ) {
         letters.forEach { letter ->
             LetterKey(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.width(keyWidth),
                 letter = letter,
                 isUppercase = isUppercase,
                 onIntent = onIntent,
