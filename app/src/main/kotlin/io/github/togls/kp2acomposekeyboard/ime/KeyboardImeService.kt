@@ -3,7 +3,6 @@ package io.github.togls.kp2acomposekeyboard.ime
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.inputmethodservice.InputMethodService
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.compose.runtime.getValue
@@ -132,7 +131,7 @@ class KeyboardImeService :
         // The IME is now bound to an input target and can enter STARTED state.
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
 
-        Log.d(TAG, "onBindInput")
+        SecureLog.d("onBindInput")
     }
 
     override fun onCreateInputView(): View {
@@ -202,8 +201,11 @@ class KeyboardImeService :
     ) {
         super.onStartInput(attribute, restarting)
 
-        // Log only editor metadata. Never log user input content.
-        Log.d(TAG, "onStartInput restarting=$restarting inputType=${attribute?.inputType}")
+        SecureLog.d(
+            "onStartInput",
+            "restarting" to restarting,
+            "inputType" to attribute?.inputType,
+        )
     }
 
     override fun onStartInputView(
@@ -235,7 +237,7 @@ class KeyboardImeService :
         // The input target is unbound. Keep CREATED state until the next bind or destroy.
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
 
-        Log.d(TAG, "onUnbindInput")
+        SecureLog.d("onUnbindInput")
         super.onUnbindInput()
     }
 
@@ -245,7 +247,7 @@ class KeyboardImeService :
         // The decor view may become available again when the IME window is shown.
         installViewTreeOwners(window?.window?.decorView)
 
-        Log.d(TAG, "onWindowShown")
+        SecureLog.d("onWindowShown")
     }
 
     override fun onEvaluateInputViewShown(): Boolean {
