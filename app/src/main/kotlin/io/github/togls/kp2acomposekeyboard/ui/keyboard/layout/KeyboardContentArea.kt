@@ -11,9 +11,9 @@ import androidx.compose.ui.unit.dp
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.MainKeyboardLayout
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardAdaptiveMetrics
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardMetrics
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.LocalKeyboardAdaptiveMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.KeyboardAdaptiveMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.KeyboardMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.LocalKeyboardAdaptiveMetrics
 
 /**
  * Hosts the main keyboard content and resolves metrics that depend on the

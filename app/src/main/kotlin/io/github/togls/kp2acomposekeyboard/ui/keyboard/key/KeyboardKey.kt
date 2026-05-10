@@ -1,4 +1,4 @@
-package io.github.togls.kp2acomposekeyboard.ui.keyboard.keys
+package io.github.togls.kp2acomposekeyboard.ui.keyboard.key
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
@@ -28,10 +28,10 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.style.KeyboardKeyColors
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.style.KeyboardKeyEmphasis
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardMetrics
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.LocalKeyboardAdaptiveMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardKeyColors
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardKeyEmphasis
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.KeyboardMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.LocalKeyboardAdaptiveMetrics
 
 /**
  * Displays a single keyboard key with Material 3 colors, shape, elevation, and press feedback.

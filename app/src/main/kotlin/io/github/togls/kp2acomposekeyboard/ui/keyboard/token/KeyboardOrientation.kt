@@ -1,4 +1,4 @@
-package io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens
+package io.github.togls.kp2acomposekeyboard.ui.keyboard.token
 
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable

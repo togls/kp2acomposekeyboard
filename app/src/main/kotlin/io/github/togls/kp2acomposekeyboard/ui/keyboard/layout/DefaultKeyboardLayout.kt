@@ -13,15 +13,15 @@ import io.github.togls.kp2acomposekeyboard.feature.keyboard.DefaultInputMode
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.entry.ExistingEntryHint
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.EnterKey
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.KeyboardKey
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.style.KeyboardKeyEmphasis
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.SelectEntryKey
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.SettingsKey
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.SpaceKey
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardMetrics
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.LocalKeyboardAdaptiveMetrics
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.isKeyboardLandscape
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.EnterKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.KeyboardKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardKeyEmphasis
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.SelectEntryKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.SettingsKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.SpaceKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.KeyboardMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.LocalKeyboardAdaptiveMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.isKeyboardLandscape
 
 @Composable
 fun DefaultKeyboardLayout(

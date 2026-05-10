@@ -1,9 +1,9 @@
-package io.github.togls.kp2acomposekeyboard.ui.keyboard.keys
+package io.github.togls.kp2acomposekeyboard.ui.keyboard.key
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.style.KeyboardKeyEmphasis
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardKeyEmphasis
 
 @Composable
 internal fun DeleteKey(

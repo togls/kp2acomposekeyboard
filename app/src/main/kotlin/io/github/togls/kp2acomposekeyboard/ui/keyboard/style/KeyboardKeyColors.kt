@@ -1,10 +1,9 @@
-package io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.style
+package io.github.togls.kp2acomposekeyboard.ui.keyboard.style
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.style.KeyboardKeyEmphasis
 
 /**
  * Defines the color set used by a keyboard key in different visual states.

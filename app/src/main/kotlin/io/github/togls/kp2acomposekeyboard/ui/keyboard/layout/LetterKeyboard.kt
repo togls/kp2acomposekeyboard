@@ -8,13 +8,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.CommitTextKey
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.DeleteKey
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.ShiftKey
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.DeleteKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.LetterKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.ShiftKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.row.LetterRow
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.KeyboardMetrics
 
 @Composable
 fun LetterKeyboard(
@@ -83,51 +83,3 @@ fun LetterKeyboard(
     }
 }
 
-@Composable
-private fun LetterRow(
-    letters: String,
-    keyWidth: Dp,
-    isUppercase: Boolean,
-    onIntent: (KeyboardIntent) -> Unit,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(
-            space = KeyboardMetrics.KeySpacing,
-            alignment = Alignment.CenterHorizontally,
-        ),
-    ) {
-        letters.forEach { letter ->
-            LetterKey(
-                modifier = Modifier.width(keyWidth),
-                letter = letter,
-                isUppercase = isUppercase,
-                onIntent = onIntent,
-            )
-        }
-    }
-}
-
-@Composable
-private fun LetterKey(
-    letter: Char,
-    isUppercase: Boolean,
-    onIntent: (KeyboardIntent) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val text = letter.toInputText(isUppercase)
-
-    CommitTextKey(
-        text = text,
-        onIntent = onIntent,
-        modifier = modifier,
-    )
-}
-
-private fun Char.toInputText(isUppercase: Boolean): String {
-    return if (isUppercase) {
-        uppercaseChar().toString()
-    } else {
-        toString()
-    }
-}

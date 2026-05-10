@@ -1,4 +1,4 @@
-package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
+package io.github.togls.kp2acomposekeyboard.ui.keyboard.row
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -9,29 +9,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.CommitTextKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.LetterKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.KeyboardMetrics
 
 @Composable
-internal fun FixedTextKeyRow(
-    keys: List<String>,
+internal fun LetterRow(
+    letters: String,
     keyWidth: Dp,
+    isUppercase: Boolean,
     onIntent: (KeyboardIntent) -> Unit,
-    modifier: Modifier = Modifier,
-    horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = Modifier.Companion.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(
             space = KeyboardMetrics.KeySpacing,
-            alignment = horizontalAlignment,
+            alignment = Alignment.Companion.CenterHorizontally,
         ),
     ) {
-        keys.forEach { text ->
-            CommitTextKey(
-                text = text,
+        letters.forEach { letter ->
+            LetterKey(
+                modifier = Modifier.Companion.width(keyWidth),
+                letter = letter,
+                isUppercase = isUppercase,
                 onIntent = onIntent,
-                modifier = Modifier.width(keyWidth),
             )
         }
     }

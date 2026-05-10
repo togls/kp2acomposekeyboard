@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.dpCompat
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.dpCompat
 
 @Composable
 fun ExistingEntryHint(
