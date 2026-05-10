@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import io.github.togls.kp2acomposekeyboard.R
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.DefaultInputMode
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
@@ -29,8 +31,6 @@ fun DefaultKeyboardLayout(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val adaptiveMetrics = LocalKeyboardAdaptiveMetrics.current
-
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -43,45 +43,48 @@ fun DefaultKeyboardLayout(
     ) {
         val isLandscape = isKeyboardLandscape()
 
-        if (state.hasActiveSession) {
-            ExistingEntryHint(
-                entryName = state.currentEntryName?.takeIf { it.isNotBlank() } ?: "未命名条目",
-                onIntent = onIntent,
-                modifier = Modifier.height(adaptiveMetrics.keyHeight),
-            )
-        }
+        DefaultKeyboardUtilityRow(
+            state = state,
+            onIntent = onIntent,
+            isLandscape = isLandscape,
+        )
 
-        if (!isLandscape) {
-            DefaultKeyboardUtilityRow(
-                onIntent = onIntent,
-            )
-        }
-
-        when (state.defaultInputMode) {
-            DefaultInputMode.Letters -> {
-                LetterKeyboard(
-                    state = state,
-                    onIntent = onIntent,
-                )
-            }
-
-            DefaultInputMode.Numbers -> {
-                NumberKeyboard(
-                    onIntent = onIntent,
-                )
-            }
-
-            DefaultInputMode.Symbols -> {
-                SymbolKeyboard(
-                    onIntent = onIntent,
-                )
-            }
-        }
+        DefaultKeyboardContent(
+            state = state,
+            onIntent = onIntent,
+        )
 
         DefaultKeyboardActionRow(
             state = state,
             onIntent = onIntent,
         )
+    }
+}
+
+@Composable
+private fun DefaultKeyboardContent(
+    state: KeyboardUiState,
+    onIntent: (KeyboardIntent) -> Unit,
+) {
+    when (state.defaultInputMode) {
+        DefaultInputMode.Letters -> {
+            LetterKeyboard(
+                state = state,
+                onIntent = onIntent,
+            )
+        }
+
+        DefaultInputMode.Numbers -> {
+            NumberKeyboard(
+                onIntent = onIntent,
+            )
+        }
+
+        DefaultInputMode.Symbols -> {
+            SymbolKeyboard(
+                onIntent = onIntent,
+            )
+        }
     }
 }
 
@@ -130,8 +133,16 @@ private fun DefaultKeyboardActionRow(
 
 @Composable
 private fun DefaultKeyboardUtilityRow(
+    state: KeyboardUiState,
     onIntent: (KeyboardIntent) -> Unit,
+    isLandscape: Boolean,
 ) {
+    if (isLandscape) {
+        return
+    }
+
+    val adaptiveMetrics = LocalKeyboardAdaptiveMetrics.current
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.End,
@@ -140,5 +151,18 @@ private fun DefaultKeyboardUtilityRow(
             onIntent = onIntent,
             modifier = Modifier.weight(1f),
         )
+
+        if (state.hasActiveSession) {
+
+            val entryName = state.currentEntryName
+                ?.takeIf { it.isNotBlank() }
+                ?: stringResource(R.string.entry_name_unnamed)
+
+            ExistingEntryHint(
+                entryName = entryName,
+                onIntent = onIntent,
+                modifier = Modifier.height(adaptiveMetrics.keyHeight),
+            )
+        }
     }
 }

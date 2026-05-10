@@ -3,11 +3,12 @@
     <string name="app_name">KP2A Compose Keyboard</string>
     <string name="ime_name">KP2A Compose Keyboard</string>
     <string name="ime_subtype_en_us">English (US)</string>
-    <string name="entry_picker_title">选择条目</string>
-    <string name="settings_title">键盘设置</string>
+    <string name="settings_title">Keyboard settings</string>
+
     <string name="app_description">
         KP2A Compose Keyboard uses Keepass2Android Plugin API to let the user choose an entry and input selected fields through the keyboard without using the clipboard.
     </string>
+
     <string name="cd_key_delete">Delete</string>
     <string name="cd_key_open_settings">Open settings</string>
     <string name="cd_key_select_entry">Select KeePass entry</string>
@@ -22,5 +23,8 @@
     <string name="cd_key_shift">Shift</string>
     <string name="cd_key_commit_text">Type %1$s</string>
     <string name="cd_key_switch_to_entry_layout">Switch to entry layout</string>
+
+    <string name="entry_picker_title">Select entry</string>
+    <string name="entry_name_unnamed">Unnamed entry</string>
     <string name="existing_entry_hint_current_entry">Current entry: %1$s</string>
 </resources>
