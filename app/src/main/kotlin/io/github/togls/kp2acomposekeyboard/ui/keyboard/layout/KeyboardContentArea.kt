@@ -1,6 +1,8 @@
 package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -52,24 +54,31 @@ internal fun KeyboardContentArea(
         CompositionLocalProvider(
             LocalKeyboardAdaptiveMetrics provides contentMetrics,
         ) {
-            UtilityRow(
-                state = state,
-                onIntent = onIntent,
-            )
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
+            ) {
+                UtilityRow(
+                    state = state,
+                    onIntent = onIntent,
+                )
 
-            when (state.mainLayout) {
-                MainKeyboardLayout.Default -> {
-                    DefaultKeyboardLayout(
-                        state = state,
-                        onIntent = onIntent,
-                    )
-                }
+                when (state.mainLayout) {
+                    MainKeyboardLayout.Default -> {
+                        DefaultKeyboardLayout(
+                            state = state,
+                            onIntent = onIntent,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
 
-                MainKeyboardLayout.Entry -> {
-                    EntryKeyboardLayout(
-                        state = state,
-                        onIntent = onIntent,
-                    )
+                    MainKeyboardLayout.Entry -> {
+                        EntryKeyboardLayout(
+                            state = state,
+                            onIntent = onIntent,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
                 }
             }
         }
@@ -109,16 +118,11 @@ private fun KeyboardUiState.defaultVisualRowCount(
         rowCount += DefaultUtilityRowCount
     }
 
-    if (hasActiveSession) {
-        rowCount += ExistingEntryHintRowCount
-    }
-
     return rowCount
 }
 
 private const val DefaultInputRowCount = 3
 private const val DefaultActionRowCount = 1
 private const val DefaultUtilityRowCount = 1
-private const val ExistingEntryHintRowCount = 1
 
 private val MinResolvedKeyHeight = 34.dp

@@ -57,7 +57,7 @@ fun ExistingEntryHint(
                 onClick = { onIntent(KeyboardIntent.SwitchToEntryLayout) },
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_key_24),
+                    painter = painterResource(id = R.drawable.ic_arrow_outward_24),
                     contentDescription = stringResource(
                         id = R.string.cd_key_switch_to_entry_layout,
                     ),
