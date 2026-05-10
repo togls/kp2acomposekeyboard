@@ -24,7 +24,11 @@ feature/keyboard/
 ├─ KeyboardViewModel
 ├─ KeyboardIntent
 ├─ KeyboardEffect
-└─ KeyboardUiState
+├─ KeyboardUiState
+├─ MainKeyboardLayout
+├─ DefaultInputMode
+├─ EntryFieldDisplayMode
+└─ ScrollDirection
 
 feature/entrypicker/
 ├─ EntryPickerActivity
@@ -40,7 +44,11 @@ feature/settings/
 ├─ SettingsScreen
 ├─ SettingsIntent
 ├─ SettingsEffect
-└─ SettingsUiState
+├─ SettingsUiState
+├─ SettingsRepository
+├─ KeyboardSettings
+├─ KeyboardThemeMode
+└─ KeyboardHeightMode
 
 kp2a/
 ├─ Kp2aContract
@@ -48,6 +56,7 @@ kp2a/
 ├─ Kp2aEntryResultParser
 ├─ Kp2aEntryMapper
 ├─ Kp2aPluginAccess
+├─ Kp2aActionReceiver
 └─ Kp2aPluginAccessReceiver
 
 session/
@@ -62,24 +71,48 @@ domain/
 ├─ KeyboardFieldType
 ├─ KeyboardFieldUiModel
 ├─ KeyboardFieldClassifier
+├─ KeyboardFieldMappings
 └─ SensitiveFieldPolicy
-
-settings/
-├─ KeyboardSettings
-├─ SettingsRepository
-├─ KeyboardThemeMode
-└─ KeyboardHeightMode
 
 ui/theme/
 └─ KeyboardTheme
 
 ui/keyboard/
 ├─ KeyboardRoot
-├─ DefaultKeyboardLayout
-├─ EntryKeyboardLayout
-├─ KeyboardKey
-├─ FieldButton
-└─ layout components
+├─ KeyboardBottomGap
+├─ KeyboardNavigationBarSpacer
+├─ entry/
+│  ├─ EntryHeader
+│  ├─ FieldButton
+│  ├─ FixedFieldRow
+│  ├─ ExtraFieldPagedPanel
+│  └─ AllFieldsExpandedPanel
+├─ key/
+│  ├─ KeyboardKey
+│  ├─ LetterKey
+│  ├─ KeyboardActionKeys
+│  └─ KeyboardTextKeys
+├─ layout/
+│  ├─ KeyboardContentArea
+│  ├─ KeyboardWidthLayout
+│  ├─ DefaultKeyboardLayout
+│  ├─ EntryKeyboardLayout
+│  ├─ LetterKeyboard
+│  ├─ NumberKeyboard
+│  └─ SymbolKeyboard
+├─ row/
+│  ├─ LetterRow
+│  ├─ TextKeyRow
+│  └─ EntryActionRows
+├─ style/
+│  ├─ KeyboardKeyColors
+│  └─ KeyboardKeyEmphasis
+└─ token/
+   ├─ KeyboardAdaptiveMetrics
+   ├─ KeyboardHeight
+   ├─ KeyboardInsets
+   ├─ KeyboardMetrics
+   └─ KeyboardOrientation
 ```
 
 ## Keyboard Input Flow
@@ -106,6 +139,24 @@ InputConnection.commitText()
 - Do not access repositories.
 - Do not access Keepass2Android.
 - Do not receive or display field values.
+
+`KeyboardRoot`:
+
+- Owns the bounded IME surface height.
+- Resolves portrait or landscape adaptive metrics.
+- Keeps keyboard content above bottom gap and navigation bar spacer.
+
+`KeyboardContentArea`:
+
+- Hosts either the default layout or entry layout.
+- Resolves default-layout key height from the actual available content height.
+- Clips overflowing content so compact landscape screens do not expand the IME window.
+
+`KeyboardWidthLayout`:
+
+- Calculates standard key width from the available row width.
+- Calculates flexible action key width after fixed keys and gaps are removed.
+- Keeps letter, number, and symbol rows aligned through shared width logic.
 
 `KeyboardViewModel`:
 
@@ -257,11 +308,23 @@ The same theme is used by:
 - Entry picker UI
 - Settings UI
 
-## Keyboard Height and Orientation
+## Keyboard Height, Width, and Orientation
 
 The root keyboard surface has a bounded height based on `KeyboardHeightMode`.
 
 Portrait and landscape share the same layout in P0.
+
+`KeyboardAdaptiveMetrics` provides orientation-aware:
+
+- Key height
+- Key horizontal padding
+- Key corner radius
+- Bottom safe padding
+- Maximum navigation-aware bottom padding
+
+The selected `KeyboardHeightMode` scales key height while preserving the portrait or landscape baseline metrics.
+
+`KeyboardWidthLayout` centralizes width calculation for rows that mix fixed standard keys and flexible action keys.
 
 Landscape behavior:
 
@@ -279,7 +342,6 @@ A dedicated landscape layout is deferred to P1.
 
 Logging must use:
 
-- `DebugLog`
 - `SecureLog`
 
 Do not use raw `Log.d`, `println`, or `printStackTrace` for sensitive flows.

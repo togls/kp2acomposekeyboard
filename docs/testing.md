@@ -17,6 +17,7 @@ Covered areas:
 - Safe session snapshot mapping
 - Settings default values
 - Settings timeout bounds
+- Keyboard height mode persistence and bounds
 
 Expected test files:
 
@@ -74,6 +75,7 @@ sdk=35
 - [ ] Enter sends enter.
 - [ ] Number mode opens.
 - [ ] Symbol mode opens.
+- [ ] Number and symbol layouts keep fixed and flexible keys aligned.
 - [ ] Settings button opens settings.
 
 ### Keepass2Android Flow
@@ -105,6 +107,7 @@ sdk=35
 - [ ] Theme mode can be changed.
 - [ ] Dynamic color can be toggled.
 - [ ] Keyboard height can be changed.
+- [ ] Keyboard height mode changes are reflected when reopening the IME.
 - [ ] Session timeout can be changed.
 - [ ] Reset to default works.
 
@@ -117,6 +120,13 @@ sdk=35
 - [ ] Session clears after timeout.
 - [ ] Manual clear works.
 - [ ] Canceling KP2A selection does not clear old session.
+
+### Layout and Insets
+
+- [ ] Compact, Normal, and Tall keyboard heights stay bounded.
+- [ ] Portrait bottom action rows stay clear of gesture navigation.
+- [ ] Landscape layout uses compressed metrics and does not expand the IME window.
+- [ ] Expanded fields scroll internally without pushing bottom actions into the navigation area.
 
 ## Runtime Log Check
 

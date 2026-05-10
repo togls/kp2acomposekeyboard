@@ -17,6 +17,8 @@ Included:
 - Settings page.
 - Material 3 theme.
 - Basic portrait / landscape support.
+- Adaptive keyboard metrics.
+- Navigation-aware bottom spacing.
 - Basic unit tests.
 
 Excluded from P0:
@@ -45,7 +47,7 @@ The default layout supports:
 Bottom action row:
 
 ```text
-[123/ABC] [Symbols/123] [Space] [Select Entry] [Enter]
+[?123/ABC] [#+=/ABC] [Space] [Select Entry] [Enter]
 ```
 
 Optional utility row:
@@ -71,6 +73,7 @@ Requirements:
 - Tapping `Select Entry` starts the Keepass2Android entry selection flow.
 - Tapping `Settings` opens the settings page.
 - If an active session exists, tapping `Back to Entry Layout` returns to the entry layout without querying Keepass2Android again.
+- Letter, number, and symbol rows should use shared width calculation when mixing fixed and flexible keys.
 
 ## Entry Keyboard Layout
 
@@ -220,6 +223,7 @@ Requirements:
 - Bottom action rows stay fixed.
 - Bottom action rows must avoid gesture navigation / navigation bar areas.
 - Landscape mode uses compressed height.
+- Key height, horizontal padding, corner radius, bottom safe padding, and navigation-aware bottom padding must come from adaptive keyboard metrics when possible.
 
 ## Portrait / Landscape Requirements
 

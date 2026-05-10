@@ -2,7 +2,7 @@
 
 ## Personal-device Scope
 
-This project is primarily built for personal devices and personal requirements.
+This project is primarily built for personal devices and personal needs.
 
 It does not guarantee compatibility with:
 
@@ -68,6 +68,7 @@ Known tradeoffs:
 - Some buttons may feel dense.
 - Field layouts are not optimized for wide screens.
 - Entry action rows may be crowded.
+- The shared layout is clipped to the bounded IME height instead of using a dedicated wide-screen arrangement.
 - A dedicated landscape layout is deferred to P1.
 
 ## Field Classification Limitations
@@ -103,7 +104,7 @@ It does not:
 
 Some settings may exist before their behavior is fully implemented.
 
-Examples:
+Current reserved or partially wired settings:
 
 - Haptic feedback
 - Key sound
@@ -125,4 +126,4 @@ The project reduces clipboard and UI exposure, but cannot fully protect against:
 
 ## Compatibility Statement
 
-> This project is primarily built for personal devices and personal requirements. It does not guarantee compatibility with all Android versions, HyperOS versions, MIUI versions, OEM ROMs, or Keepass2Android configurations.
+> This project is primarily built for personal devices and personal needs. It does not guarantee compatibility with all Android, HyperOS, MIUI, or vendor ROM versions.

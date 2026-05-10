@@ -4,8 +4,6 @@ KP2A Compose Keyboard is an Android input method designed to work with Keepass2A
 
 The keyboard lets the user select a KeePass entry from Keepass2Android and then input selected entry fields directly into the active text field through `InputConnection`, without using the clipboard.
 
-> This project is primarily built for personal devices and personal requirements. It does not guarantee compatibility with all Android versions, HyperOS versions, MIUI versions, OEM ROMs, or Keepass2Android configurations.
-
 ## Current Status
 
 Implemented:
@@ -16,6 +14,9 @@ Implemented:
 - Light theme, dark theme, system theme, and Android 12+ dynamic color.
 - Default keyboard layout: letters, numbers, and symbols.
 - Entry keyboard layout: current entry header, fixed fields, paged extra fields, and expanded all-fields mode.
+- Adaptive keyboard sizing for compact, normal, and tall height modes.
+- Orientation-aware key metrics, bottom spacing, and navigation bar clearance.
+- Shared key, field button, row, and width layout components for the keyboard UI.
 - Keepass2Android Plugin SDK2 integration.
 - Keepass2Android plugin access flow.
 - Entry selection through Keepass2Android.
@@ -25,7 +26,8 @@ Implemented:
 - Default 60-second session timeout.
 - Settings page.
 - Keyboard height settings.
-- Basic portrait / landscape adaptation.
+- Portrait layout and compressed landscape adaptation.
+- Debug-only secure logging through the project logging wrapper.
 - Basic unit tests for parsing, mapping, classification, sensitivity detection, settings, and safe snapshots.
 
 ## Project Goals
@@ -55,6 +57,14 @@ The project is designed around these constraints:
 
 ## Keyboard Layouts
 
+Keyboard UI is split into focused Compose components under `ui/keyboard/`:
+
+- `KeyboardRoot` owns the bounded IME surface, orientation-aware metrics, and bottom system spacing.
+- `KeyboardContentArea` resolves content-height-dependent key sizing.
+- `DefaultKeyboardLayout` hosts letter, number, and symbol input modes.
+- `EntryKeyboardLayout` hosts selected-entry field actions.
+- `KeyboardWidthLayout` centralizes row width calculations so fixed and flexible keys align consistently.
+
 ### Default Layout
 
 The default layout supports letter mode, number mode, and symbol mode.
@@ -62,7 +72,7 @@ The default layout supports letter mode, number mode, and symbol mode.
 Bottom action row:
 
 ```text
-[123/ABC] [Symbols/123] [Space] [Select Entry] [Enter]
+[?123/ABC] [#+=/ABC] [Space] [Select Entry] [Enter]
 ```
 
 If an active session exists, the default layout shows a top hint:
@@ -82,6 +92,8 @@ The entry layout supports:
 - Bottom action rows.
 
 Sensitive field buttons use a cautious visual style, but still show only the field label, never the field value.
+
+The entry layout keeps the current entry header and bottom action rows fixed while the expanded field area scrolls internally.
 
 ## Security Model
 
@@ -119,11 +131,13 @@ The settings page currently supports:
 
 Some settings may be reserved for later behavior integration.
 
+Keyboard height is applied through bounded Compact, Normal, and Tall modes. The app also resolves orientation-aware key metrics for portrait and landscape instead of letting field-heavy layouts expand the IME window.
+
 ## Known Limitations
 
 - The project is not a full general-purpose keyboard.
 - It does not support pinyin, suggestions, autocorrect, candidate words, handwriting, or voice input.
-- Landscape mode currently uses a compressed version of the same layout.
+- Landscape mode currently uses compressed shared layouts and metrics.
 - Dedicated landscape layout is planned for a later phase.
 - OEM ROMs may behave differently around IME window height, navigation bars, activity launching, and input method lifecycle.
 - Keepass2Android Plugin SDK2 is required.
@@ -131,18 +145,6 @@ Some settings may be reserved for later behavior integration.
 - Field classification for custom fields is heuristic and may need tuning.
 
 See [`docs/known-limitations.md`](docs/known-limitations.md) for details.
-
-## Tested Device
-
-Primary test device:
-
-```text
-Device: Xiaomi 15 Ultra / Xiaomi 15U
-ROM: HyperOS 3.0.303.0
-Password manager: Keepass2Android
-```
-
-See [`docs/test-devices.md`](docs/test-devices.md) for details.
 
 ## Build and Test
 

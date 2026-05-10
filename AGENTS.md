@@ -95,7 +95,6 @@ General rules:
 - Do not swallow exceptions silently.
 - Add logs only for useful state transitions or failures.
 - Use `rg` instead of `grep` when searching.
-- Prefer `pnpm` for JS tooling if any JS tooling appears.
 
 Size guidelines:
 
@@ -228,9 +227,8 @@ InputConnection.commitText(value, 1)
 
 ## Logging Rules
 
-Use project logging wrappers only:
+Use the project logging wrapper only:
 
-- `DebugLog`
 - `SecureLog`
 
 Do not use raw logging in new code:
@@ -241,20 +239,20 @@ println(...)
 printStackTrace()
 ```
 
-`DebugLog` is allowed only in debug builds and must be structured.
+`SecureLog` is debug-build-only and must be structured.
 
 Do not interpolate sensitive or contextual values directly into the `message` string:
 
 ```kotlin
 // Bad
-DebugLog.d("launch query: searchText=$searchText")
+SecureLog.d("launch query: searchText=$searchText")
 ```
 
 Use structured fields instead, and avoid sensitive values:
 
 ```kotlin
 // Good
-DebugLog.d(
+SecureLog.d(
     message = "launch kp2a query entry",
     "queryMode" to "manual",
     "hasQuery" to !searchText.isNullOrBlank(),
@@ -352,6 +350,9 @@ Use shared keyboard components:
 
 - `KeyboardKey`
 - `FieldButton`
+- `TextKeyRow`
+- `KeyboardWidthLayout`
+- `KeyboardContentArea`
 
 Keyboard UI should support:
 
@@ -365,6 +366,10 @@ Keyboard UI should support:
 Sensitive field buttons may look different, but must not display field values.
 
 Keyboard height must be bounded. Field-heavy layouts must not expand the IME window indefinitely.
+
+Use `KeyboardAdaptiveMetrics` for orientation-aware key height, key padding, corner radius, bottom safe padding, and navigation-aware bottom padding. Do not hard-code new keyboard sizing tokens in feature components when an existing token or adaptive metric fits.
+
+Use `KeyboardWidthLayout` when a row mixes standard-width keys with flexible action keys, so row alignment stays consistent across letter, number, and symbol layouts.
 
 Entry layout requirements:
 
@@ -475,7 +480,7 @@ adb logcat | rg "Kp2aKeyboardIme|AndroidRuntime|FATAL EXCEPTION"
 
 Sensitive value log checks should never reveal actual values.
 
-## ## Commit Message Style
+## Commit Message Style
 
 Use Conventional Commits.
 

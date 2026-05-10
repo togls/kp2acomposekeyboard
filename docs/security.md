@@ -104,7 +104,6 @@ Sensitive fields may use a cautious visual style, but must still show only the l
 
 Use only:
 
-- `DebugLog`
 - `SecureLog`
 
 Allowed log fields:
@@ -130,9 +129,11 @@ Forbidden log fields:
 - Access tokens
 - Full Intent extras values
 
-## DebugLog Rules
+## SecureLog Rules
 
-`DebugLog.intent()` may log:
+`SecureLog` is the only logging wrapper for new code. It logs only in debug builds.
+
+`SecureLog.intent()` may log:
 
 - Action
 - Package
@@ -141,13 +142,13 @@ Forbidden log fields:
 
 It must not log extras values.
 
-`DebugLog.bundleKeys()` may log:
+`SecureLog.bundleKeys()` may log:
 
 - Bundle key names
 
 It must not log values.
 
-`DebugLog.entryFields()` may log:
+`SecureLog.entryFields()` may log:
 
 - Field count
 - Redacted sensitive fields
@@ -158,7 +159,7 @@ It must not log sensitive values.
 Avoid putting dynamic values directly into the `message` string. Prefer structured fields:
 
 ```kotlin
-DebugLog.d(
+SecureLog.d(
     message = "launch kp2a query entry",
     "queryMode" to "manual",
 )
@@ -167,7 +168,7 @@ DebugLog.d(
 Avoid:
 
 ```kotlin
-DebugLog.d("launch query: $searchText")
+SecureLog.d("launch query: $searchText")
 ```
 
 ## Session Timeout
