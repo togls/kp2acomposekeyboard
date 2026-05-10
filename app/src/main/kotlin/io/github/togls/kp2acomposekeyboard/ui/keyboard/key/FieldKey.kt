@@ -1,4 +1,4 @@
-package io.github.togls.kp2acomposekeyboard.ui.keyboard.entry
+package io.github.togls.kp2acomposekeyboard.ui.keyboard.key
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -6,11 +6,10 @@ import androidx.compose.ui.res.stringResource
 import io.github.togls.kp2acomposekeyboard.R
 import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldUiModel
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.KeyboardKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardKeyEmphasis
 
 @Composable
-fun FieldButton(
+internal fun FieldKey(
     field: KeyboardFieldUiModel,
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,

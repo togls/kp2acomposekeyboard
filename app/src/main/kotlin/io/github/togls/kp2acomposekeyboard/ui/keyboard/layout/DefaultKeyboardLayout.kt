@@ -5,25 +5,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import io.github.togls.kp2acomposekeyboard.R
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.DefaultInputMode
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.entry.ExistingEntryHint
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.EnterKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.KeyboardKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.SelectEntryKey
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.SettingsKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.SpaceKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardKeyEmphasis
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.KeyboardMetrics
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.LocalKeyboardAdaptiveMetrics
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.isKeyboardLandscape
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
 
 @Composable
 fun DefaultKeyboardLayout(
@@ -41,13 +34,6 @@ fun DefaultKeyboardLayout(
             ),
         verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
     ) {
-        val isLandscape = isKeyboardLandscape()
-
-        DefaultKeyboardUtilityRow(
-            state = state,
-            onIntent = onIntent,
-            isLandscape = isLandscape,
-        )
 
         DefaultKeyboardContent(
             state = state,
@@ -128,41 +114,5 @@ private fun DefaultKeyboardActionRow(
             onIntent = onIntent,
             modifier = Modifier.weight(1.2f),
         )
-    }
-}
-
-@Composable
-private fun DefaultKeyboardUtilityRow(
-    state: KeyboardUiState,
-    onIntent: (KeyboardIntent) -> Unit,
-    isLandscape: Boolean,
-) {
-    if (isLandscape) {
-        return
-    }
-
-    val adaptiveMetrics = LocalKeyboardAdaptiveMetrics.current
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.End,
-    ) {
-        SettingsKey(
-            onIntent = onIntent,
-            modifier = Modifier.weight(1f),
-        )
-
-        if (state.hasActiveSession) {
-
-            val entryName = state.currentEntryName
-                ?.takeIf { it.isNotBlank() }
-                ?: stringResource(R.string.entry_name_unnamed)
-
-            ExistingEntryHint(
-                entryName = entryName,
-                onIntent = onIntent,
-                modifier = Modifier.height(adaptiveMetrics.keyHeight),
-            )
-        }
     }
 }

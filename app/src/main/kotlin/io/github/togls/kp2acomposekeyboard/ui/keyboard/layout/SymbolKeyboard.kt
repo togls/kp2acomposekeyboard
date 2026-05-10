@@ -12,7 +12,7 @@ import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.DeleteKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.KeyboardKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.row.TextKeyRow
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardKeyEmphasis
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.KeyboardMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
 
 @Composable
 fun SymbolKeyboard(

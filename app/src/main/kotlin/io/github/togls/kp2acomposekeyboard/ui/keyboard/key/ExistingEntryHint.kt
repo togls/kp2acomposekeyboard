@@ -1,4 +1,4 @@
-package io.github.togls.kp2acomposekeyboard.ui.keyboard.entry
+package io.github.togls.kp2acomposekeyboard.ui.keyboard.key
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -19,7 +19,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.togls.kp2acomposekeyboard.R
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.dpCompat
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.dpCompat
 
 @Composable
 fun ExistingEntryHint(

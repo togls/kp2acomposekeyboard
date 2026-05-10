@@ -35,8 +35,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardKeyColors
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardKeyEmphasis
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.KeyboardMetrics
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.LocalKeyboardAdaptiveMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.LocalKeyboardAdaptiveMetrics
 
 /**
  * Displays a single text keyboard key with Material 3 colors, shape, elevation,

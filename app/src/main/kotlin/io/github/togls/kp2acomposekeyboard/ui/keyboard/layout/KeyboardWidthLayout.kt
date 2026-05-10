@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.KeyboardMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
 
 @Immutable
 internal data class KeyboardKeyWidths(

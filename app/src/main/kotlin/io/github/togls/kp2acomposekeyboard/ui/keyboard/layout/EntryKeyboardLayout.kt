@@ -15,12 +15,11 @@ import io.github.togls.kp2acomposekeyboard.feature.keyboard.EntryFieldDisplayMod
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.entry.AllFieldsExpandedPanel
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.entry.EntryHeader
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.entry.ExtraFieldPagedPanel
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.entry.FixedFieldRow
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.row.ExpandedEntryActionRows
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.row.FixedFieldRow
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.row.PagedEntryActionRow
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.KeyboardMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
 import kotlinx.coroutines.launch
 
 @Composable
@@ -48,8 +47,6 @@ fun EntryKeyboardLayout(
             ),
         verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
     ) {
-        EntryHeader(entryName = state.currentEntryName)
-
         when (state.entryFieldDisplayMode) {
             EntryFieldDisplayMode.Paged -> {
                 PagedEntryContent(

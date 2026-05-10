@@ -11,9 +11,11 @@ import androidx.compose.ui.unit.dp
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.MainKeyboardLayout
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.KeyboardAdaptiveMetrics
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.KeyboardMetrics
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.LocalKeyboardAdaptiveMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.row.UtilityRow
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardAdaptiveMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.LocalKeyboardAdaptiveMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.isKeyboardLandscape
 
 /**
  * Hosts the main keyboard content and resolves metrics that depend on the
@@ -50,6 +52,11 @@ internal fun KeyboardContentArea(
         CompositionLocalProvider(
             LocalKeyboardAdaptiveMetrics provides contentMetrics,
         ) {
+            UtilityRow(
+                state = state,
+                onIntent = onIntent,
+            )
+
             when (state.mainLayout) {
                 MainKeyboardLayout.Default -> {
                     DefaultKeyboardLayout(

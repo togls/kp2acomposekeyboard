@@ -16,7 +16,8 @@ import androidx.compose.ui.res.stringResource
 import io.github.togls.kp2acomposekeyboard.R
 import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldUiModel
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.KeyboardMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.FieldKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
 
 @Composable
 fun AllFieldsExpandedPanel(
@@ -48,7 +49,7 @@ fun AllFieldsExpandedPanel(
                     horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
                 ) {
                     rowFields.forEach { field ->
-                        FieldButton(
+                        FieldKey(
                             modifier = Modifier.weight(1f),
                             field = field,
                             onIntent = onIntent,

@@ -14,7 +14,7 @@ import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.DeleteKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.LetterKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.ShiftKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.row.LetterRow
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.KeyboardMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
 
 @Composable
 fun LetterKeyboard(
