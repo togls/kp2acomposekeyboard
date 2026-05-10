@@ -9,7 +9,9 @@ import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.CommitTextKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.DeleteKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.KeyboardKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.row.TextKeyRow
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keys.style.KeyboardKeyEmphasis
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardMetrics
 
 @Composable
@@ -35,6 +37,16 @@ internal fun NumberKeyboard(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
         ) {
+
+            KeyboardKey(
+                modifier = Modifier.weight(1f),
+                text = "=\\<",
+                onClick = {
+                    onIntent(KeyboardIntent.SwitchToLetters)
+                },
+                emphasis = KeyboardKeyEmphasis.Action,
+            )
+
             NumberKeyboardLastRow.forEach { text ->
                 CommitTextKey(
                     modifier = Modifier.weight(1f),
@@ -53,7 +65,7 @@ internal fun NumberKeyboard(
 
 private val NumberKeyboardRows = listOf(
     listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0"),
-    listOf("-", "/", ":", ";", "(", ")", "¥", "&", "@", "\""),
+    listOf("@", "#", "$", "_", "&", "-", "+", "(", ")", "\\"),
 )
 
-private val NumberKeyboardLastRow = listOf(".", ",", "?", "!", "'")
+private val NumberKeyboardLastRow = listOf("*", "\"", "'", ":", ";", "!", "?")
