@@ -56,6 +56,8 @@ class KeyboardUtilitySlotsReducer(
             return sanitizedSlots
         }
 
+        // Moving to right is a replacement operation: an existing right item is
+        // removed before assigning the new one, so max pinned count is unchanged.
         return sanitize(
             remove(sanitizedSlots, itemId).copy(rightItemId = itemId),
         )
@@ -88,6 +90,8 @@ class KeyboardUtilitySlotsReducer(
     }
 
     private fun canMoveToRight(itemId: KeyboardUtilityItemId): Boolean {
+        // Right-slot replacement is allowed even when pinned count is already
+        // full, as long as the item is a supported production utility.
         return itemId in allowedItemIds
     }
 }

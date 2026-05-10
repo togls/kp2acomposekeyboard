@@ -37,6 +37,8 @@ internal fun resolveUtilityDropTarget(
         return UtilityDropTarget.Center(targetIndex = 0)
     }
 
+    // Use each item's midpoint instead of container width ratios so insertion
+    // stays accurate when slots have gaps or different widths.
     centerItemBounds.forEachIndexed { index, bounds ->
         if (positionInRoot.x < bounds.center.x) {
             return UtilityDropTarget.Center(targetIndex = index)
@@ -67,6 +69,8 @@ internal fun dispatchUtilityDrop(
         }
 
         UtilityDropTarget.Outside -> {
+            // Only pinned utilities can be removed by dropping outside; panel
+            // items are not persisted until the final drop target is valid.
             if (source == UtilityDragSource.Pinned) {
                 onIntent(KeyboardIntent.RemoveUtilityItem(itemId))
             }

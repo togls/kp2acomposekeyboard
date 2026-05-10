@@ -15,6 +15,7 @@ object KeyboardUtilitySlotsPreferenceCodec {
         }
         val rightValue = sanitizedSlots.rightItemId?.storageValue.orEmpty()
 
+        // Keep the value compact and non-sensitive: only utility IDs are stored.
         return "center=$centerValue;right=$rightValue"
     }
 
@@ -32,6 +33,8 @@ object KeyboardUtilitySlotsPreferenceCodec {
             }
         }.toMap()
 
+        // Unknown fields are ignored for forward compatibility, but the two
+        // known fields must exist so a malformed value falls back safely.
         if (!valuesByKey.containsKey(CENTER_KEY) || !valuesByKey.containsKey(RIGHT_KEY)) {
             return KeyboardUtilitySlots()
         }
