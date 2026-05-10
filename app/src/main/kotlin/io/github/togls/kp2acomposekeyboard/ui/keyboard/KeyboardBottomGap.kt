@@ -21,7 +21,7 @@ internal fun KeyboardBottomGap(
     val height = if (isLandscape) {
         0.dp
     } else {
-        16.dp
+        32.dp
     }
 
     Spacer(

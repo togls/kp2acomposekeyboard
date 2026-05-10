@@ -40,7 +40,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * Main input method host for KP2A Compose Keyboard.
+ * Main IME service for KP2A Compose Keyboard.
+ *
+ * InputMethodService is not an Activity, but Compose, ViewModel, Lifecycle, and
+ * rememberSaveable still require ViewTree owners. This service owns those objects
+ * manually and installs them onto the IME view tree.
  */
 @AndroidEntryPoint
 class KeyboardImeService :
@@ -57,8 +61,24 @@ class KeyboardImeService :
 
     private lateinit var viewModel: KeyboardViewModel
 
+    /**
+     * IME services do not have an Activity lifecycle, so the lifecycle state is
+     * driven manually from InputMethodService callbacks.
+     */
     private val lifecycleRegistry = LifecycleRegistry(this)
+
+    /**
+     * Saved state support required by Compose and rememberSaveable.
+     */
     private val savedStateRegistryController = SavedStateRegistryController.create(this)
+
+    /**
+     * Coroutine scope tied to the service lifecycle.
+     *
+     * SupervisorJob prevents one failed effect handler from cancelling all effect
+     * collection. Main.immediate is used because InputConnection and UI operations
+     * must run on the main thread.
+     */
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     override val lifecycle: Lifecycle
@@ -67,8 +87,15 @@ class KeyboardImeService :
     override val savedStateRegistry: SavedStateRegistry
         get() = savedStateRegistryController.savedStateRegistry
 
+    /**
+     * ViewModel store owned by this IME service.
+     */
     override val viewModelStore = ViewModelStore()
 
+    /**
+     * The active InputConnection can change when the focused editor changes, so it
+     * is resolved lazily through a provider.
+     */
     private val inputConnectionDispatcher by lazy {
         InputConnectionDispatcher(
             inputConnectionProvider = { currentInputConnection },
@@ -76,10 +103,12 @@ class KeyboardImeService :
     }
 
     /**
-     * 普通销毁 IME -> 清理 Session
-     * 启动 EntryPicker 导致 IME 临时销毁 -> 不清理 Session
-     * 用户取消 KP2A -> 旧 Session 保留
-     * 用户成功选择新条目 -> Repository 覆盖旧 Session
+     * Tracks whether the IME is currently launching the entry picker.
+     *
+     * Normal IME destruction -> clear the current session.
+     * Temporary destruction caused by EntryPicker launch -> keep the current session.
+     * User cancels KP2A -> keep the previous session.
+     * User selects a new entry -> repository replaces the previous session.
      */
     private var entryPickerFlowActive = false
 
@@ -99,19 +128,32 @@ class KeyboardImeService :
 
     override fun onBindInput() {
         super.onBindInput()
+
+        // The IME is now bound to an input target and can enter STARTED state.
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
+
         Log.d(TAG, "onBindInput")
     }
 
     override fun onCreateInputView(): View {
         SecureLog.d("Input view created")
 
+        // Some ROMs may access the decor view before ComposeView is fully attached.
         installViewTreeOwners(window?.window?.decorView)
+
+        // Use a safe default before settings are collected inside Compose.
+        configureImeNavigationBar(isDarkTheme = false)
 
         return ComposeView(this).apply {
             installViewTreeOwners(this)
 
-            // IME 的窗口父容器由系统创建；部分 ROM 上 Compose 会从 rootView/parentPanel 查找 owner。
+            /*
+             * The IME window container is created by the system.
+             *
+             * On some ROMs or Android versions, Compose may look up ViewTree owners
+             * from rootView or decorView instead of only the ComposeView itself.
+             * Reinstalling owners after attach makes the lookup more reliable.
+             */
             addOnAttachStateChangeListener(
                 object : View.OnAttachStateChangeListener {
                     override fun onViewAttachedToWindow(view: View) {
@@ -124,7 +166,12 @@ class KeyboardImeService :
                 },
             )
 
-            // IME 输入视图可能被系统反复 attach/detach，detach 时释放 composition，避免旧键盘视图泄漏。
+            /*
+             * IME input views may be repeatedly attached and detached by the system.
+             *
+             * Disposing the composition on detach prevents stale keyboard views,
+             * state collectors, and callbacks from leaking.
+             */
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnDetachedFromWindow)
 
             setContent {
@@ -132,6 +179,11 @@ class KeyboardImeService :
                 val settings by settingsRepository.settings.collectAsStateWithLifecycle(
                     initialValue = KeyboardSettings(),
                 )
+
+                val isDarkTheme = shouldUseDarkTheme(settings)
+
+                // Keep the system navigation bar in sync with the active theme.
+                configureImeNavigationBar(isDarkTheme = isDarkTheme)
 
                 KeyboardTheme(settings = settings) {
                     KeyboardRoot(
@@ -149,6 +201,8 @@ class KeyboardImeService :
         restarting: Boolean,
     ) {
         super.onStartInput(attribute, restarting)
+
+        // Log only editor metadata. Never log user input content.
         Log.d(TAG, "onStartInput restarting=$restarting inputType=${attribute?.inputType}")
     }
 
@@ -157,37 +211,62 @@ class KeyboardImeService :
         restarting: Boolean,
     ) {
         super.onStartInputView(info, restarting)
+
+        // The input view is visible, so Compose can move to RESUMED state.
         lifecycleRegistry.currentState = Lifecycle.State.RESUMED
+
         installViewTreeOwners(window?.window?.decorView)
+
+        // A new input view session starts outside the entry picker flow by default.
         entryPickerFlowActive = false
+
         SecureLog.d("input view started")
     }
 
     override fun onFinishInputView(finishingInput: Boolean) {
+        // The input view is no longer visible, but the service may still be alive.
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
+
         SecureLog.d("Input view finished")
         super.onFinishInputView(finishingInput)
     }
 
     override fun onUnbindInput() {
+        // The input target is unbound. Keep CREATED state until the next bind or destroy.
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
+
         Log.d(TAG, "onUnbindInput")
         super.onUnbindInput()
     }
 
     override fun onWindowShown() {
         super.onWindowShown()
+
+        // The decor view may become available again when the IME window is shown.
         installViewTreeOwners(window?.window?.decorView)
+
         Log.d(TAG, "onWindowShown")
     }
 
     override fun onEvaluateInputViewShown(): Boolean {
         super.onEvaluateInputViewShown()
-        // 开发阶段强制显示输入视图，避免硬键盘状态或厂商策略让系统误判“不需要软键盘”。
+
+        /*
+         * Force the input view to show during development.
+         *
+         * This avoids false negatives caused by hardware keyboard state, emulator
+         * behavior, or vendor-specific IME policies.
+         */
         return true
     }
 
     override fun onDestroy() {
+        /*
+         * Clear the current entry only during normal IME destruction.
+         *
+         * When launching EntryPicker, the system may temporarily destroy the IME.
+         * In that case, the session must be preserved until the picker returns.
+         */
         if (::viewModel.isInitialized && !entryPickerFlowActive) {
             viewModel.onIntent(KeyboardIntent.ClearEntry)
         }
@@ -195,10 +274,17 @@ class KeyboardImeService :
         lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
         serviceScope.cancel()
         viewModelStore.clear()
+
         SecureLog.d("ime destroyed")
         super.onDestroy()
     }
 
+    /**
+     * Collects one-off effects emitted by the ViewModel.
+     *
+     * Examples include committing text, deleting text, sending Enter, and launching
+     * picker or settings screens.
+     */
     private fun collectKeyboardEffects() {
         serviceScope.launch {
             viewModel.effect.collect { effect ->
@@ -207,10 +293,13 @@ class KeyboardImeService :
         }
     }
 
+    /**
+     * Handles side effects requested by the keyboard UI.
+     */
     private fun handleKeyboardEffect(effect: KeyboardEffect) {
         when (effect) {
             is KeyboardEffect.CommitText -> {
-                // effect.text 后续可能是密码、TOTP 或恢复码，禁止打印。
+                // The text may contain passwords, TOTP codes, or recovery codes. Never log it.
                 inputConnectionDispatcher.commitText(effect.text)
             }
 
@@ -234,12 +323,17 @@ class KeyboardImeService :
         }
     }
 
+    /**
+     * Launches the entry picker from the IME service.
+     */
     private fun launchEntryPickerActivity() {
         entryPickerFlowActive = true
 
         val intent = Intent(this, EntryPickerActivity::class.java).apply {
-            // InputMethodService 不是 Activity Context；从 Service 启动 Activity 必须使用新任务。
+            // InputMethodService is not an Activity context, so a new task is required.
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+            // The picker should not appear in the recent tasks list.
             addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
         }
 
@@ -251,13 +345,17 @@ class KeyboardImeService :
         try {
             startActivity(intent)
         } catch (error: ActivityNotFoundException) {
+            // Reset the flag so onDestroy does not treat this as an active picker flow.
             entryPickerFlowActive = false
+
             SecureLog.w(
                 message = "entry picker activity launch failed",
                 throwable = error,
             )
         } catch (error: SecurityException) {
+            // Reset the flag when the system blocks the launch.
             entryPickerFlowActive = false
+
             SecureLog.w(
                 message = "entry picker activity launch failed",
                 throwable = error,
@@ -265,6 +363,12 @@ class KeyboardImeService :
         }
     }
 
+    /**
+     * Installs the owners required by Compose onto the given View.
+     *
+     * IME views are not normal Activity content views, so LifecycleOwner,
+     * SavedStateRegistryOwner, and ViewModelStoreOwner must be attached manually.
+     */
     private fun installViewTreeOwners(view: View?) {
         if (view == null) {
             return
@@ -275,9 +379,55 @@ class KeyboardImeService :
         view.setViewTreeViewModelStoreOwner(this)
     }
 
+    /**
+     * Configures the system navigation bar for the IME window.
+     *
+     * Goals:
+     * 1. Make the navigation bar transparent so the keyboard can visually extend
+     *    into the navigation area.
+     * 2. Disable Android 10+ contrast enforcement to avoid unexpected system scrims.
+     * 3. Use dark or light navigation icons based on the active theme.
+     */
+    private fun configureImeNavigationBar(isDarkTheme: Boolean) {
+        val imeWindow = window?.window ?: return
+
+        imeWindow.navigationBarColor = android.graphics.Color.TRANSPARENT
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            imeWindow.isNavigationBarContrastEnforced = false
+        }
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            val lightNavigationBarFlag = View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+
+            imeWindow.decorView.systemUiVisibility = if (isDarkTheme) {
+                // Dark theme should use light navigation bar icons.
+                imeWindow.decorView.systemUiVisibility and lightNavigationBarFlag.inv()
+            } else {
+                // Light theme should use dark navigation bar icons.
+                imeWindow.decorView.systemUiVisibility or lightNavigationBarFlag
+            }
+        }
+    }
+
+    /**
+     * Returns whether the keyboard should use a dark theme.
+     *
+     * The current implementation follows the system night mode. The settings
+     * parameter is kept for future theme modes, such as system, light, or dark.
+     */
+    private fun shouldUseDarkTheme(settings: KeyboardSettings): Boolean {
+        return resources.configuration.uiMode and
+                android.content.res.Configuration.UI_MODE_NIGHT_MASK ==
+                android.content.res.Configuration.UI_MODE_NIGHT_YES
+    }
+
+    /**
+     * Launches the settings screen from the IME service.
+     */
     private fun launchSettingsActivity() {
         val intent = Intent(this, SettingsActivity::class.java).apply {
-            // InputMethodService 不是 Activity Context，从 IME 启动设置页必须新建任务。
+            // InputMethodService is not an Activity context, so a new task is required.
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
 
