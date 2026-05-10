@@ -4,6 +4,15 @@ sealed interface KeyboardIntent {
     data object SelectEntry : KeyboardIntent
     data object OpenSettings : KeyboardIntent
     data object ClearEntry : KeyboardIntent
+    data object ToggleUtilityPanel : KeyboardIntent
+    data object CloseUtilityPanel : KeyboardIntent
+    data class ClickUtilityItem(val itemId: KeyboardUtilityItemId) : KeyboardIntent
+    data class MoveUtilityItemToCenter(
+        val itemId: KeyboardUtilityItemId,
+        val targetIndex: Int,
+    ) : KeyboardIntent
+    data class MoveUtilityItemToRight(val itemId: KeyboardUtilityItemId) : KeyboardIntent
+    data class RemoveUtilityItem(val itemId: KeyboardUtilityItemId) : KeyboardIntent
 
     data object SwitchToDefaultLayout : KeyboardIntent
     data object SwitchToEntryLayout : KeyboardIntent

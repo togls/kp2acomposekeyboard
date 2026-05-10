@@ -34,6 +34,8 @@ data class KeyboardUiState(
     val extraFieldPageIndex: Int = 0,
     val extraFieldPageSize: Int = DEFAULT_EXTRA_FIELD_PAGE_SIZE,
     val isUppercase: Boolean = false,
+    val utilitySlots: KeyboardUtilitySlots = KeyboardUtilitySlots(),
+    val isUtilityPanelExpanded: Boolean = false,
 ) {
     companion object {
         /**

@@ -1,5 +1,6 @@
 package io.github.togls.kp2acomposekeyboard.settings
 
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUtilitySlots
 import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardHeightMode
 import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
 import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardThemeMode
@@ -19,6 +20,7 @@ class KeyboardSettingsTest {
         assertEquals(false, settings.hapticFeedbackEnabled)
         assertEquals(false, settings.keySoundEnabled)
         assertEquals(false, settings.showKeyPreview)
+        assertEquals(KeyboardUtilitySlots(), settings.utilitySlots)
     }
 
     @Test(expected = IllegalArgumentException::class)

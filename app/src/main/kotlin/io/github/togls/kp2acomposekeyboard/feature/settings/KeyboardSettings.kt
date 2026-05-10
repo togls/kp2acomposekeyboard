@@ -1,5 +1,7 @@
 package io.github.togls.kp2acomposekeyboard.feature.settings
 
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUtilitySlots
+
 data class KeyboardSettings(
     val themeMode: KeyboardThemeMode = KeyboardThemeMode.System,
     val useDynamicColor: Boolean = true,
@@ -8,6 +10,7 @@ data class KeyboardSettings(
     val hapticFeedbackEnabled: Boolean = false,
     val keySoundEnabled: Boolean = false,
     val showKeyPreview: Boolean = false,
+    val utilitySlots: KeyboardUtilitySlots = KeyboardUtilitySlots(),
 ) {
     init {
         // Keep the invariant close to the model so DataStore, UI, and tests share one safe range.

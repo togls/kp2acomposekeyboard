@@ -70,3 +70,31 @@ private fun DefaultKeyboardLettersDarkPreview() {
         settings = previewDarkSettings(),
     )
 }
+
+@Preview(
+    name = "Utility Panel",
+    group = "Keyboard / Default",
+    showBackground = true,
+    widthDp = 411,
+    heightDp = 320,
+)
+@Composable
+private fun DefaultKeyboardUtilityPanelPreview() {
+    KeyboardPreviewContent(
+        state = previewUtilityPanelState(),
+    )
+}
+
+@Preview(
+    name = "Right Utility Slot",
+    group = "Keyboard / Default",
+    showBackground = true,
+    widthDp = 411,
+    heightDp = 320,
+)
+@Composable
+private fun DefaultKeyboardRightUtilitySlotPreview() {
+    KeyboardPreviewContent(
+        state = previewRightUtilitySlotState(),
+    )
+}

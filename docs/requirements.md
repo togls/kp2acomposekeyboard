@@ -53,7 +53,7 @@ Bottom action row:
 Optional utility row:
 
 ```text
-[Settings]
+[Utility panel] [Pinned utilities or current entry hint] [Optional pinned utility]
 ```
 
 If an active session exists, the top area shows:
@@ -72,6 +72,14 @@ Requirements:
 - Tapping delete removes the previous character.
 - Tapping `Select Entry` starts the Keepass2Android entry selection flow.
 - Tapping `Settings` opens the settings page.
+- Tapping the utility panel button expands or closes the utility panel.
+- The utility panel occupies the main keyboard content area and leaves only the bottom IME safe/navigation area.
+- Utility items can be tapped directly from the panel.
+- Utility items can be long-pressed and dragged into the center area or right slot.
+- Dragging only updates hover feedback until release; the final slot change is committed on drag end.
+- The left utility panel button does not count toward the five pinned utilities.
+- If an active session exists, the center area shows the current entry hint while the utility panel is closed.
+- Utility slot persistence stores only utility IDs and never stores entry or field values.
 - If an active session exists, tapping `Back to Entry Layout` returns to the entry layout without querying Keepass2Android again.
 - Letter, number, and symbol rows should use shared width calculation when mixing fixed and flexible keys.
 

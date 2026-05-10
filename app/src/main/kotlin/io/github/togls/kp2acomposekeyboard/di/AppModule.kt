@@ -1,9 +1,20 @@
 package io.github.togls.kp2acomposekeyboard.di
 
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettingsStore
+import io.github.togls.kp2acomposekeyboard.feature.settings.SettingsRepository
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule
+object AppModule {
+
+    @Provides
+    fun provideKeyboardSettingsStore(
+        settingsRepository: SettingsRepository,
+    ): KeyboardSettingsStore {
+        return settingsRepository
+    }
+}

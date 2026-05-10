@@ -2,6 +2,7 @@ package io.github.togls.kp2acomposekeyboard.feature.keyboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettingsStore
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
 import io.github.togls.kp2acomposekeyboard.session.KeyboardSessionRepository
 import io.github.togls.kp2acomposekeyboard.session.KeyboardSessionSnapshot
@@ -19,7 +20,10 @@ import kotlinx.coroutines.launch
 class KeyboardViewModel(
     private val sessionRepository: KeyboardSessionRepository,
     private val sessionTimeoutController: SessionTimeoutController,
+    private val settingsStore: KeyboardSettingsStore,
 ) : ViewModel() {
+
+    private val utilitySlotsReducer = KeyboardUtilitySlotsReducer()
 
     private val _uiState = MutableStateFlow(KeyboardUiState())
     val uiState: StateFlow<KeyboardUiState> = _uiState.asStateFlow()
@@ -32,6 +36,7 @@ class KeyboardViewModel(
 
     init {
         observeSession()
+        observeSettings()
     }
 
     fun onIntent(intent: KeyboardIntent) {
@@ -46,6 +51,28 @@ class KeyboardViewModel(
             )
 
             KeyboardIntent.ClearEntry -> sessionTimeoutController.clearNow()
+            KeyboardIntent.ToggleUtilityPanel -> toggleUtilityPanel()
+            KeyboardIntent.CloseUtilityPanel -> closeUtilityPanel()
+            is KeyboardIntent.ClickUtilityItem -> clickUtilityItem(intent.itemId)
+            is KeyboardIntent.MoveUtilityItemToCenter -> updateUtilitySlots { slots ->
+                utilitySlotsReducer.moveToCenter(
+                    slots = slots,
+                    itemId = intent.itemId,
+                    targetIndex = intent.targetIndex,
+                )
+            }
+            is KeyboardIntent.MoveUtilityItemToRight -> updateUtilitySlots { slots ->
+                utilitySlotsReducer.moveToRight(
+                    slots = slots,
+                    itemId = intent.itemId,
+                )
+            }
+            is KeyboardIntent.RemoveUtilityItem -> updateUtilitySlots { slots ->
+                utilitySlotsReducer.remove(
+                    slots = slots,
+                    itemId = intent.itemId,
+                )
+            }
 
             KeyboardIntent.SwitchToDefaultLayout -> switchToDefaultLayout()
             KeyboardIntent.SwitchToEntryLayout -> switchToEntryLayout()
@@ -68,6 +95,16 @@ class KeyboardViewModel(
 
             KeyboardIntent.ScrollExpandedFieldsUp -> Unit
             KeyboardIntent.ScrollExpandedFieldsDown -> Unit
+        }
+    }
+
+    private fun observeSettings() {
+        viewModelScope.launch {
+            settingsStore.settings.collect { settings ->
+                _uiState.update { state ->
+                    state.copy(utilitySlots = settings.utilitySlots)
+                }
+            }
         }
     }
 
@@ -158,6 +195,32 @@ class KeyboardViewModel(
     private fun updateDefaultInputMode(inputMode: DefaultInputMode) {
         _uiState.update { state ->
             state.copy(defaultInputMode = inputMode)
+        }
+    }
+
+    private fun toggleUtilityPanel() {
+        _uiState.update { state ->
+            state.copy(isUtilityPanelExpanded = !state.isUtilityPanelExpanded)
+        }
+    }
+
+    private fun closeUtilityPanel() {
+        _uiState.update { state ->
+            state.copy(isUtilityPanelExpanded = false)
+        }
+    }
+
+    private fun clickUtilityItem(itemId: KeyboardUtilityItemId) {
+        if (itemId == SettingsUtilityItemId) {
+            sendEffect(KeyboardEffect.LaunchSettings)
+        }
+    }
+
+    private fun updateUtilitySlots(
+        transform: (KeyboardUtilitySlots) -> KeyboardUtilitySlots,
+    ) {
+        viewModelScope.launch {
+            settingsStore.updateUtilitySlots(transform(_uiState.value.utilitySlots))
         }
     }
 

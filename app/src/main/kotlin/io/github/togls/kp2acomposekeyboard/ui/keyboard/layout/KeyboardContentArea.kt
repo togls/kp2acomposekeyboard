@@ -13,7 +13,9 @@ import androidx.compose.ui.unit.dp
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.MainKeyboardLayout
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.row.UtilityRow
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.utility.UtilityPanel
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.utility.UtilityRow
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.utility.rememberUtilityDragState
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardAdaptiveMetrics
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.LocalKeyboardAdaptiveMetrics
@@ -54,30 +56,41 @@ internal fun KeyboardContentArea(
         CompositionLocalProvider(
             LocalKeyboardAdaptiveMetrics provides contentMetrics,
         ) {
+            val utilityDragState = rememberUtilityDragState()
+
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
             ) {
                 UtilityRow(
                     state = state,
+                    dragState = utilityDragState,
                     onIntent = onIntent,
                 )
 
-                when (state.mainLayout) {
-                    MainKeyboardLayout.Default -> {
-                        DefaultKeyboardLayout(
-                            state = state,
-                            onIntent = onIntent,
-                            modifier = Modifier.weight(1f),
-                        )
-                    }
+                if (state.isUtilityPanelExpanded) {
+                    UtilityPanel(
+                        dragState = utilityDragState,
+                        onIntent = onIntent,
+                        modifier = Modifier.weight(1f),
+                    )
+                } else {
+                    when (state.mainLayout) {
+                        MainKeyboardLayout.Default -> {
+                            DefaultKeyboardLayout(
+                                state = state,
+                                onIntent = onIntent,
+                                modifier = Modifier.weight(1f),
+                            )
+                        }
 
-                    MainKeyboardLayout.Entry -> {
-                        EntryKeyboardLayout(
-                            state = state,
-                            onIntent = onIntent,
-                            modifier = Modifier.weight(1f),
-                        )
+                        MainKeyboardLayout.Entry -> {
+                            EntryKeyboardLayout(
+                                state = state,
+                                onIntent = onIntent,
+                                modifier = Modifier.weight(1f),
+                            )
+                        }
                     }
                 }
             }

@@ -104,6 +104,13 @@ ui/keyboard/
 │  ├─ LetterRow
 │  ├─ TextKeyRow
 │  └─ EntryActionRows
+├─ utility/
+│  ├─ KeyboardUtilityItem
+│  ├─ UtilityRow
+│  ├─ UtilityPanel
+│  ├─ UtilitySlot
+│  ├─ UtilitySlotModels
+│  └─ UtilityDragState
 ├─ style/
 │  ├─ KeyboardKeyColors
 │  └─ KeyboardKeyEmphasis
@@ -287,8 +294,11 @@ Settings currently include:
 - Haptic feedback
 - Key sound
 - Key preview
+- Utility slots
 
 Settings must never contain Keepass2Android field values or access tokens.
+
+`KeyboardUtilitySlots` is persisted through `SettingsRepository` as utility IDs only. It must not contain entry names, field labels, field values, KP2A JSON, access tokens, or committed text.
 
 ## Theme Architecture
 

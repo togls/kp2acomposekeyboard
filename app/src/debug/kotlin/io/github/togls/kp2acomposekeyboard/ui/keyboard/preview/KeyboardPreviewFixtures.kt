@@ -6,7 +6,9 @@ import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldUiModel
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.DefaultInputMode
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.EntryFieldDisplayMode
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUtilitySlots
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.MainKeyboardLayout
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.SettingsUtilityItemId
 import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardHeightMode
 import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
 import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardThemeMode
@@ -71,6 +73,25 @@ internal fun previewDefaultKeyboardState(
         currentEntryName = "GitHub Personal",
         hasActiveSession = true,
         isUppercase = false,
+    )
+}
+
+internal fun previewUtilityPanelState(): KeyboardUiState {
+    return previewDefaultKeyboardState().copy(
+        hasActiveSession = false,
+        currentEntryName = null,
+        isUtilityPanelExpanded = true,
+    )
+}
+
+internal fun previewRightUtilitySlotState(): KeyboardUiState {
+    return previewDefaultKeyboardState().copy(
+        hasActiveSession = false,
+        currentEntryName = null,
+        utilitySlots = KeyboardUtilitySlots(
+            centerItemIds = emptyList(),
+            rightItemId = SettingsUtilityItemId,
+        ),
     )
 }
 

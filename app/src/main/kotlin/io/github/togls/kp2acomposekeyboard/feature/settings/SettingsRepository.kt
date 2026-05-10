@@ -11,6 +11,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUtilitySlots
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -24,9 +25,9 @@ private val Context.keyboardSettingsDataStore: DataStore<Preferences> by prefere
 @Singleton
 class SettingsRepository @Inject constructor(
     @param:ApplicationContext private val context: Context,
-) {
+) : KeyboardSettingsStore {
 
-    val settings: Flow<KeyboardSettings> = context.keyboardSettingsDataStore.data
+    override val settings: Flow<KeyboardSettings> = context.keyboardSettingsDataStore.data
         .catch { throwable ->
             if (throwable is IOException) {
                 emit(emptyPreferences())
@@ -85,6 +86,12 @@ class SettingsRepository @Inject constructor(
         }
     }
 
+    override suspend fun updateUtilitySlots(slots: KeyboardUtilitySlots) {
+        context.keyboardSettingsDataStore.edit { preferences ->
+            preferences[Keys.UTILITY_SLOTS] = KeyboardUtilitySlotsPreferenceCodec.encode(slots)
+        }
+    }
+
     suspend fun resetToDefault() {
         context.keyboardSettingsDataStore.edit { preferences ->
             preferences.clear()
@@ -116,6 +123,7 @@ class SettingsRepository @Inject constructor(
                 ?: KeyboardSettings().keySoundEnabled,
             showKeyPreview = this[Keys.SHOW_KEY_PREVIEW]
                 ?: KeyboardSettings().showKeyPreview,
+            utilitySlots = KeyboardUtilitySlotsPreferenceCodec.decode(this[Keys.UTILITY_SLOTS]),
         )
     }
 
@@ -138,5 +146,6 @@ class SettingsRepository @Inject constructor(
         val HAPTIC_FEEDBACK_ENABLED = booleanPreferencesKey("haptic_feedback_enabled")
         val KEY_SOUND_ENABLED = booleanPreferencesKey("key_sound_enabled")
         val SHOW_KEY_PREVIEW = booleanPreferencesKey("show_key_preview")
+        val UTILITY_SLOTS = stringPreferencesKey("utility_slots")
     }
 }
