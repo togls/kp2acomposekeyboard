@@ -6,7 +6,9 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,6 +19,7 @@ import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.graphicsLayer
@@ -28,6 +31,12 @@ import androidx.compose.ui.unit.dp
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.KeyboardMetrics
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.tokens.LocalKeyboardAdaptiveMetrics
 
+/**
+ * Displays a single keyboard key with Material 3 colors, shape, elevation, and press feedback.
+ *
+ * The key uses adaptive keyboard metrics for sizing so it can stay consistent across
+ * portrait and landscape layouts.
+ */
 @Composable
 internal fun KeyboardKey(
     text: String,
@@ -39,6 +48,7 @@ internal fun KeyboardKey(
 ) {
     val adaptiveMetrics = LocalKeyboardAdaptiveMetrics.current
 
+    // Keep one interaction source so press state, ripple, and animations stay in sync.
     val interactionSource = remember { MutableInteractionSource() }
     val pressed by interactionSource.collectIsPressedAsState()
 
@@ -64,17 +74,16 @@ internal fun KeyboardKey(
         } else {
             KeyboardMetrics.NormalScale
         },
-        label = "keyboard-key-scale"
+        label = "keyboard-key-scale",
     )
 
-    val elevation by animateDpAsState(
+    val shadowElevation by animateDpAsState(
         targetValue = when {
             !enabled -> 0.dp
-            pressed -> KeyboardMetrics.PressedElevation
-            emphasis == KeyboardKeyEmphasis.Action -> KeyboardMetrics.ActionElevation
-            else -> KeyboardMetrics.NormalElevation
+            pressed -> 0.dp
+            else -> 1.dp
         },
-        label = "keyboard-key-elevation",
+        label = "keyboard-key-shadow-elevation",
     )
 
     Surface(
@@ -97,28 +106,38 @@ internal fun KeyboardKey(
                 indication = ripple(),
                 onClick = onClick,
             ),
-        shape = RoundedCornerShape(adaptiveMetrics.keyCornerRadius),
+        shape = RoundedCornerShape(10.dp),
         color = containerColor,
         contentColor = contentColor,
-        tonalElevation = elevation,
-        shadowElevation = elevation,
+        // Keep the actual key color clean. Tonal elevation changes the visual color.
+        tonalElevation = 0.dp,
+        // Use only a very small physical shadow for the Gboard-like floating key effect.
+        shadowElevation = shadowElevation,
     ) {
-        Text(
-            modifier = Modifier.padding(
-                PaddingValues(
-                    horizontal = adaptiveMetrics.keyHorizontalPadding,
-                    vertical = KeyboardMetrics.KeyVerticalPadding,
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                modifier = Modifier.padding(
+                    PaddingValues(
+                        horizontal = adaptiveMetrics.keyHorizontalPadding,
+                        vertical = KeyboardMetrics.KeyVerticalPadding,
+                    ),
                 ),
-            ),
-            text = text,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = when (emphasis) {
-                KeyboardKeyEmphasis.Normal -> FontWeight.Normal
-                KeyboardKeyEmphasis.Action -> FontWeight.SemiBold
-                KeyboardKeyEmphasis.Sensitive -> FontWeight.Medium
-            }
-        )
+                text = text,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = when (emphasis) {
+                    KeyboardKeyEmphasis.Normal -> FontWeight.Normal
+                    KeyboardKeyEmphasis.Action -> FontWeight.SemiBold
+                    KeyboardKeyEmphasis.Sensitive -> FontWeight.Medium
+                },
+            )
+        }
     }
 }
 
+/**
+ * Matches Material disabled content opacity.
+ */
 private const val DisabledKeyAlpha = 0.38f

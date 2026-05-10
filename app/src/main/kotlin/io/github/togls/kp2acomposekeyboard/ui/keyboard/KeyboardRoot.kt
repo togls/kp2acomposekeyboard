@@ -51,7 +51,7 @@ fun KeyboardRoot(
                 // The IME window is controlled by the system. Clip overflow to avoid
                 // accidentally expanding the input view on compact landscape screens.
                 .clipToBounds(),
-            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
             contentColor = MaterialTheme.colorScheme.onSurface,
         ) {
             Column(

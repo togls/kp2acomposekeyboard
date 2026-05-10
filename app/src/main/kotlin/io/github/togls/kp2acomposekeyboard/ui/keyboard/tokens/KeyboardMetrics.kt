@@ -22,7 +22,7 @@ internal object KeyboardMetrics {
     val PressedScale = 0.97f
     val NormalScale = 1f
 
-    val NormalElevation = 1.dp
+    val NormalElevation = 0.dp
     val ActionElevation = 2.dp
     val PressedElevation = 0.dp
 

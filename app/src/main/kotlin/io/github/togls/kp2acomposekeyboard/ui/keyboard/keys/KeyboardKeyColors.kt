@@ -34,7 +34,7 @@ internal data class KeyboardKeyColors(
             return when (emphasis) {
                 // Standard key style used for normal text input keys.
                 KeyboardKeyEmphasis.Normal -> KeyboardKeyColors(
-                    containerColor = colorScheme.surface,
+                    containerColor = colorScheme.surfaceBright,
                     onContainerColor = colorScheme.onSurface,
                     pressedContainerColor = colorScheme.surfaceContainerHigh,
                 )

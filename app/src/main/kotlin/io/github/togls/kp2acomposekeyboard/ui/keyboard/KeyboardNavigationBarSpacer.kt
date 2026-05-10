@@ -21,6 +21,6 @@ internal fun KeyboardNavigationBarSpacer(
     Spacer(
         modifier = modifier
             .fillMaxWidth()
-            .windowInsetsBottomHeight(WindowInsets.Companion.navigationBars),
+            .windowInsetsBottomHeight(WindowInsets.navigationBars),
     )
 }
