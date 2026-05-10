@@ -97,9 +97,9 @@ private fun DefaultKeyboardActionRow(
         KeyboardKey(
             modifier = Modifier.weight(1f),
             text = when (state.defaultInputMode) {
-                DefaultInputMode.Letters -> "123"
-                DefaultInputMode.Numbers -> "ABC"
-                DefaultInputMode.Symbols -> "ABC"
+                DefaultInputMode.Letters -> "?123"
+                DefaultInputMode.Numbers -> "返回"
+                DefaultInputMode.Symbols -> "返回"
             },
             onClick = {
                 when (state.defaultInputMode) {
@@ -111,31 +111,14 @@ private fun DefaultKeyboardActionRow(
             emphasis = KeyboardKeyEmphasis.Action,
         )
 
-        KeyboardKey(
-            modifier = Modifier.weight(1f),
-            text = when (state.defaultInputMode) {
-                DefaultInputMode.Letters -> "符号"
-                DefaultInputMode.Numbers -> "符号"
-                DefaultInputMode.Symbols -> "123"
-            },
-            onClick = {
-                when (state.defaultInputMode) {
-                    DefaultInputMode.Letters -> onIntent(KeyboardIntent.SwitchToSymbols)
-                    DefaultInputMode.Numbers -> onIntent(KeyboardIntent.SwitchToSymbols)
-                    DefaultInputMode.Symbols -> onIntent(KeyboardIntent.SwitchToNumbers)
-                }
-            },
-            emphasis = KeyboardKeyEmphasis.Action,
-        )
-
         SpaceKey(
             onIntent = onIntent,
-            modifier = Modifier.weight(2f),
+            modifier = Modifier.weight(3f),
         )
 
         SelectEntryKey(
             onIntent = onIntent,
-            modifier = Modifier.weight(1.6f),
+            modifier = Modifier.weight(1.5f),
         )
 
         EnterKey(
