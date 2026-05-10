@@ -41,8 +41,8 @@ internal data class KeyboardKeyColors(
 
                 // Prominent style used for action keys, such as delete or enter.
                 KeyboardKeyEmphasis.Action -> KeyboardKeyColors(
-                    containerColor = colorScheme.primaryContainer,
-                    onContainerColor = colorScheme.onPrimaryContainer,
+                    containerColor = colorScheme.secondaryContainer,
+                    onContainerColor = colorScheme.onSecondaryContainer,
                     pressedContainerColor = lerp(
                         colorScheme.primaryContainer,
                         colorScheme.primary,
