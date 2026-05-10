@@ -29,6 +29,7 @@ class KeyboardSessionRepository @Inject constructor() {
             return null
         }
 
+        // Raw values leave the session only at commit time and are never copied into UI state.
         return _session.value
             ?.fields
             ?.firstOrNull { field -> field.id == fieldId }
@@ -36,7 +37,7 @@ class KeyboardSessionRepository @Inject constructor() {
     }
 
     fun getSnapshot(): KeyboardSessionSnapshot? {
-        // Snapshot 是 UI 安全边界，必须通过 mapper 去掉字段真实 value。
+        // Snapshots are the UI safety boundary and must not expose raw field values.
         return _session.value?.toSnapshot()
     }
 }

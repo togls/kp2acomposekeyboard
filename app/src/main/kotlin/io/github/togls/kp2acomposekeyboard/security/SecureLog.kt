@@ -6,14 +6,8 @@ import android.util.Log
 import io.github.togls.kp2acomposekeyboard.BuildConfig
 
 /**
- * 这里 SecureLog 只接收 SecureLogEvent，不提供 debug(message: String) 这种自由字符串入口。
- * 原因是自由字符串很容易被临时拼接成：
- *
- * ```
- * Log.d(TAG, "value=$value")
- * ```
- *
- * 而 SecureLogEvent 可以把可打印内容收敛到固定白名单。
+ * Centralizes debug-only logging so sensitive KP2A values are redacted before reaching logcat.
+ * Callers should pass structured fields instead of interpolating values into message strings.
  */
 object SecureLog {
 
@@ -85,6 +79,7 @@ object SecureLog {
         d(
             message = message,
             fields = arrayOf(
+                // Intent extras from KP2A can contain credentials; log only the key set.
                 "action" to intent?.action,
                 "package" to intent?.`package`,
                 "component" to intent?.component?.flattenToShortString(),
@@ -106,6 +101,7 @@ object SecureLog {
         d(
             message = message,
             fields = arrayOf(
+                // Bundle values may contain entry fields, so expose only structural metadata.
                 "extras" to bundle?.keySet()?.joinToString(),
                 *fields,
             ),
@@ -124,6 +120,7 @@ object SecureLog {
             val key = entry.key
             val value = entry.value
 
+            // Non-sensitive field values are still user data; length is enough for diagnostics.
             if (isSensitiveKey(key)) {
                 "$key=<redacted>"
             } else {
@@ -180,6 +177,7 @@ object SecureLog {
             .replace("\n", "\\n")
             .replace("\r", "\\r")
 
+        // Quote values that would otherwise make the key=value log format ambiguous.
         val shouldQuote = escaped.any { it.isWhitespace() } ||
                 escaped.contains("=") ||
                 escaped.contains(",")

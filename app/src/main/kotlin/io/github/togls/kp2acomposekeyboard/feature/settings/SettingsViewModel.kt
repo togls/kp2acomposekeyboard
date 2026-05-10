@@ -108,6 +108,7 @@ class SettingsViewModel @Inject constructor(
             }.onSuccess {
                 _effect.emit(SettingsEffect.ShowSavedMessage)
             }.onFailure { throwable ->
+                // Log the exception type for diagnostics without exposing user-visible setting text.
                 SecureLog.w(
                     message = "settings save failed",
                     throwable = throwable,
@@ -131,7 +132,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     private companion object {
-        // 设置页可能连续快速切换多个选项，保留少量 effect 缓冲避免 Snackbar 事件丢失。
+        // Settings can be toggled quickly; buffer one-shot snackbar effects across recomposition.
         const val EFFECT_BUFFER_CAPACITY = 8
     }
 }

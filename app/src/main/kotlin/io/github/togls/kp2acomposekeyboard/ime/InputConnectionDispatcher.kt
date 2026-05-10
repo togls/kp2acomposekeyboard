@@ -13,8 +13,9 @@ class InputConnectionDispatcher(
             return
         }
 
-        // text 后续可能是密码、TOTP 或恢复码，所以这里不能写日志。
+        // Text may contain passwords, TOTP codes, or recovery codes, so never log the value.
         SecureLog.d("Text commit requested")
+        // commitText avoids clipboard exposure and lets the target editor own the inserted text.
         inputConnectionProvider()?.commitText(text, 1)
     }
 
@@ -28,7 +29,7 @@ class InputConnectionDispatcher(
 
         SecureLog.d("Enter requested")
 
-        // 部分输入目标只处理完整的按下/抬起事件对，单独发送 ACTION_DOWN 兼容性较差。
+        // Some editors only handle a complete down/up pair for enter key events.
         inputConnection.sendKeyEvent(
             KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER),
         )

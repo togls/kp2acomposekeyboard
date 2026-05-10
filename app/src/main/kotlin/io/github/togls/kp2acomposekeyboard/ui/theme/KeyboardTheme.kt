@@ -30,7 +30,7 @@ fun KeyboardTheme(
     }
 
     val colorScheme = when {
-        // 动态颜色只在 Android 12+ 可用；低版本直接回退到默认 Material 3 色彩。
+        // Dynamic color is only available on Android 12+; older versions use Material 3 defaults.
         settings.useDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             if (darkTheme) {
                 dynamicDarkColorScheme(context)

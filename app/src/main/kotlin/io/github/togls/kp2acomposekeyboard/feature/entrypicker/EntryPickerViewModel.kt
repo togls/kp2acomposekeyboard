@@ -55,10 +55,12 @@ class EntryPickerViewModel @Inject constructor(
     }
 
     private fun handleKp2aEntrySelected(fields: Map<String, String>) {
+        // Raw KP2A field values are sensitive; keep this path log-only until it maps through a session.
         SecureLog.d("handleKp2aEntrySelected not implemented!")
     }
 
     private fun startSelectionIfNeeded() {
+        // Activity recreation can replay StartSelection; launch KP2A only once per selection attempt.
         if (selectionStarted) {
             return
         }
@@ -119,7 +121,7 @@ class EntryPickerViewModel @Inject constructor(
             message = "已取消选择",
         )
 
-        // 用户取消选择时不能清除旧 Session，避免破坏当前可用条目。
+        // Cancellation must preserve the previous usable session instead of clearing it.
         SecureLog.d("KP2A selection cancelled")
         sendEffect(EntryPickerEffect.Finish)
     }
@@ -151,7 +153,7 @@ class EntryPickerViewModel @Inject constructor(
     }
 
     private companion object {
-        // Activity 可能在 KP2A 返回后马上 finish，保留一个缓冲避免一次性 effect 被生命周期切换吞掉。
+        // KP2A can return right before Activity finish; buffer one-shot effects through lifecycle churn.
         const val EFFECT_BUFFER_CAPACITY = 4
     }
 }

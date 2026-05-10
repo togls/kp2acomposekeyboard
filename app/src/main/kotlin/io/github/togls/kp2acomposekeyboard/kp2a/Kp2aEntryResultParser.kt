@@ -41,7 +41,7 @@ class Kp2aEntryResultParser @Inject constructor() {
                 }
             }
         } catch (_: JSONException) {
-            // KP2A 返回的 JSON 可能包含密码字段；解析失败时不能打印原始内容。
+            // KP2A output may contain passwords; never include raw JSON in parse-failure logs.
             emptyMap()
         }
     }
@@ -49,6 +49,7 @@ class Kp2aEntryResultParser @Inject constructor() {
     private fun parseProtectedFields(data: Intent?): Set<String> {
         val arrayList = data?.getStringArrayListExtra(Strings.EXTRA_PROTECTED_FIELDS_LIST)
 
+        // SDK and app versions may return protected fields as either an ArrayList or JSON string.
         if (!arrayList.isNullOrEmpty()) {
             return arrayList
                 .filter { fieldName -> fieldName.isNotBlank() }
@@ -75,7 +76,7 @@ class Kp2aEntryResultParser @Inject constructor() {
                 }
             }
         } catch (_: JSONException) {
-            // 受保护字段列表只用于安全标记；解析失败时按无额外保护字段处理。
+            // Protected-field metadata only affects safety labels, so malformed data can degrade to empty.
             emptySet()
         }
     }

@@ -269,6 +269,7 @@ private fun SessionTimeoutSetting(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            // Bounds mirror KeyboardSettings so the UI cannot request an invalid session lifetime.
             OutlinedButton(
                 enabled = seconds > KeyboardSettings.MIN_SESSION_TIMEOUT_SECONDS,
                 onClick = {

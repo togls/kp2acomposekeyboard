@@ -41,8 +41,7 @@ class KeyboardViewModel(
             KeyboardIntent.Enter -> sendEffect(KeyboardEffect.SendEnter)
 
             KeyboardIntent.SelectEntry -> sendEffect(
-                // 真正的 targetPackageName 应由 KeyboardImeService 从 currentInputEditorInfo.packageName 补进去更合适，
-                // 因为 ViewModel 不应该持有 IME / EditorInfo
+                // KeyboardImeService owns EditorInfo, so it should fill the target package name.
                 KeyboardEffect.LaunchEntryPicker(targetPackageName = null),
             )
 
@@ -75,9 +74,11 @@ class KeyboardViewModel(
     private fun observeSession() {
         viewModelScope.launch {
             sessionRepository.session.collect { session ->
+                // Read a sanitized snapshot for UI updates before any raw field value could escape.
                 val snapshot = sessionRepository.getSnapshot()
 
                 if (session != null) {
+                    // Timeout is tied to the ViewModel scope so it stops with the IME UI lifecycle.
                     sessionTimeoutController.restartTimeout(viewModelScope)
                 } else {
                     sessionTimeoutController.cancelTimeout()
@@ -145,6 +146,7 @@ class KeyboardViewModel(
 
     private fun switchToEntryLayout() {
         _uiState.update { state ->
+            // Entry layout without a session would show empty credential controls.
             if (!state.hasActiveSession) {
                 state
             } else {
@@ -173,7 +175,7 @@ class KeyboardViewModel(
             return
         }
 
-        // value 可能是 Password / TOTP / Recovery Code，不能写入 UiState，也不能打印日志。
+        // Values may be passwords, TOTP codes, or recovery codes; keep them out of UI state and logs.
         sendEffect(KeyboardEffect.CommitText(value))
     }
 
@@ -197,6 +199,7 @@ class KeyboardViewModel(
 
     private fun expandFields() {
         _uiState.update { state ->
+            // Expanded fields are meaningful only while a sanitized session snapshot is active.
             if (!state.hasActiveSession) {
                 state
             } else {
@@ -224,14 +227,14 @@ class KeyboardViewModel(
     }
 
     private fun sendEffect(effect: KeyboardEffect) {
-        // effect 里的 CommitText 后续可能承载密码/TOTP，所以这里不能打印 effect 内容。
+        // CommitText effects may carry secrets, so do not log effect payloads here.
         viewModelScope.launch {
             _effect.emit(effect)
         }
     }
 
     private companion object {
-        // 输入法按键可能连续快速点击，保留少量缓冲可避免短时间内没有 collector 时丢失过多动作。
+        // Keyboard actions can arrive in bursts while collectors briefly restart.
         const val EFFECT_BUFFER_CAPACITY = 16
     }
 }
