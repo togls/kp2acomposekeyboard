@@ -3,6 +3,7 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard.utility
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.unit.IntOffset
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUtilitySlots
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.SettingsUtilityItemId
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -50,5 +51,50 @@ class UtilityRowPolicyTest {
         )
 
         assertEquals(IntOffset(30, 10), offset)
+    }
+
+    @Test
+    fun shouldShowPanelUtilityItem_hidesPinnedCenterItem() {
+        assertFalse(
+            shouldShowPanelUtilityItem(
+                itemId = SettingsUtilityItemId,
+                utilitySlots = KeyboardUtilitySlots(
+                    centerItemIds = listOf(SettingsUtilityItemId),
+                ),
+            ),
+        )
+    }
+
+    @Test
+    fun shouldShowPanelUtilityItem_hidesPinnedRightItem() {
+        assertFalse(
+            shouldShowPanelUtilityItem(
+                itemId = SettingsUtilityItemId,
+                utilitySlots = KeyboardUtilitySlots(
+                    centerItemIds = emptyList(),
+                    rightItemId = SettingsUtilityItemId,
+                ),
+            ),
+        )
+    }
+
+    @Test
+    fun shouldShowDraggedSourceItem_hidesOnlyMatchingDraggedSource() {
+        assertFalse(
+            shouldShowDraggedSourceItem(
+                itemId = SettingsUtilityItemId,
+                source = UtilityDragSource.Panel,
+                draggedItemId = SettingsUtilityItemId,
+                dragSource = UtilityDragSource.Panel,
+            ),
+        )
+        assertTrue(
+            shouldShowDraggedSourceItem(
+                itemId = SettingsUtilityItemId,
+                source = UtilityDragSource.Pinned,
+                draggedItemId = SettingsUtilityItemId,
+                dragSource = UtilityDragSource.Panel,
+            ),
+        )
     }
 }

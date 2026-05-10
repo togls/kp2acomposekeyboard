@@ -10,11 +10,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.LocalKeyboardAdaptiveMetrics
 
 @Composable
 internal fun UtilityPanel(
+    state: KeyboardUiState,
     dragState: UtilityDragState,
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
@@ -35,25 +37,32 @@ internal fun UtilityPanel(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
         ) {
-            availableKeyboardUtilityItems().forEach { item ->
-                UtilityItemSlot(
-                    itemId = item.id,
-                    onIntent = onIntent,
-                    dragState = dragState,
-                    dragSource = UtilityDragSource.Panel,
-                    onDrop = { itemId, source, target ->
-                        dispatchUtilityDrop(
-                            itemId = itemId,
-                            source = source,
-                            target = target,
-                            onIntent = onIntent,
-                        )
-                    },
-                    modifier = Modifier
-                        .width(panelItemWidth)
-                        .height(adaptiveMetrics.keyHeight),
-                )
-            }
+            availableKeyboardUtilityItems()
+                .filter { item ->
+                    shouldShowPanelUtilityItem(
+                        itemId = item.id,
+                        utilitySlots = state.utilitySlots,
+                    )
+                }
+                .forEach { item ->
+                    UtilityItemSlot(
+                        itemId = item.id,
+                        onIntent = onIntent,
+                        dragState = dragState,
+                        dragSource = UtilityDragSource.Panel,
+                        onDrop = { itemId, source, target ->
+                            dispatchUtilityDrop(
+                                itemId = itemId,
+                                source = source,
+                                target = target,
+                                onIntent = onIntent,
+                            )
+                        },
+                        modifier = Modifier
+                            .width(panelItemWidth)
+                            .height(adaptiveMetrics.keyHeight),
+                    )
+                }
         }
     }
 }

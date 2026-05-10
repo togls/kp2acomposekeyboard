@@ -83,6 +83,7 @@ internal fun KeyboardContentArea(
 
                 if (state.isUtilityPanelExpanded) {
                     UtilityPanel(
+                        state = state,
                         dragState = utilityDragState,
                         onIntent = onIntent,
                         modifier = Modifier.weight(1f),

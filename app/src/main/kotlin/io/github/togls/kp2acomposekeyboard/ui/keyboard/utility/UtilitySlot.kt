@@ -58,6 +58,18 @@ internal fun UtilityItemSlot(
     when {
         item != null -> {
             var itemBoundsInRoot by remember { mutableStateOf<Rect?>(null) }
+            val sourceItemAlpha = if (
+                shouldShowDraggedSourceItem(
+                    itemId = item.id,
+                    source = dragSource,
+                    draggedItemId = dragState?.draggedItemId,
+                    dragSource = dragState?.dragSource,
+                )
+            ) {
+                1f
+            } else {
+                HiddenDraggedSourceAlpha
+            }
             val draggableModifier = if (dragState != null && onDrop != null) {
                 Modifier
                     .onGloballyPositioned { coordinates ->
@@ -101,7 +113,9 @@ internal fun UtilityItemSlot(
             }
 
             UtilityIconButton(
-                modifier = modifier.then(draggableModifier),
+                modifier = modifier
+                    .alpha(sourceItemAlpha)
+                    .then(draggableModifier),
                 iconRes = item.iconRes,
                 contentDescription = stringResource(item.contentDescriptionRes),
                 iconSize = iconSize,
@@ -183,3 +197,4 @@ private fun EmptyUtilitySlot(
 }
 
 private const val EmptySlotAlpha = 0.45f
+private const val HiddenDraggedSourceAlpha = 0f
