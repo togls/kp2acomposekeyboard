@@ -8,8 +8,11 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.togls.kp2acomposekeyboard.R
 import io.github.togls.kp2acomposekeyboard.ui.theme.KeyboardTheme
 
 @AndroidEntryPoint
@@ -24,12 +27,15 @@ class SettingsActivity : ComponentActivity() {
             val state by viewModel.uiState.collectAsStateWithLifecycle()
             val snackbarHostState = remember { SnackbarHostState() }
 
+            val savedMessage = stringResource(R.string.settings_saved)
+            val currentSavedMessage by rememberUpdatedState(savedMessage)
+
             KeyboardTheme(settings = state.settings) {
                 LaunchedEffect(viewModel) {
                     viewModel.effect.collect { effect ->
                         when (effect) {
                             SettingsEffect.ShowSavedMessage -> {
-                                snackbarHostState.showSnackbar("已保存")
+                                snackbarHostState.showSnackbar(currentSavedMessage)
                             }
 
                             is SettingsEffect.ShowError -> {

@@ -154,5 +154,6 @@ private fun hasNextPage(state: KeyboardUiState): Boolean {
     return nextPageStart < state.extraFields.size
 }
 
-// 固定滚动步长用于 P0，避免为了 prev/next 引入复杂布局测量。
+// Use a fixed scroll step for P0 to avoid adding layout measurement complexity
+// just for the previous/next field navigation.
 private const val EXPANDED_SCROLL_PAGE_SIZE_PX = 220

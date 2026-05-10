@@ -13,7 +13,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import io.github.togls.kp2acomposekeyboard.R
 
 @Composable
 fun EntryPickerScreen(
@@ -70,12 +72,12 @@ private fun SelectingContent(
     CircularProgressIndicator()
 
     Text(
-        text = message ?: "正在打开 Keepass2Android...",
+        text = message ?: stringResource(R.string.entry_picker_opening_kp2a),
         style = MaterialTheme.typography.titleMedium,
     )
 
     OutlinedButton(onClick = onCancel) {
-        Text(text = "取消")
+        Text(text = stringResource(R.string.action_cancel))
     }
 }
 
@@ -84,7 +86,7 @@ private fun CompletedContent(
     message: String?,
 ) {
     Text(
-        text = message ?: "选择完成",
+        text = message ?: stringResource(R.string.entry_picker_selection_completed),
         style = MaterialTheme.typography.titleMedium,
     )
 }
@@ -96,21 +98,21 @@ private fun FailedContent(
     onCancel: () -> Unit,
 ) {
     Text(
-        text = "选择条目失败",
+        text = stringResource(R.string.entry_picker_selection_failed_title),
         style = MaterialTheme.typography.titleMedium,
     )
 
     Text(
-        text = message ?: "暂时无法打开 Keepass2Android",
+        text = message ?: stringResource(R.string.entry_picker_kp2a_unavailable),
         style = MaterialTheme.typography.bodyMedium,
     )
 
     Button(onClick = onRetry) {
-        Text(text = "重试")
+        Text(text = stringResource(R.string.action_retry))
     }
 
     OutlinedButton(onClick = onCancel) {
-        Text(text = "取消")
+        Text(text = stringResource(R.string.action_cancel))
     }
 }
 
@@ -119,7 +121,7 @@ private fun CancelledContent(
     message: String?,
 ) {
     Text(
-        text = message ?: "已取消选择",
+        text = message ?: stringResource(R.string.entry_picker_selection_cancelled),
         style = MaterialTheme.typography.titleMedium,
     )
 }

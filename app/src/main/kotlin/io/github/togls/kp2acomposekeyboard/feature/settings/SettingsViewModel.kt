@@ -1,8 +1,11 @@
 package io.github.togls.kp2acomposekeyboard.feature.settings
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.togls.kp2acomposekeyboard.R
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -17,6 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
+    @param:ApplicationContext private val context: Context,
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
 
@@ -118,13 +122,13 @@ class SettingsViewModel @Inject constructor(
                 _uiState.update { state ->
                     state.copy(
                         isLoading = false,
-                        errorMessage = "保存设置失败",
+                        errorMessage = context.getString(R.string.settings_save_failed),
                     )
                 }
 
                 _effect.emit(
                     SettingsEffect.ShowError(
-                        message = "保存设置失败",
+                        message = context.getString(R.string.settings_save_failed),
                     ),
                 )
             }

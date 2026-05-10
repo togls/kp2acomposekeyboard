@@ -37,6 +37,11 @@
     <string name="settings_session_timeout_decrease">-15 sec</string>
     <string name="settings_session_timeout_seconds">%1$d sec</string>
     <string name="settings_session_timeout_increase">+15 sec</string>
+    <string name="settings_saved">Saved</string>
+    <string name="settings_save_failed">Failed to save settings</string>
+
+    <string name="action_cancel">Cancel</string>
+    <string name="action_retry">Retry</string>
 
     <string name="cd_key_delete">Delete</string>
     <string name="cd_key_open_settings">Open settings</string>
@@ -57,4 +62,15 @@
     <string name="entry_picker_title">Select entry</string>
     <string name="entry_name_unnamed">Unnamed entry</string>
     <string name="existing_entry_hint_current_entry">Current entry: %1$s</string>
+    <string name="entry_picker_opening_kp2a">Opening Keepass2Android…</string>
+    <string name="entry_picker_selection_completed">Selection completed</string>
+    <string name="entry_picker_selection_failed_title">Entry selection failed</string>
+    <string name="entry_picker_kp2a_unavailable">Keepass2Android is temporarily unavailable</string>
+    <string name="entry_picker_selection_cancelled">Selection cancelled</string>
+    <string name="entry_picker_entry_selected">Keepass2Android entry selected</string>
+    <string name="entry_picker_entry_fetch_failed">Failed to get entry from Keepass2Android</string>
+    <string name="entry_picker_open_kp2a_failed">Unable to open Keepass2Android</string>
+
+    <string name="kp2a_plugin_status_enabled">KP2A Compose Keyboard is enabled as a Keepass2Android plugin</string>
+    <string name="kp2a_plugin_status_disabled">KP2A Compose Keyboard is not enabled as a Keepass2Android plugin</string>
 </resources>

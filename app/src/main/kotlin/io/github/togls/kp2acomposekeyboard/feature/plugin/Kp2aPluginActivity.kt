@@ -13,9 +13,9 @@ class Kp2aPluginActivity : Activity() {
         val enabled = AccessManager.getAllHostPackages(this).isNotEmpty()
 
         val text = if (enabled) {
-            "KP2A Compose Keyboard 已启用为 Keepass2Android 插件"
+            getString(io.github.togls.kp2acomposekeyboard.R.string.kp2a_plugin_status_enabled)
         } else {
-            "KP2A Compose Keyboard 尚未启用为 Keepass2Android 插件"
+            getString(io.github.togls.kp2acomposekeyboard.R.string.kp2a_plugin_status_disabled)
         }
 
         setContentView(

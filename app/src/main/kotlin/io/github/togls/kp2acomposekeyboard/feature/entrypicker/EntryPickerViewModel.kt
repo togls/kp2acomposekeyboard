@@ -1,8 +1,11 @@
 package io.github.togls.kp2acomposekeyboard.feature.entrypicker
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.togls.kp2acomposekeyboard.R
 import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aEntryMapper
 import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aEntryResult
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
@@ -19,6 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EntryPickerViewModel @Inject constructor(
+    @param:ApplicationContext private val context: Context,
     private val sessionRepository: KeyboardSessionRepository,
     private val entryMapper: Kp2aEntryMapper,
 ) : ViewModel() {
@@ -68,7 +72,7 @@ class EntryPickerViewModel @Inject constructor(
         selectionStarted = true
         _uiState.value = EntryPickerUiState(
             status = EntryPickerStatus.Selecting,
-            message = "正在打开 Keepass2Android...",
+            message = context.getString(R.string.entry_picker_opening_kp2a),
         )
 
         SecureLog.d("KP2A launch requested")
@@ -82,7 +86,7 @@ class EntryPickerViewModel @Inject constructor(
     private fun cancelSelection() {
         _uiState.value = EntryPickerUiState(
             status = EntryPickerStatus.Cancelled,
-            message = "已取消选择",
+            message = context.getString(R.string.entry_picker_selection_cancelled),
         )
 
         SecureLog.d("KP2A selection cancelled")
@@ -101,7 +105,7 @@ class EntryPickerViewModel @Inject constructor(
 
         _uiState.value = EntryPickerUiState(
             status = EntryPickerStatus.Completed,
-            message = "已选择 Keepass2Android 条目",
+            message = context.getString(R.string.entry_picker_entry_selected),
         )
 
         SecureLog.d(
@@ -118,7 +122,7 @@ class EntryPickerViewModel @Inject constructor(
     private fun handleKp2aCancelled() {
         _uiState.value = EntryPickerUiState(
             status = EntryPickerStatus.Cancelled,
-            message = "已取消选择",
+            message = context.getString(R.string.entry_picker_selection_cancelled),
         )
 
         // Cancellation must preserve the previous usable session instead of clearing it.
@@ -130,7 +134,7 @@ class EntryPickerViewModel @Inject constructor(
         selectionStarted = false
         _uiState.value = EntryPickerUiState(
             status = EntryPickerStatus.Failed,
-            message = "未能从 Keepass2Android 获取条目",
+            message = context.getString(R.string.entry_picker_entry_fetch_failed),
         )
 
         SecureLog.d("KP2A selection failed")
@@ -140,7 +144,7 @@ class EntryPickerViewModel @Inject constructor(
         selectionStarted = false
         _uiState.value = EntryPickerUiState(
             status = EntryPickerStatus.Failed,
-            message = "无法打开 Keepass2Android",
+            message = context.getString(R.string.entry_picker_open_kp2a_failed),
         )
 
         SecureLog.d("KP2A launch failed")
