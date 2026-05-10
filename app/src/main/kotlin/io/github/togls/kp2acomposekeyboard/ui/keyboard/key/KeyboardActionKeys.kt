@@ -2,6 +2,8 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard.key
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import io.github.togls.kp2acomposekeyboard.R
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardKeyEmphasis
 
@@ -10,10 +12,10 @@ internal fun DeleteKey(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    KeyboardKey(
+    KeyboardIconKey(
         modifier = modifier,
-        text = "⌫",
-        contentDescription = "删除",
+        iconRes = R.drawable.ic_backspace_24,
+        contentDescription = stringResource(R.string.cd_key_delete),
         onClick = { onIntent(KeyboardIntent.DeleteBackward) },
         emphasis = KeyboardKeyEmphasis.Action,
     )
@@ -24,10 +26,10 @@ internal fun SettingsKey(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    KeyboardKey(
+    KeyboardIconKey(
         modifier = modifier,
-        text = "设置",
-        contentDescription = "打开设置",
+        iconRes = R.drawable.ic_settings_24,
+        contentDescription = stringResource(R.string.cd_key_open_settings),
         onClick = { onIntent(KeyboardIntent.OpenSettings) },
         emphasis = KeyboardKeyEmphasis.Action,
     )
@@ -38,10 +40,10 @@ internal fun SelectEntryKey(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    KeyboardKey(
+    KeyboardIconKey(
         modifier = modifier,
-        text = "选择条目",
-        contentDescription = "选择 KeePass 条目",
+        iconRes = R.drawable.ic_key_24,
+        contentDescription = stringResource(R.string.cd_key_select_entry),
         onClick = { onIntent(KeyboardIntent.SelectEntry) },
         emphasis = KeyboardKeyEmphasis.Action,
     )
@@ -52,10 +54,10 @@ internal fun SwitchToDefaultLayoutKey(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    KeyboardKey(
+    KeyboardIconKey(
         modifier = modifier,
-        text = "默认布局",
-        contentDescription = "切换到默认键盘布局",
+        iconRes = R.drawable.ic_keyboard_24,
+        contentDescription = stringResource(R.string.cd_key_switch_to_default_layout),
         onClick = { onIntent(KeyboardIntent.SwitchToDefaultLayout) },
         emphasis = KeyboardKeyEmphasis.Action,
     )
@@ -66,10 +68,10 @@ internal fun ClearEntryKey(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    KeyboardKey(
+    KeyboardIconKey(
         modifier = modifier,
-        text = "清除",
-        contentDescription = "清除当前条目",
+        iconRes = R.drawable.ic_delete_sweep_24,
+        contentDescription = stringResource(R.string.cd_key_clear_entry),
         onClick = { onIntent(KeyboardIntent.ClearEntry) },
         emphasis = KeyboardKeyEmphasis.Action,
     )
@@ -80,10 +82,10 @@ internal fun EnterKey(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    KeyboardKey(
+    KeyboardIconKey(
         modifier = modifier,
-        text = "换行",
-        contentDescription = "换行",
+        iconRes = R.drawable.ic_keyboard_return_24,
+        contentDescription = stringResource(R.string.cd_key_enter),
         onClick = { onIntent(KeyboardIntent.Enter) },
         emphasis = KeyboardKeyEmphasis.Action,
     )
@@ -94,10 +96,10 @@ internal fun SpaceKey(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    KeyboardKey(
+    KeyboardIconKey(
         modifier = modifier,
-        text = "空格",
-        contentDescription = "输入空格",
+        iconRes = R.drawable.ic_space_bar_24,
+        contentDescription = stringResource(R.string.cd_key_space),
         onClick = { onIntent(KeyboardIntent.CommitText(" ")) },
     )
 }
@@ -108,10 +110,10 @@ internal fun PreviousPageKey(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    KeyboardKey(
+    KeyboardIconKey(
         modifier = modifier,
-        text = "上一页",
-        contentDescription = "上一页",
+        iconRes = R.drawable.ic_navigate_before_24,
+        contentDescription = stringResource(R.string.cd_key_previous_page),
         enabled = enabled,
         onClick = onClick,
     )
@@ -123,10 +125,10 @@ internal fun NextPageKey(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    KeyboardKey(
+    KeyboardIconKey(
         modifier = modifier,
-        text = "下一页",
-        contentDescription = "下一页",
+        iconRes = R.drawable.ic_navigate_next_24,
+        contentDescription = stringResource(R.string.cd_key_next_page),
         enabled = enabled,
         onClick = onClick,
     )
@@ -137,10 +139,10 @@ internal fun ExpandFieldsKey(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    KeyboardKey(
+    KeyboardIconKey(
         modifier = modifier,
-        text = "全部",
-        contentDescription = "展开全部字段",
+        iconRes = R.drawable.ic_expand_all_24,
+        contentDescription = stringResource(R.string.cd_key_expand_fields),
         onClick = { onIntent(KeyboardIntent.ExpandFields) },
     )
 }
@@ -150,10 +152,10 @@ internal fun CollapseFieldsKey(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    KeyboardKey(
+    KeyboardIconKey(
         modifier = modifier,
-        text = "收起",
-        contentDescription = "收起字段列表",
+        iconRes = R.drawable.ic_collapse_all_24,
+        contentDescription = stringResource(R.string.cd_key_collapse_fields),
         onClick = { onIntent(KeyboardIntent.CollapseFields) },
         emphasis = KeyboardKeyEmphasis.Action,
     )

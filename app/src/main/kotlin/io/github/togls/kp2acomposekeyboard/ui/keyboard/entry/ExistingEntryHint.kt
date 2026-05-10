@@ -5,15 +5,19 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import io.github.togls.kp2acomposekeyboard.R
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.dpCompat
 
@@ -40,16 +44,24 @@ fun ExistingEntryHint(
                 modifier = Modifier
                     .weight(1f)
                     .widthIn(min = 0.dp),
-                text = "当前已有条目：$entryName",
+                text = stringResource(
+                    id = R.string.existing_entry_hint_current_entry,
+                    entryName,
+                ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.bodyMedium,
             )
 
-            TextButton(
+            IconButton(
                 onClick = { onIntent(KeyboardIntent.SwitchToEntryLayout) },
             ) {
-                Text(text = "切回条目布局")
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_key_24),
+                    contentDescription = stringResource(
+                        id = R.string.cd_key_switch_to_entry_layout,
+                    ),
+                )
             }
         }
     }

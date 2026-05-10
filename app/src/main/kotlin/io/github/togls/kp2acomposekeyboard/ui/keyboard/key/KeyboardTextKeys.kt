@@ -2,6 +2,8 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard.key
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import io.github.togls.kp2acomposekeyboard.R
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardKeyEmphasis
 
@@ -14,7 +16,7 @@ internal fun CommitTextKey(
     KeyboardKey(
         modifier = modifier,
         text = text,
-        contentDescription = "输入 $text",
+        contentDescription = stringResource(R.string.cd_key_commit_text, text),
         onClick = { onIntent(KeyboardIntent.CommitText(text)) },
     )
 }
@@ -24,10 +26,10 @@ internal fun ShiftKey(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    KeyboardKey(
+    KeyboardIconKey(
         modifier = modifier,
-        text = "⇧",
-        contentDescription = "切换大小写",
+        iconRes = R.drawable.ic_shift_24,
+        contentDescription = stringResource(R.string.cd_key_shift),
         onClick = { onIntent(KeyboardIntent.ToggleUppercase) },
         emphasis = KeyboardKeyEmphasis.Action,
     )

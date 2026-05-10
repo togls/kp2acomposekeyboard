@@ -1,5 +1,6 @@
 package io.github.togls.kp2acomposekeyboard.ui.keyboard.key
 
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -11,7 +12,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,10 +26,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardKeyColors
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardKeyEmphasis
@@ -34,10 +39,10 @@ import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.KeyboardMetrics
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.token.LocalKeyboardAdaptiveMetrics
 
 /**
- * Displays a single keyboard key with Material 3 colors, shape, elevation, and press feedback.
+ * Displays a single text keyboard key with Material 3 colors, shape, elevation,
+ * and press feedback.
  *
- * The key uses adaptive keyboard metrics for sizing so it can stay consistent across
- * portrait and landscape layouts.
+ * Text keys are still used by letter, number, and symbol layouts.
  */
 @Composable
 internal fun KeyboardKey(
@@ -47,6 +52,75 @@ internal fun KeyboardKey(
     enabled: Boolean = true,
     contentDescription: String? = null,
     emphasis: KeyboardKeyEmphasis = KeyboardKeyEmphasis.Normal,
+) {
+    val adaptiveMetrics = LocalKeyboardAdaptiveMetrics.current
+
+    KeyboardKeySurface(
+        modifier = modifier,
+        enabled = enabled,
+        contentDescription = contentDescription,
+        emphasis = emphasis,
+        onClick = onClick,
+    ) {
+        Text(
+            modifier = Modifier.padding(
+                PaddingValues(
+                    horizontal = adaptiveMetrics.keyHorizontalPadding,
+                    vertical = KeyboardMetrics.KeyVerticalPadding,
+                ),
+            ),
+            text = text,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = keyFontWeight(emphasis),
+        )
+    }
+}
+
+/**
+ * Displays a single icon keyboard key with the same visual behavior as text keys.
+ *
+ * The outer key owns the accessibility description, so the inner icon keeps its
+ * contentDescription null to avoid duplicate TalkBack output.
+ */
+@Composable
+internal fun KeyboardIconKey(
+    @DrawableRes iconRes: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    contentDescription: String? = null,
+    emphasis: KeyboardKeyEmphasis = KeyboardKeyEmphasis.Normal,
+    iconSize: Dp = KeyboardActionIconSize,
+) {
+    KeyboardKeySurface(
+        modifier = modifier,
+        enabled = enabled,
+        contentDescription = contentDescription,
+        emphasis = emphasis,
+        onClick = onClick,
+    ) {
+        Icon(
+            modifier = Modifier.size(iconSize),
+            painter = painterResource(id = iconRes),
+            contentDescription = null,
+        )
+    }
+}
+
+/**
+ * Shared key container for both text and icon keys.
+ *
+ * Keep visual state handling here so all keyboard keys use the same press,
+ * disabled, ripple, color, shape, and elevation behavior.
+ */
+@Composable
+private fun KeyboardKeySurface(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    contentDescription: String? = null,
+    emphasis: KeyboardKeyEmphasis = KeyboardKeyEmphasis.Normal,
+    content: @Composable () -> Unit,
 ) {
     val adaptiveMetrics = LocalKeyboardAdaptiveMetrics.current
 
@@ -120,22 +194,19 @@ internal fun KeyboardKey(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) {
-            Text(
-                modifier = Modifier.padding(
-                    PaddingValues(
-                        horizontal = adaptiveMetrics.keyHorizontalPadding,
-                        vertical = KeyboardMetrics.KeyVerticalPadding,
-                    ),
-                ),
-                text = text,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = when (emphasis) {
-                    KeyboardKeyEmphasis.Normal -> FontWeight.Normal
-                    KeyboardKeyEmphasis.Action -> FontWeight.SemiBold
-                    KeyboardKeyEmphasis.Sensitive -> FontWeight.Medium
-                },
-            )
+            content()
         }
+    }
+}
+
+/**
+ * Returns the text weight used by text keys for each visual emphasis.
+ */
+private fun keyFontWeight(emphasis: KeyboardKeyEmphasis): FontWeight {
+    return when (emphasis) {
+        KeyboardKeyEmphasis.Normal -> FontWeight.Normal
+        KeyboardKeyEmphasis.Action -> FontWeight.SemiBold
+        KeyboardKeyEmphasis.Sensitive -> FontWeight.Medium
     }
 }
 
@@ -143,3 +214,5 @@ internal fun KeyboardKey(
  * Matches Material disabled content opacity.
  */
 private const val DisabledKeyAlpha = 0.38f
+
+private val KeyboardActionIconSize = 24.dp
