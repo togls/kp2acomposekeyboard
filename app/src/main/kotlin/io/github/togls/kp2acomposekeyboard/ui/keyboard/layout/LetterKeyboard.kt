@@ -1,7 +1,6 @@
 package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,19 +22,18 @@ fun LetterKeyboard(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    BoxWithConstraints(
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        val keySpacing = KeyboardMetrics.KeySpacing
+    KeyboardWidthLayout(
+        modifier = modifier,
+        referenceKeyCount = 10,
+    ) { widths ->
+        val letterKeyWidth = widths.standardKeyWidth
 
-        // Use the top row as the standard width reference.
-        // qwertyuiop has 10 letters and 9 gaps.
-        val letterKeyWidth = (maxWidth - keySpacing * 9) / 10
-
-        // The third row has:
-        // Shift + 7 letters + Delete = 9 items, therefore 8 gaps.
-        // Shift and Delete share the remaining width equally.
-        val sideKeyWidth = (maxWidth - letterKeyWidth * 7 - keySpacing * 8) / 2
+        // Shift + 7 letters + Delete = 9 keys, therefore 8 gaps.
+        val sideKeyWidth = widths.flexibleKeyWidth(
+            fixedKeyCount = 7,
+            flexibleKeyCount = 2,
+            gapCount = 8,
+        )
 
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -58,18 +56,18 @@ fun LetterKeyboard(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(
-                    space = keySpacing,
+                    space = KeyboardMetrics.KeySpacing,
                     alignment = Alignment.CenterHorizontally,
                 ),
             ) {
                 ShiftKey(
                     onIntent = onIntent,
-                    modifier = Modifier.width(letterKeyWidth * 1.2f),
+                    modifier = Modifier.width(sideKeyWidth),
                 )
 
                 "zxcvbnm".forEach { letter ->
                     LetterKey(
-                        modifier = Modifier.width(sideKeyWidth),
+                        modifier = Modifier.width(letterKeyWidth),
                         letter = letter,
                         isUppercase = state.isUppercase,
                         onIntent = onIntent,
