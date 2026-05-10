@@ -9,6 +9,35 @@
         KP2A Compose Keyboard uses Keepass2Android Plugin API to let the user choose an entry and input selected fields through the keyboard without using the clipboard.
     </string>
 
+    <string name="settings_back">Back</string>
+    <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_section_security">Security</string>
+    <string name="settings_section_input_feedback">Input feedback</string>
+    <string name="settings_dynamic_color_title">Dynamic color</string>
+    <string name="settings_dynamic_color_description">Follow the system dynamic color theme</string>
+    <string name="settings_haptic_feedback_title">Haptic feedback</string>
+    <string name="settings_haptic_feedback_description">Use light vibration when tapping keys</string>
+    <string name="settings_key_sound_title">Key sound</string>
+    <string name="settings_key_sound_description">Play a key sound when tapping keys</string>
+    <string name="settings_key_preview_title">Key preview</string>
+    <string name="settings_key_preview_description">Show a preview popup when tapping keys</string>
+    <string name="settings_reset_defaults">Reset to defaults</string>
+    <string name="settings_theme_mode_title">Theme mode</string>
+    <string name="settings_theme_mode_description">Controls the theme used by settings and the keyboard</string>
+    <string name="settings_theme_mode_system">System</string>
+    <string name="settings_theme_mode_light">Light</string>
+    <string name="settings_theme_mode_dark">Dark</string>
+    <string name="settings_keyboard_height_title">Keyboard height</string>
+    <string name="settings_keyboard_height_description">Adjusts the overall IME height</string>
+    <string name="settings_keyboard_height_compact">Compact</string>
+    <string name="settings_keyboard_height_normal">Normal</string>
+    <string name="settings_keyboard_height_tall">Tall</string>
+    <string name="settings_session_timeout_title">Entry auto-clear</string>
+    <string name="settings_session_timeout_description">Controls how long password fields stay in the in-memory session</string>
+    <string name="settings_session_timeout_decrease">-15 sec</string>
+    <string name="settings_session_timeout_seconds">%1$d sec</string>
+    <string name="settings_session_timeout_increase">+15 sec</string>
+
     <string name="cd_key_delete">Delete</string>
     <string name="cd_key_open_settings">Open settings</string>
     <string name="cd_key_select_entry">Select KeePass entry</string>

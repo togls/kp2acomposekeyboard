@@ -28,7 +28,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import io.github.togls.kp2acomposekeyboard.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,11 +46,11 @@ fun SettingsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "键盘设置")
+                    Text(text = stringResource(R.string.settings_title))
                 },
                 navigationIcon = {
                     TextButton(onClick = onBackClick) {
-                        Text(text = "返回")
+                        Text(text = stringResource(R.string.settings_back))
                     }
                 },
             )
@@ -113,7 +115,7 @@ private fun SettingsContent(
             )
         }
 
-        SectionTitle(text = "外观")
+        SectionTitle(text = stringResource(R.string.settings_section_appearance))
 
         ThemeModeSetting(
             selected = settings.themeMode,
@@ -123,8 +125,8 @@ private fun SettingsContent(
         )
 
         SwitchSettingRow(
-            title = "动态颜色",
-            description = "跟随系统动态颜色主题",
+            title = stringResource(R.string.settings_dynamic_color_title),
+            description = stringResource(R.string.settings_dynamic_color_description),
             checked = settings.useDynamicColor,
             onCheckedChange = { enabled ->
                 onIntent(SettingsIntent.ChangeDynamicColorEnabled(enabled))
@@ -140,7 +142,7 @@ private fun SettingsContent(
 
         HorizontalDivider()
 
-        SectionTitle(text = "安全")
+        SectionTitle(text = stringResource(R.string.settings_section_security))
 
         SessionTimeoutSetting(
             seconds = settings.sessionTimeoutSeconds,
@@ -151,11 +153,11 @@ private fun SettingsContent(
 
         HorizontalDivider()
 
-        SectionTitle(text = "输入反馈")
+        SectionTitle(text = stringResource(R.string.settings_section_input_feedback))
 
         SwitchSettingRow(
-            title = "震动反馈",
-            description = "点击按键时触发轻微震动",
+            title = stringResource(R.string.settings_haptic_feedback_title),
+            description = stringResource(R.string.settings_haptic_feedback_description),
             checked = settings.hapticFeedbackEnabled,
             onCheckedChange = { enabled ->
                 onIntent(SettingsIntent.ChangeHapticFeedbackEnabled(enabled))
@@ -163,8 +165,8 @@ private fun SettingsContent(
         )
 
         SwitchSettingRow(
-            title = "按键音",
-            description = "点击按键时播放按键音",
+            title = stringResource(R.string.settings_key_sound_title),
+            description = stringResource(R.string.settings_key_sound_description),
             checked = settings.keySoundEnabled,
             onCheckedChange = { enabled ->
                 onIntent(SettingsIntent.ChangeKeySoundEnabled(enabled))
@@ -172,8 +174,8 @@ private fun SettingsContent(
         )
 
         SwitchSettingRow(
-            title = "按键预览",
-            description = "点击按键时显示预览气泡",
+            title = stringResource(R.string.settings_key_preview_title),
+            description = stringResource(R.string.settings_key_preview_description),
             checked = settings.showKeyPreview,
             onCheckedChange = { enabled ->
                 onIntent(SettingsIntent.ChangeKeyPreviewEnabled(enabled))
@@ -185,7 +187,7 @@ private fun SettingsContent(
         OutlinedButton(
             onClick = { onIntent(SettingsIntent.ResetToDefault) },
         ) {
-            Text(text = "恢复默认设置")
+            Text(text = stringResource(R.string.settings_reset_defaults))
         }
     }
 }
@@ -196,26 +198,26 @@ private fun ThemeModeSetting(
     onSelected: (KeyboardThemeMode) -> Unit,
 ) {
     SettingBlock(
-        title = "主题模式",
-        description = "控制设置页和键盘后续使用的主题模式",
+        title = stringResource(R.string.settings_theme_mode_title),
+        description = stringResource(R.string.settings_theme_mode_description),
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             ThemeChip(
-                text = "跟随系统",
+                text = stringResource(R.string.settings_theme_mode_system),
                 selected = selected == KeyboardThemeMode.System,
                 onClick = { onSelected(KeyboardThemeMode.System) },
             )
 
             ThemeChip(
-                text = "浅色",
+                text = stringResource(R.string.settings_theme_mode_light),
                 selected = selected == KeyboardThemeMode.Light,
                 onClick = { onSelected(KeyboardThemeMode.Light) },
             )
 
             ThemeChip(
-                text = "深色",
+                text = stringResource(R.string.settings_theme_mode_dark),
                 selected = selected == KeyboardThemeMode.Dark,
                 onClick = { onSelected(KeyboardThemeMode.Dark) },
             )
@@ -229,26 +231,26 @@ private fun HeightModeSetting(
     onSelected: (KeyboardHeightMode) -> Unit,
 ) {
     SettingBlock(
-        title = "键盘高度",
-        description = "后续会用于调整输入法整体高度",
+        title = stringResource(R.string.settings_keyboard_height_title),
+        description = stringResource(R.string.settings_keyboard_height_description),
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             ThemeChip(
-                text = "紧凑",
+                text = stringResource(R.string.settings_keyboard_height_compact),
                 selected = selected == KeyboardHeightMode.Compact,
                 onClick = { onSelected(KeyboardHeightMode.Compact) },
             )
 
             ThemeChip(
-                text = "标准",
+                text = stringResource(R.string.settings_keyboard_height_normal),
                 selected = selected == KeyboardHeightMode.Normal,
                 onClick = { onSelected(KeyboardHeightMode.Normal) },
             )
 
             ThemeChip(
-                text = "较高",
+                text = stringResource(R.string.settings_keyboard_height_tall),
                 selected = selected == KeyboardHeightMode.Tall,
                 onClick = { onSelected(KeyboardHeightMode.Tall) },
             )
@@ -262,8 +264,8 @@ private fun SessionTimeoutSetting(
     onChange: (Int) -> Unit,
 ) {
     SettingBlock(
-        title = "条目自动清理",
-        description = "控制密码字段在内存 Session 中保留的最长时间",
+        title = stringResource(R.string.settings_session_timeout_title),
+        description = stringResource(R.string.settings_session_timeout_description),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -276,11 +278,11 @@ private fun SessionTimeoutSetting(
                     onChange(seconds - SESSION_TIMEOUT_STEP_SECONDS)
                 },
             ) {
-                Text(text = "-15 秒")
+                Text(text = stringResource(R.string.settings_session_timeout_decrease))
             }
 
             Text(
-                text = "$seconds 秒",
+                text = stringResource(R.string.settings_session_timeout_seconds, seconds),
                 style = MaterialTheme.typography.titleMedium,
             )
 
@@ -290,7 +292,7 @@ private fun SessionTimeoutSetting(
                     onChange(seconds + SESSION_TIMEOUT_STEP_SECONDS)
                 },
             ) {
-                Text(text = "+15 秒")
+                Text(text = stringResource(R.string.settings_session_timeout_increase))
             }
         }
     }
