@@ -32,36 +32,27 @@ fun ExtraFieldPagedPanel(
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
     ) {
-        Text(
-            text = "其余字段：",
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-
         if (pageFields.isEmpty()) {
-            Text(
-                text = "没有其他字段",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        } else {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
-            ) {
-                pageFields.forEach { field ->
-                    FieldButton(
-                        modifier = Modifier.weight(1f),
-                        field = field,
-                        onIntent = onIntent,
-                    )
-                }
+            return
+        }
 
-                repeat(safePageSize - pageFields.size) {
-                    EmptyFieldSlot(modifier = Modifier.weight(1f))
-                }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
+        ) {
+            pageFields.forEach { field ->
+                FieldButton(
+                    modifier = Modifier.weight(1f),
+                    field = field,
+                    onIntent = onIntent,
+                )
+            }
+
+            repeat(safePageSize - pageFields.size) {
+                EmptyFieldSlot(modifier = Modifier.weight(1f))
             }
         }
+
     }
 }
 

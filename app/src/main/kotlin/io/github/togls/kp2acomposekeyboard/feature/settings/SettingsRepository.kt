@@ -52,7 +52,8 @@ class SettingsRepository @Inject constructor(
 
     suspend fun updateSessionTimeoutSeconds(seconds: Int) {
         context.keyboardSettingsDataStore.edit { preferences ->
-            // 超时时间影响敏感字段在内存中的存活时长，写入前先收敛到允许范围。
+            // Clamp the timeout to the allowed range before saving it,
+            // because it controls how long sensitive fields stay in memory.
             preferences[Keys.SESSION_TIMEOUT_SECONDS] = seconds.coerceIn(
                 minimumValue = KeyboardSettings.MIN_SESSION_TIMEOUT_SECONDS,
                 maximumValue = KeyboardSettings.MAX_SESSION_TIMEOUT_SECONDS,

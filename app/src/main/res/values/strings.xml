@@ -24,6 +24,7 @@
     <string name="cd_key_commit_text">Type %1$s</string>
     <string name="cd_key_switch_to_entry_layout">Switch to entry layout</string>
 
+    <string name="entry_fields_label">All fields:</string>
     <string name="entry_picker_title">Select entry</string>
     <string name="entry_name_unnamed">Unnamed entry</string>
     <string name="existing_entry_hint_current_entry">Current entry: %1$s</string>
