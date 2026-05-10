@@ -1,6 +1,5 @@
 package io.github.togls.kp2acomposekeyboard.feature.entrypicker
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -56,8 +55,7 @@ class EntryPickerViewModel @Inject constructor(
     }
 
     private fun handleKp2aEntrySelected(fields: Map<String, String>) {
-        // TODO
-        Log.d("Kp2aKeyboardIme", "handleKp2aEntrySelected not implemented!")
+        SecureLog.d("handleKp2aEntrySelected not implemented!")
     }
 
     private fun startSelectionIfNeeded() {

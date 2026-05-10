@@ -1,6 +1,6 @@
 package io.github.togls.kp2acomposekeyboard.kp2a
 
-import android.util.Log
+import io.github.togls.kp2acomposekeyboard.security.SecureLog
 import keepass2android.pluginsdk.PluginActionBroadcastReceiver
 
 class Kp2aActionReceiver : PluginActionBroadcastReceiver() {
@@ -8,7 +8,10 @@ class Kp2aActionReceiver : PluginActionBroadcastReceiver() {
     override fun openEntry(openEntryAction: OpenEntryAction) {
         val fields = openEntryAction.entryFields
 
-        Log.d("Kp2APlugin", "openEntry fields=${fields.keys}")
+        SecureLog.d(
+            "kp2a openEntry",
+            "fields" to fields.keys,
+        )
 
         // 下一步：
         // 1. 读取 Title/UserName/Password/TOTP 等字段
@@ -17,10 +20,10 @@ class Kp2aActionReceiver : PluginActionBroadcastReceiver() {
     }
 
     override fun actionSelected(actionSelectedAction: ActionSelectedAction) {
-        Log.d("Kp2APlugin", "actionSelected")
+        SecureLog.d("kp2a actionSelected")
     }
 
     override fun entryOutputModified(entryOutputModifiedAction: EntryOutputModifiedAction) {
-        Log.d("Kp2APlugin", "entryOutputModified")
+        SecureLog.d("kp2a entryOutputModified")
     }
 }
