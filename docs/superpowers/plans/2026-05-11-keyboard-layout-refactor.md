@@ -438,9 +438,13 @@ git commit -m "feat(keyboard): add layout metrics calculator"
 
 - [ ] **Step 2.1: Extract bottom gap helper without changing values**
 
-Modify `KeyboardBottomGap.kt`:
+Modify `KeyboardBottomGap.kt` by extracting the current `height` expression into `keyboardBottomGapHeight(isLandscape: Boolean): Dp`.
+
+Required end state:
 
 ```kotlin
+import androidx.compose.ui.unit.Dp
+
 @Composable
 internal fun KeyboardBottomGap(
     isLandscape: Boolean,
@@ -452,15 +456,15 @@ internal fun KeyboardBottomGap(
             .height(keyboardBottomGapHeight(isLandscape)),
     )
 }
-
-internal fun keyboardBottomGapHeight(isLandscape: Boolean) = if (isLandscape) {
-    0.dp
-} else {
-    32.dp
-}
 ```
 
-This preserves the existing values exactly.
+Required helper signature:
+
+```kotlin
+internal fun keyboardBottomGapHeight(isLandscape: Boolean): Dp
+```
+
+The helper body must be the exact current `if (isLandscape) { ... } else { ... }` expression moved from this file. Do not type a new numeric value from the plan. After the extraction, run `git diff -- app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardBottomGap.kt` and verify that the branch values only moved into the helper; they must not change.
 
 - [ ] **Step 2.2: Add minimal frame wrapper**
 
@@ -474,12 +478,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.platform.testTag
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardBottomGap
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardNavigationBarSpacer
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardTestTags
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardAdaptiveMetrics
 
 @Composable
@@ -493,8 +495,7 @@ internal fun KeyboardFrame(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clipToBounds()
-            .testTag(KeyboardTestTags.Root),
+            .clipToBounds(),
     ) {
         KeyboardContentArea(
             state = state,
@@ -589,8 +590,7 @@ Modify `KeyboardFrame.kt` to use `BoxWithConstraints`, `WindowInsets.navigationB
 BoxWithConstraints(
     modifier = modifier
         .fillMaxWidth()
-        .clipToBounds()
-        .testTag(KeyboardTestTags.Root),
+        .clipToBounds(),
 ) {
     val density = LocalDensity.current
     val navigationSpacerHeight = with(density) {
@@ -676,6 +676,7 @@ git commit -m "refactor(keyboard): provide layout metrics from frame"
 **Files:**
 - Create: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardRow.kt`
 - Create: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardTestTags.kt`
+- Modify: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardFrame.kt`
 - Modify: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/key/FieldKey.kt`
 - Modify: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/key/ActionKeys.kt`
 
@@ -742,7 +743,27 @@ internal object KeyboardTestTags {
 }
 ```
 
-- [ ] **Step 4.3: Tag fields by id only**
+- [ ] **Step 4.3: Tag the frame root after tags exist**
+
+Modify `KeyboardFrame.kt`:
+
+```kotlin
+import androidx.compose.ui.platform.testTag
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardTestTags
+```
+
+Update the root `Column` modifier:
+
+```kotlin
+modifier = modifier
+    .fillMaxWidth()
+    .clipToBounds()
+    .testTag(KeyboardTestTags.Root),
+```
+
+This tag is intentionally added in this stage because `KeyboardTestTags` is created here. Stage 2 and Stage 3 must compile without referencing it.
+
+- [ ] **Step 4.4: Tag fields by id only**
 
 Modify `FieldKey.kt`:
 
@@ -763,7 +784,7 @@ Do not change:
 onClick = { onIntent(KeyboardIntent.CommitField(field.id)) }
 ```
 
-- [ ] **Step 4.4: Tag previous and next page buttons**
+- [ ] **Step 4.5: Tag previous and next page buttons**
 
 Modify `ActionKeys.kt`:
 
@@ -784,7 +805,7 @@ Update `NextPageKey`:
 modifier = modifier.testTag(KeyboardTestTags.NextPage),
 ```
 
-- [ ] **Step 4.5: Run checks**
+- [ ] **Step 4.6: Run checks**
 
 Run:
 
@@ -795,10 +816,10 @@ Run:
 
 Expected: PASS.
 
-- [ ] **Step 4.6: Commit**
+- [ ] **Step 4.7: Commit**
 
 ```bash
-git add app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardRow.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardTestTags.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/key/FieldKey.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/key/ActionKeys.kt
+git add app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardRow.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardTestTags.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardFrame.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/key/FieldKey.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/key/ActionKeys.kt
 git commit -m "refactor(keyboard): add row helper and safe tags"
 ```
 
