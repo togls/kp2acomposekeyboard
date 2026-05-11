@@ -2,93 +2,106 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Refactor the keyboard UI below `KeyboardRoot` around centralized layout metrics, staged default and entry layout migration, and Compose UI regression tests.
+**Goal:** Refactor keyboard layout internals under the stable `KeyboardRoot` entry point with centralized metrics, staged UI migration, entry scrolling and paging behavior, and regression tests.
 
-**Architecture:** Keep `KeyboardRoot` as the stable external entry point. Add a pure `KeyboardLayoutMetrics` calculation layer, then migrate default keyboard, normal entry scrolling, expanded entry paging, drag-end snap, tests, previews, and cleanup in separate reviewable stages.
+**Architecture:** Keep `KeyboardRoot` public API unchanged. Add pure measurement and paging helpers first, then migrate frame, metrics provider, row helpers, default keyboard, normal entry, expanded paging, drag snap, tests, previews, and cleanup as separate reviewable stages.
 
-**Tech Stack:** Kotlin, Jetpack Compose, Material 3, Android InputMethodService UI, JUnit, Robolectric, Compose UI Test.
+**Tech Stack:** Kotlin, Jetpack Compose, Material 3, Android IME UI, JUnit, Robolectric, Compose UI Test.
 
 ---
 
-## Spec Source
+## Source Documents
 
 Implement against:
 
 - `docs/superpowers/specs/2026-05-11-keyboard-layout-refactor-design.md`
 
-The implementation must not introduce a full keyboard layout DSL, must not add `minKeyHeight`, and must not pass sensitive field values into UI state, Composables, semantics, test tags, logs, tests, screenshots, or docs.
+This plan intentionally splits work more finely than the design document:
+
+- Stage 0: Compose UI test dependencies
+- Stage 1: pure `KeyboardLayoutMetrics`
+- Stage 2: minimal `KeyboardFrame`
+- Stage 3: metrics provider and layout local
+- Stage 4: `KeyboardRow` and safe test tags
+- Stage 5: default keyboard migration
+- Stage 6: normal entry continuous scroll
+- Stage 7: expanded entry paging controls
+- Stage 8: drag-end snap
+- Stage 9: Compose UI regression tests
+- Stage 10: previews
+- Stage 11: cleanup old components
+
+Do not implement multiple stages in one patch unless the user explicitly asks for a batch and the batch still compiles between logical checkpoints.
+
+## Hard Constraints
+
+- Keep `KeyboardRoot` public function signature unchanged.
+- Do not introduce a full layout DSL or key-spec renderer.
+- Do not introduce `minKeyHeight`.
+- Use `coerceAtLeast(0.dp)` only to prevent invalid negative layout dimensions.
+- Do not change current bottom gap visual values while extracting helpers.
+- Do not pass field values into UI state, Composable parameters, semantics, test tags, content descriptions, logs, tests, screenshots, or docs.
+- Keep field commit id-based: `KeyboardIntent.CommitField(field.id)`.
+- Metrics calculation must not write Compose state or use measurement callbacks to drive layout metrics.
+- Old component deletion must be a standalone cleanup stage after the new path is tested.
 
 ## File Structure
 
-### New Files
+### New Runtime Files
 
 - `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardLayoutMetrics.kt`
-  - Pure input/output models and layout metric formulas.
+  - Pure metrics input, output, and formulas.
 - `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardFrame.kt`
-  - Internal frame below `KeyboardRoot`; owns candidate row, keyboard area, bottom spacer, and navigation spacer measurement.
-- `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardRow.kt`
-  - Lightweight row helper for spacing, alignment, and clipping.
+  - Internal frame below `KeyboardRoot`; introduced minimally before behavior migration.
 - `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardLayoutLocals.kt`
-  - CompositionLocal for `KeyboardLayoutMetrics`.
-- `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryFieldGrid.kt`
-  - Shared field-grid rendering for normal and expanded entry modes.
-- `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryFieldPaging.kt`
-  - Pure paging, enablement, clamp, and snap helpers for expanded mode.
+  - `LocalKeyboardLayoutMetrics`.
+- `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardRow.kt`
+  - Lightweight row helper, not a DSL.
 - `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardTestTags.kt`
-  - Safe, value-free test tags for layout areas and field keys.
-- `app/src/test/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardLayoutMetricsTest.kt`
-  - JVM tests for metrics formulas.
-- `app/src/test/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryFieldPagingTest.kt`
-  - JVM tests for expanded paging formulas.
-- `app/src/androidTest/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardRootLayoutTest.kt`
-  - Compose UI tests for default, normal entry, expanded entry, controls, scrolling, and sensitive-value absence.
+  - Safe test tags based on layout names and field ids.
+- `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryFieldGrid.kt`
+  - Shared field grid for normal and expanded entry modes.
+- `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryFieldPaging.kt`
+  - Pure page target, disabled state, clamp, and snap math.
 
-### Modified Files
+### New Test Files
+
+- `app/src/test/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardLayoutMetricsTest.kt`
+- `app/src/test/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryFieldPagingTest.kt`
+- `app/src/androidTest/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardRootDefaultLayoutTest.kt`
+- `app/src/androidTest/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardRootEntryLayoutTest.kt`
+- `app/src/androidTest/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardRootSensitiveDataTest.kt`
+
+### Modified Runtime Files
 
 - `gradle/libs.versions.toml`
-  - Add Compose UI test dependency aliases.
 - `app/build.gradle.kts`
-  - Add `testInstrumentationRunner` and Compose UI test dependencies.
 - `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardRoot.kt`
-  - Keep public signature; delegate internal rendering to `KeyboardFrame`.
 - `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardBottomGap.kt`
-  - Expose a pure bottom gap height helper used by metrics.
-- `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardNavigationBarSpacer.kt`
-  - Keep rendering the actual navigation spacer; metrics reads the same inset value from `WindowInsets.navigationBars`.
+- `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardContentArea.kt`
 - `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/key/FieldKey.kt`
-  - Add safe test tag based on field id only.
+- `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/key/ActionKeys.kt`
 - `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/DefaultKeyboardLayout.kt`
-  - Consume shared metrics.
 - `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/LetterKeyboard.kt`
-  - Consume shared metrics and row helper.
 - `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/NumberKeyboard.kt`
-  - Consume shared metrics and row helper.
 - `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/SymbolKeyboard.kt`
-  - Consume shared metrics and row helper.
 - `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryKeyboardLayout.kt`
-  - Render normal continuous scroll and expanded continuous list with page controls.
-- `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/entry/ExtraFieldPagedPanel.kt`
-  - Remove from active normal entry path after migration.
-- `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/entry/AllFieldsExpandedPanel.kt`
-  - Replace active path or simplify around `EntryFieldGrid`.
 - `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/row/EntryActionRows.kt`
-  - Remove normal previous/next controls.
 - `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/row/ExpandedEntryActionRows.kt`
-  - Wire previous/next to page-scroll helpers.
 - `app/src/debug/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/preview/KeyboardPreviewFixtures.kt`
-  - Keep safe preview labels; add long-label and low-field fixtures.
 - `app/src/debug/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/preview/EntryKeyboardPreviews.kt`
-  - Add normal, expanded, landscape, dark, and long-label previews.
 
 ---
 
-## Task 1: Configure Compose UI Test Dependencies
+## Stage 0: Configure Compose UI Test Dependencies
+
+**Goal:** Add Compose UI test infrastructure without changing keyboard runtime behavior.
 
 **Files:**
 - Modify: `gradle/libs.versions.toml`
 - Modify: `app/build.gradle.kts`
 
-- [ ] **Step 1: Add version catalog aliases**
+- [ ] **Step 0.1: Add version catalog aliases**
 
 Modify `gradle/libs.versions.toml` under `[libraries]`:
 
@@ -97,17 +110,17 @@ androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4
 androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 ```
 
-- [ ] **Step 2: Configure the instrumentation runner and dependencies**
+- [ ] **Step 0.2: Add instrumentation runner**
 
-Modify `app/build.gradle.kts`.
-
-Inside `defaultConfig`:
+Modify `app/build.gradle.kts` inside `defaultConfig`:
 
 ```kotlin
 testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 ```
 
-Inside `dependencies`:
+- [ ] **Step 0.3: Add Compose UI test dependencies**
+
+Modify `app/build.gradle.kts` inside `dependencies`:
 
 ```kotlin
 androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -115,7 +128,7 @@ androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 debugImplementation(libs.androidx.compose.ui.test.manifest)
 ```
 
-- [ ] **Step 3: Verify dependency configuration**
+- [ ] **Step 0.4: Verify build configuration**
 
 Run:
 
@@ -123,9 +136,9 @@ Run:
 ./gradlew :app:assembleDebug
 ```
 
-Expected: build succeeds. No Compose UI test has been added yet.
+Expected: PASS.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 0.5: Commit**
 
 ```bash
 git add gradle/libs.versions.toml app/build.gradle.kts
@@ -134,15 +147,17 @@ git commit -m "test(keyboard): add compose ui test dependencies"
 
 ---
 
-## Task 2: Add Pure Keyboard Layout Metrics
+## Stage 1: Add Pure KeyboardLayoutMetrics
+
+**Goal:** Add pure metrics inputs, outputs, and formulas without changing current UI behavior.
 
 **Files:**
 - Create: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardLayoutMetrics.kt`
 - Create: `app/src/test/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardLayoutMetricsTest.kt`
 
-- [ ] **Step 1: Write failing metrics tests**
+- [ ] **Step 1.1: Write failing metrics tests**
 
-Create `app/src/test/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardLayoutMetricsTest.kt`:
+Create `KeyboardLayoutMetricsTest.kt`:
 
 ```kotlin
 package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
@@ -166,6 +181,7 @@ class KeyboardLayoutMetricsTest {
                 rowSpacing = 4.dp,
                 bottomSpacerHeight = 0.dp,
                 navigationSpacerHeight = 0.dp,
+                sideKeyStandardKeyCount = 7,
             ),
         )
 
@@ -173,7 +189,7 @@ class KeyboardLayoutMetricsTest {
     }
 
     @Test
-    fun `keyboard row height subtracts candidate spacer navigation and three row gaps once`() {
+    fun `row height subtracts candidate paddings spacers and three row gaps`() {
         val metrics = calculateKeyboardLayoutMetrics(
             KeyboardLayoutInput(
                 totalWidth = 300.dp,
@@ -185,11 +201,32 @@ class KeyboardLayoutMetricsTest {
                 rowSpacing = 5.dp,
                 bottomSpacerHeight = 20.dp,
                 navigationSpacerHeight = 25.dp,
+                sideKeyStandardKeyCount = 7,
             ),
         )
 
         assertEquals(35f, metrics.keyboardRowHeight.value, 0.001f)
         assertEquals(75f, metrics.remainingFieldsAreaHeight.value, 0.001f)
+    }
+
+    @Test
+    fun `bottom and navigation spacers may be zero`() {
+        val metrics = calculateKeyboardLayoutMetrics(
+            KeyboardLayoutInput(
+                totalWidth = 300.dp,
+                totalHeight = 220.dp,
+                candidateRowHeight = 40.dp,
+                horizontalPadding = 8.dp,
+                verticalOuterPadding = 10.dp,
+                keySpacing = 6.dp,
+                rowSpacing = 5.dp,
+                bottomSpacerHeight = 0.dp,
+                navigationSpacerHeight = 0.dp,
+                sideKeyStandardKeyCount = 7,
+            ),
+        )
+
+        assertEquals(41.25f, metrics.keyboardRowHeight.value, 0.001f)
     }
 
     @Test
@@ -205,6 +242,7 @@ class KeyboardLayoutMetricsTest {
                 rowSpacing = 4.dp,
                 bottomSpacerHeight = 0.dp,
                 navigationSpacerHeight = 0.dp,
+                sideKeyStandardKeyCount = 7,
             ),
         )
 
@@ -213,7 +251,7 @@ class KeyboardLayoutMetricsTest {
     }
 
     @Test
-    fun `metrics never returns negative dimensions`() {
+    fun `small height and large spacing do not produce negative dimensions`() {
         val metrics = calculateKeyboardLayoutMetrics(
             KeyboardLayoutInput(
                 totalWidth = 10.dp,
@@ -225,6 +263,7 @@ class KeyboardLayoutMetricsTest {
                 rowSpacing = 40.dp,
                 bottomSpacerHeight = 20.dp,
                 navigationSpacerHeight = 20.dp,
+                sideKeyStandardKeyCount = 7,
             ),
         )
 
@@ -248,6 +287,7 @@ class KeyboardLayoutMetricsTest {
                 rowSpacing = 4.dp,
                 bottomSpacerHeight = 0.dp,
                 navigationSpacerHeight = 0.dp,
+                sideKeyStandardKeyCount = 7,
             ),
         )
 
@@ -258,7 +298,7 @@ class KeyboardLayoutMetricsTest {
 }
 ```
 
-- [ ] **Step 2: Run metrics tests and verify they fail**
+- [ ] **Step 1.2: Run metrics tests and verify failure**
 
 Run:
 
@@ -266,11 +306,11 @@ Run:
 ./gradlew :app:testDebugUnitTest --tests "io.github.togls.kp2acomposekeyboard.ui.keyboard.layout.KeyboardLayoutMetricsTest"
 ```
 
-Expected: fails because `KeyboardLayoutInput` and `calculateKeyboardLayoutMetrics` do not exist.
+Expected: FAIL because `KeyboardLayoutInput` does not exist.
 
-- [ ] **Step 3: Implement metrics**
+- [ ] **Step 1.3: Implement metrics**
 
-Create `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardLayoutMetrics.kt`:
+Create `KeyboardLayoutMetrics.kt`:
 
 ```kotlin
 package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
@@ -290,6 +330,7 @@ internal data class KeyboardLayoutInput(
     val rowSpacing: Dp,
     val bottomSpacerHeight: Dp,
     val navigationSpacerHeight: Dp,
+    val sideKeyStandardKeyCount: Int,
 )
 
 @Immutable
@@ -304,8 +345,7 @@ internal data class KeyboardLayoutMetrics(
     fun fieldKeyWidth(columns: Int): Dp {
         require(columns >= 1) { "columns must be >= 1." }
 
-        val gapCount = columns - 1
-        return ((availableWidth - keySpacing * gapCount.toFloat()) / columns.toFloat())
+        return ((availableWidth - keySpacing * (columns - 1).toFloat()) / columns.toFloat())
             .coerceAtLeast(0.dp)
     }
 }
@@ -317,10 +357,14 @@ internal fun calculateKeyboardLayoutMetrics(
         .coerceAtLeast(0.dp)
     val standardKeyWidth = ((availableWidth - input.keySpacing * STANDARD_GAP_COUNT) /
         STANDARD_KEY_COUNT.toFloat()).coerceAtLeast(0.dp)
-    val sideKeyWidth = ((availableWidth -
-        standardKeyWidth * SIDE_KEY_STANDARD_COUNT.toFloat() -
-        input.keySpacing * SIDE_KEY_GAP_COUNT.toFloat()) / 2f).coerceAtLeast(0.dp)
+    val sideKeyWidth = sideKeyWidth(
+        availableWidth = availableWidth,
+        standardKeyWidth = standardKeyWidth,
+        keySpacing = input.keySpacing,
+        standardKeyCount = input.sideKeyStandardKeyCount,
+    )
 
+    // Candidate, bottom, and navigation areas live outside the four keyboard rows.
     val keyboardAreaHeight = input.totalHeight -
         input.candidateRowHeight -
         input.verticalOuterPadding * 2f -
@@ -340,36 +384,41 @@ internal fun calculateKeyboardLayoutMetrics(
     )
 }
 
+private fun sideKeyWidth(
+    availableWidth: Dp,
+    standardKeyWidth: Dp,
+    keySpacing: Dp,
+    standardKeyCount: Int,
+): Dp {
+    require(standardKeyCount >= 0) { "standardKeyCount must be >= 0." }
+    val totalKeyCount = standardKeyCount + SIDE_KEY_COUNT
+    val gapCount = (totalKeyCount - 1).coerceAtLeast(0)
+    return ((availableWidth -
+        standardKeyWidth * standardKeyCount.toFloat() -
+        keySpacing * gapCount.toFloat()) / SIDE_KEY_COUNT.toFloat()).coerceAtLeast(0.dp)
+}
+
 private const val STANDARD_KEY_COUNT = 10
 private const val STANDARD_GAP_COUNT = STANDARD_KEY_COUNT - 1
 private const val KEYBOARD_ROW_COUNT = 4
 private const val KEYBOARD_ROW_GAP_COUNT = KEYBOARD_ROW_COUNT - 1
-private const val SIDE_KEY_STANDARD_COUNT = 7
-private const val SIDE_KEY_GAP_COUNT = SIDE_KEY_STANDARD_COUNT + 1
 private const val REMAINING_FIELD_ROW_COUNT = 2
+private const val SIDE_KEY_COUNT = 2
 ```
 
-- [ ] **Step 4: Run metrics tests and verify they pass**
+- [ ] **Step 1.4: Run metrics tests and full local checks**
 
 Run:
 
 ```bash
 ./gradlew :app:testDebugUnitTest --tests "io.github.togls.kp2acomposekeyboard.ui.keyboard.layout.KeyboardLayoutMetricsTest"
-```
-
-Expected: PASS.
-
-- [ ] **Step 5: Run build**
-
-Run:
-
-```bash
+./gradlew :app:testDebugUnitTest
 ./gradlew :app:assembleDebug
 ```
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 1.5: Commit**
 
 ```bash
 git add app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardLayoutMetrics.kt app/src/test/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardLayoutMetricsTest.kt
@@ -378,19 +427,133 @@ git commit -m "feat(keyboard): add layout metrics calculator"
 
 ---
 
-## Task 3: Add Frame, Layout Local, Row Helper, and Safe Test Tags
+## Stage 2: Minimal KeyboardFrame
+
+**Goal:** Establish the frame boundary while preserving current utility row, utility panel, drag preview, bottom gap, and keyboard content behavior.
+
+**Files:**
+- Create: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardFrame.kt`
+- Modify: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardRoot.kt`
+- Modify: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardBottomGap.kt`
+
+- [ ] **Step 2.1: Extract bottom gap helper without changing values**
+
+Modify `KeyboardBottomGap.kt`:
+
+```kotlin
+@Composable
+internal fun KeyboardBottomGap(
+    isLandscape: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Spacer(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(keyboardBottomGapHeight(isLandscape)),
+    )
+}
+
+internal fun keyboardBottomGapHeight(isLandscape: Boolean) = if (isLandscape) {
+    0.dp
+} else {
+    32.dp
+}
+```
+
+This preserves the existing values exactly.
+
+- [ ] **Step 2.2: Add minimal frame wrapper**
+
+Create `KeyboardFrame.kt`:
+
+```kotlin
+package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.platform.testTag
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardBottomGap
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardNavigationBarSpacer
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardTestTags
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardAdaptiveMetrics
+
+@Composable
+internal fun KeyboardFrame(
+    state: KeyboardUiState,
+    adaptiveMetrics: KeyboardAdaptiveMetrics,
+    isLandscape: Boolean,
+    onIntent: (KeyboardIntent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clipToBounds()
+            .testTag(KeyboardTestTags.Root),
+    ) {
+        KeyboardContentArea(
+            state = state,
+            adaptiveMetrics = adaptiveMetrics,
+            isLandscape = isLandscape,
+            onIntent = onIntent,
+            modifier = Modifier.weight(1f),
+        )
+
+        KeyboardBottomGap(isLandscape = isLandscape)
+        KeyboardNavigationBarSpacer()
+    }
+}
+```
+
+- [ ] **Step 2.3: Delegate from `KeyboardRoot`**
+
+In `KeyboardRoot.kt`, replace only the internal `Column` with:
+
+```kotlin
+KeyboardFrame(
+    state = state,
+    adaptiveMetrics = adaptiveMetrics,
+    isLandscape = isLandscape,
+    onIntent = onIntent,
+)
+```
+
+Keep `KeyboardRoot` signature unchanged.
+
+- [ ] **Step 2.4: Run checks**
+
+Run:
+
+```bash
+./gradlew :app:testDebugUnitTest
+./gradlew :app:assembleDebug
+```
+
+Expected: PASS.
+
+- [ ] **Step 2.5: Commit**
+
+```bash
+git add app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardFrame.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardRoot.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardBottomGap.kt
+git commit -m "refactor(keyboard): introduce keyboard frame wrapper"
+```
+
+---
+
+## Stage 3: Metrics Provider and Layout Local
+
+**Goal:** Provide `KeyboardLayoutMetrics` from frame constraints without migrating row rendering yet.
 
 **Files:**
 - Create: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardLayoutLocals.kt`
-- Create: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardRow.kt`
-- Create: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardFrame.kt`
-- Create: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardTestTags.kt`
-- Modify: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardRoot.kt`
-- Modify: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardBottomGap.kt`
-- Modify: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/key/FieldKey.kt`
-- Modify: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardContentArea.kt`
+- Modify: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardFrame.kt`
 
-- [ ] **Step 1: Add layout local**
+- [ ] **Step 3.1: Add layout local**
 
 Create `KeyboardLayoutLocals.kt`:
 
@@ -412,12 +575,111 @@ internal val LocalKeyboardLayoutMetrics = compositionLocalOf {
             rowSpacing = 0.dp,
             bottomSpacerHeight = 0.dp,
             navigationSpacerHeight = 0.dp,
+            sideKeyStandardKeyCount = 7,
         ),
     )
 }
 ```
 
-- [ ] **Step 2: Add row helper**
+- [ ] **Step 3.2: Calculate metrics from stable inputs**
+
+Modify `KeyboardFrame.kt` to use `BoxWithConstraints`, `WindowInsets.navigationBars`, and `remember`. The metrics provider must not use `onGloballyPositioned`.
+
+```kotlin
+BoxWithConstraints(
+    modifier = modifier
+        .fillMaxWidth()
+        .clipToBounds()
+        .testTag(KeyboardTestTags.Root),
+) {
+    val density = LocalDensity.current
+    val navigationSpacerHeight = with(density) {
+        WindowInsets.navigationBars.getBottom(this).toDp()
+    }
+    val bottomSpacerHeight = keyboardBottomGapHeight(isLandscape)
+    val metrics = remember(
+        maxWidth,
+        maxHeight,
+        adaptiveMetrics.keyHeight,
+        navigationSpacerHeight,
+        bottomSpacerHeight,
+    ) {
+        calculateKeyboardLayoutMetrics(
+            KeyboardLayoutInput(
+                totalWidth = maxWidth,
+                totalHeight = maxHeight,
+                candidateRowHeight = adaptiveMetrics.keyHeight,
+                horizontalPadding = KeyboardMetrics.OuterPaddingHorizontal,
+                verticalOuterPadding = KeyboardMetrics.OuterPaddingVertical,
+                keySpacing = KeyboardMetrics.KeySpacing,
+                rowSpacing = KeyboardMetrics.RowSpacing,
+                bottomSpacerHeight = bottomSpacerHeight,
+                navigationSpacerHeight = navigationSpacerHeight,
+                sideKeyStandardKeyCount = 7,
+            ),
+        )
+    }
+
+    CompositionLocalProvider(LocalKeyboardLayoutMetrics provides metrics) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            KeyboardContentArea(
+                state = state,
+                adaptiveMetrics = adaptiveMetrics,
+                isLandscape = isLandscape,
+                onIntent = onIntent,
+                modifier = Modifier.weight(1f),
+            )
+            KeyboardBottomGap(isLandscape = isLandscape)
+            KeyboardNavigationBarSpacer()
+        }
+    }
+}
+```
+
+Required imports:
+
+```kotlin
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalDensity
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keyboardBottomGapHeight
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
+```
+
+- [ ] **Step 3.3: Run checks**
+
+Run:
+
+```bash
+./gradlew :app:testDebugUnitTest
+./gradlew :app:assembleDebug
+```
+
+Expected: PASS.
+
+- [ ] **Step 3.4: Commit**
+
+```bash
+git add app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardLayoutLocals.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardFrame.kt
+git commit -m "refactor(keyboard): provide layout metrics from frame"
+```
+
+---
+
+## Stage 4: KeyboardRow and Safe Test Tags
+
+**Goal:** Add row helper and value-free tags without changing layout semantics.
+
+**Files:**
+- Create: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardRow.kt`
+- Create: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardTestTags.kt`
+- Modify: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/key/FieldKey.kt`
+- Modify: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/key/ActionKeys.kt`
+
+- [ ] **Step 4.1: Add `KeyboardRow`**
 
 Create `KeyboardRow.kt`:
 
@@ -454,7 +716,7 @@ internal fun KeyboardRow(
 }
 ```
 
-- [ ] **Step 3: Add safe test tags**
+- [ ] **Step 4.2: Add value-free test tags**
 
 Create `KeyboardTestTags.kt`:
 
@@ -465,10 +727,14 @@ internal object KeyboardTestTags {
     const val Root = "keyboard-root"
     const val CandidateRow = "keyboard-candidate-row"
     const val DefaultContent = "keyboard-default-content"
+    const val LetterReferenceRow = "keyboard-letter-reference-row"
+    const val WidthPolicySample = "keyboard-width-policy-sample"
     const val EntryNormalContent = "keyboard-entry-normal-content"
+    const val EntryFixedFields = "keyboard-entry-fixed-fields"
+    const val EntryRemainingFields = "keyboard-entry-remaining-fields"
+    const val EntryActions = "keyboard-entry-actions"
     const val EntryExpandedContent = "keyboard-entry-expanded-content"
-    const val RemainingFields = "keyboard-remaining-fields"
-    const val ExpandedFields = "keyboard-expanded-fields"
+    const val EntryExpandedFields = "keyboard-entry-expanded-fields"
     const val PreviousPage = "keyboard-previous-page"
     const val NextPage = "keyboard-next-page"
 
@@ -476,31 +742,7 @@ internal object KeyboardTestTags {
 }
 ```
 
-- [ ] **Step 4: Expose bottom gap height**
-
-Modify `KeyboardBottomGap.kt` so `KeyboardFrame` and the spacer use the same value:
-
-```kotlin
-@Composable
-internal fun KeyboardBottomGap(
-    isLandscape: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    Spacer(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(keyboardBottomGapHeight(isLandscape)),
-    )
-}
-
-internal fun keyboardBottomGapHeight(isLandscape: Boolean) = if (isLandscape) {
-    0.dp
-} else {
-    32.dp
-}
-```
-
-- [ ] **Step 5: Add field test tag without exposing values**
+- [ ] **Step 4.3: Tag fields by id only**
 
 Modify `FieldKey.kt`:
 
@@ -509,176 +751,40 @@ import androidx.compose.ui.platform.testTag
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardTestTags
 ```
 
-Then update the `KeyboardKey` modifier:
+Then pass:
 
 ```kotlin
 modifier = modifier.testTag(KeyboardTestTags.field(field.id)),
 ```
 
-Keep the click as:
+Do not change:
 
 ```kotlin
-onClick = { onIntent(KeyboardIntent.CommitField(field.id)) },
+onClick = { onIntent(KeyboardIntent.CommitField(field.id)) }
 ```
 
-- [ ] **Step 6: Add frame, split candidate row from keyboard area, and delegate from `KeyboardRoot`**
+- [ ] **Step 4.4: Tag previous and next page buttons**
 
-Create `KeyboardFrame.kt`. The frame owns the candidate row, utility panel, drag preview, bottom gap, and navigation spacer. `KeyboardContentArea` must stop rendering `UtilityRow`, `UtilityPanel`, and `UtilityDragPreview`; it should render only `DefaultKeyboardLayout` or `EntryKeyboardLayout` for the keyboard area.
+Modify `ActionKeys.kt`:
 
 ```kotlin
-package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
-
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.layout.boundsInRoot
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.MainKeyboardLayout
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardBottomGap
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardNavigationBarSpacer
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardTestTags
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.keyboardBottomGapHeight
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardAdaptiveMetrics
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.LocalKeyboardAdaptiveMetrics
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.utility.UtilityDragPreview
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.utility.UtilityPanel
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.utility.UtilityRow
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.utility.rememberUtilityDragState
-
-@Composable
-internal fun KeyboardFrame(
-    state: KeyboardUiState,
-    adaptiveMetrics: KeyboardAdaptiveMetrics,
-    isLandscape: Boolean,
-    onIntent: (KeyboardIntent) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val density = LocalDensity.current
-    val utilityDragState = rememberUtilityDragState()
-    var frameBounds by remember { mutableStateOf<Rect?>(null) }
-
-    BoxWithConstraints(
-        modifier = modifier
-            .fillMaxWidth()
-            .clipToBounds()
-            .onGloballyPositioned { coordinates ->
-                frameBounds = coordinates.boundsInRoot()
-            }
-            .testTag(KeyboardTestTags.Root),
-    ) {
-        val navigationSpacerHeight = with(density) {
-            WindowInsets.navigationBars.getBottom(this).toDp()
-        }
-        val bottomSpacerHeight = keyboardBottomGapHeight(isLandscape)
-        val metrics = remember(
-            maxWidth,
-            maxHeight,
-            adaptiveMetrics,
-            isLandscape,
-            navigationSpacerHeight,
-            bottomSpacerHeight,
-        ) {
-            calculateKeyboardLayoutMetrics(
-                KeyboardLayoutInput(
-                    totalWidth = maxWidth,
-                    totalHeight = maxHeight,
-                    candidateRowHeight = adaptiveMetrics.keyHeight,
-                    horizontalPadding = KeyboardMetrics.OuterPaddingHorizontal,
-                    verticalOuterPadding = KeyboardMetrics.OuterPaddingVertical,
-                    keySpacing = KeyboardMetrics.KeySpacing,
-                    rowSpacing = KeyboardMetrics.RowSpacing,
-                    bottomSpacerHeight = bottomSpacerHeight,
-                    navigationSpacerHeight = navigationSpacerHeight,
-                ),
-            )
-        }
-
-        Column(modifier = Modifier.fillMaxWidth()) {
-            CompositionLocalProvider(
-                LocalKeyboardAdaptiveMetrics provides adaptiveMetrics,
-            ) {
-                UtilityRow(
-                    state = state,
-                    dragState = utilityDragState,
-                    onIntent = onIntent,
-                    modifier = Modifier.testTag(KeyboardTestTags.CandidateRow),
-                )
-            }
-
-            CompositionLocalProvider(
-                LocalKeyboardLayoutMetrics provides metrics,
-                LocalKeyboardAdaptiveMetrics provides adaptiveMetrics.copy(
-                    keyHeight = metrics.keyboardRowHeight,
-                ),
-            ) {
-                if (state.isUtilityPanelExpanded) {
-                    UtilityPanel(
-                        state = state,
-                        dragState = utilityDragState,
-                        onIntent = onIntent,
-                        modifier = Modifier.weight(1f),
-                    )
-                } else {
-                    when (state.mainLayout) {
-                        MainKeyboardLayout.Default -> DefaultKeyboardLayout(
-                            state = state,
-                            onIntent = onIntent,
-                            modifier = Modifier.weight(1f),
-                        )
-
-                        MainKeyboardLayout.Entry -> EntryKeyboardLayout(
-                            state = state,
-                            onIntent = onIntent,
-                            modifier = Modifier.weight(1f),
-                        )
-                    }
-                }
-            }
-
-            KeyboardBottomGap(isLandscape = isLandscape)
-            KeyboardNavigationBarSpacer()
-        }
-
-        UtilityDragPreview(
-            dragState = utilityDragState,
-            containerBoundsInRoot = frameBounds,
-        )
-    }
-}
 ```
 
-Then simplify `KeyboardContentArea.kt` or stop calling it. If the file remains temporarily, its implementation must not render the candidate row or utility panel; the active path must be owned by `KeyboardFrame`.
-
-Then replace the internal `Column` body in `KeyboardRoot.kt` with:
+Update `PreviousPageKey`:
 
 ```kotlin
-KeyboardFrame(
-    state = state,
-    adaptiveMetrics = adaptiveMetrics,
-    isLandscape = isLandscape,
-    onIntent = onIntent,
-)
+modifier = modifier.testTag(KeyboardTestTags.PreviousPage),
 ```
 
-Keep the `KeyboardRoot` function signature unchanged.
+Update `NextPageKey`:
 
-- [ ] **Step 7: Run checks**
+```kotlin
+modifier = modifier.testTag(KeyboardTestTags.NextPage),
+```
+
+- [ ] **Step 4.5: Run checks**
 
 Run:
 
@@ -689,16 +795,18 @@ Run:
 
 Expected: PASS.
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 4.6: Commit**
 
 ```bash
-git add app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardLayoutLocals.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardRow.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardFrame.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardContentArea.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardTestTags.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardRoot.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardBottomGap.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/key/FieldKey.kt
-git commit -m "refactor(keyboard): introduce layout frame helpers"
+git add app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardRow.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardTestTags.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/key/FieldKey.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/key/ActionKeys.kt
+git commit -m "refactor(keyboard): add row helper and safe tags"
 ```
 
 ---
 
-## Task 4: Migrate Default Keyboard to Shared Metrics
+## Stage 5: Migrate Default Keyboard to Shared Metrics
+
+**Goal:** Make letter, number, and symbol layouts use shared metrics and explicit width choices.
 
 **Files:**
 - Modify: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/DefaultKeyboardLayout.kt`
@@ -707,13 +815,13 @@ git commit -m "refactor(keyboard): introduce layout frame helpers"
 - Modify: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/SymbolKeyboard.kt`
 - Modify: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardContentArea.kt`
 
-- [ ] **Step 1: Remove duplicate default key-height calculation**
+- [ ] **Step 5.1: Stop overriding default key height inside `KeyboardContentArea`**
 
-In `KeyboardContentArea.kt`, remove `resolveDefaultKeyHeight`, `defaultVisualRowCount`, and related constants. Do not compute metrics from `onGloballyPositioned`; the existing drag-preview bounds state may remain because it does not calculate metrics.
+Remove the old `resolveDefaultKeyHeight`, `defaultVisualRowCount`, and related constants from `KeyboardContentArea.kt`. Keep drag-preview bounds only if still needed for utility drag; drag-preview bounds must not affect metrics.
 
-- [ ] **Step 2: Use metrics in `LetterKeyboard`**
+- [ ] **Step 5.2: Use metrics in `LetterKeyboard`**
 
-Replace the internal `KeyboardWidthLayout` block in `LetterKeyboard.kt` with `LocalKeyboardLayoutMetrics`:
+Use:
 
 ```kotlin
 val metrics = LocalKeyboardLayoutMetrics.current
@@ -721,10 +829,10 @@ val standardWidth = metrics.standardKeyWidth
 val sideWidth = metrics.sideKeyWidth
 ```
 
-Use `KeyboardRow` for each row:
+Render first row with the reference tag:
 
 ```kotlin
-KeyboardRow {
+KeyboardRow(modifier = Modifier.testTag(KeyboardTestTags.LetterReferenceRow)) {
     "qwertyuiop".forEach { letter ->
         LetterKey(
             modifier = Modifier.width(standardWidth),
@@ -736,7 +844,7 @@ KeyboardRow {
 }
 ```
 
-For the third row:
+Render the third row with explicit side widths:
 
 ```kotlin
 KeyboardRow {
@@ -761,23 +869,15 @@ KeyboardRow {
 }
 ```
 
-- [ ] **Step 3: Use metrics in `NumberKeyboard` and `SymbolKeyboard`**
+- [ ] **Step 5.3: Use metrics in `NumberKeyboard` and `SymbolKeyboard`**
 
-Replace local width calculation with:
+Replace local width calculations with `LocalKeyboardLayoutMetrics`. Standard keys use `Modifier.width(metrics.standardKeyWidth)`. Only explicitly matching edge keys use `metrics.sideKeyWidth`.
 
-```kotlin
-val metrics = LocalKeyboardLayoutMetrics.current
-val standardWidth = metrics.standardKeyWidth
-val sideWidth = metrics.sideKeyWidth
-```
+- [ ] **Step 5.4: Keep bottom action widths explicit**
 
-Keys default to `Modifier.width(standardWidth)`. Only explicit matching edge keys use `sideWidth`.
+In `DefaultKeyboardLayout.kt`, keep existing product content. Use `Modifier.weight(...)` only for keys that intentionally flex, such as space or select-entry. Use `Modifier.width(metrics.standardKeyWidth)` for standard-size keys. Do not infer width from action key type.
 
-- [ ] **Step 4: Keep bottom action row explicit**
-
-In `DefaultKeyboardLayout.kt`, keep existing bottom action content, but avoid hidden key-width inference. If a key should be flexible, use `Modifier.weight(...)` explicitly. If a key should be standard, use `Modifier.width(LocalKeyboardLayoutMetrics.current.standardKeyWidth)` explicitly.
-
-- [ ] **Step 5: Run checks**
+- [ ] **Step 5.5: Run checks**
 
 Run:
 
@@ -788,7 +888,7 @@ Run:
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 5.6: Commit**
 
 ```bash
 git add app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/DefaultKeyboardLayout.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/LetterKeyboard.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/NumberKeyboard.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/SymbolKeyboard.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardContentArea.kt
@@ -797,167 +897,16 @@ git commit -m "refactor(keyboard): migrate default layout to metrics"
 
 ---
 
-## Task 5: Add Entry Paging Pure Helpers
+## Stage 6: Implement Normal Entry Continuous Scroll
 
-**Files:**
-- Create: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryFieldPaging.kt`
-- Create: `app/src/test/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryFieldPagingTest.kt`
-
-- [ ] **Step 1: Write failing paging tests**
-
-Create `EntryFieldPagingTest.kt`:
-
-```kotlin
-package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
-
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
-import org.junit.Test
-
-class EntryFieldPagingTest {
-    @Test
-    fun `previous and next targets clamp to bounds`() {
-        val page = EntryFieldPageState(
-            currentOffsetPx = 150f,
-            maxScrollOffsetPx = 260f,
-            visibleFieldListAreaHeightPx = 100f,
-            contentHeightPx = 360f,
-        )
-
-        assertEquals(50f, page.previousTargetPx(), 0.001f)
-        assertEquals(250f, page.nextTargetPx(), 0.001f)
-    }
-
-    @Test
-    fun `controls disable when content fits one page`() {
-        val page = EntryFieldPageState(
-            currentOffsetPx = 0f,
-            maxScrollOffsetPx = 0f,
-            visibleFieldListAreaHeightPx = 200f,
-            contentHeightPx = 180f,
-        )
-
-        assertFalse(page.previousEnabled)
-        assertFalse(page.nextEnabled)
-        assertEquals(0f, page.snapTargetPx(), 0.001f)
-    }
-
-    @Test
-    fun `snap target uses nearest page and clamps`() {
-        val page = EntryFieldPageState(
-            currentOffsetPx = 151f,
-            maxScrollOffsetPx = 260f,
-            visibleFieldListAreaHeightPx = 100f,
-            contentHeightPx = 360f,
-        )
-
-        assertEquals(200f, page.snapTargetPx(), 0.001f)
-    }
-
-    @Test
-    fun `zero visible height disables paging math`() {
-        val page = EntryFieldPageState(
-            currentOffsetPx = 100f,
-            maxScrollOffsetPx = 200f,
-            visibleFieldListAreaHeightPx = 0f,
-            contentHeightPx = 300f,
-        )
-
-        assertFalse(page.previousEnabled)
-        assertFalse(page.nextEnabled)
-        assertEquals(0f, page.previousTargetPx(), 0.001f)
-        assertEquals(0f, page.nextTargetPx(), 0.001f)
-        assertEquals(0f, page.snapTargetPx(), 0.001f)
-    }
-}
-```
-
-- [ ] **Step 2: Run paging tests and verify they fail**
-
-Run:
-
-```bash
-./gradlew :app:testDebugUnitTest --tests "io.github.togls.kp2acomposekeyboard.ui.keyboard.layout.EntryFieldPagingTest"
-```
-
-Expected: fails because `EntryFieldPageState` does not exist.
-
-- [ ] **Step 3: Implement paging helpers**
-
-Create `EntryFieldPaging.kt`:
-
-```kotlin
-package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
-
-import kotlin.math.round
-
-internal data class EntryFieldPageState(
-    val currentOffsetPx: Float,
-    val maxScrollOffsetPx: Float,
-    val visibleFieldListAreaHeightPx: Float,
-    val contentHeightPx: Float,
-) {
-    val previousEnabled: Boolean
-        get() = canPage && currentOffsetPx > 0f
-
-    val nextEnabled: Boolean
-        get() = canPage && currentOffsetPx < maxScrollOffsetPx
-
-    fun previousTargetPx(): Float {
-        if (!canPage) return 0f
-        return (currentOffsetPx - visibleFieldListAreaHeightPx)
-            .coerceAtLeast(0f)
-    }
-
-    fun nextTargetPx(): Float {
-        if (!canPage) return 0f
-        return (currentOffsetPx + visibleFieldListAreaHeightPx)
-            .coerceAtMost(maxScrollOffsetPx)
-    }
-
-    fun snapTargetPx(): Float {
-        if (!canPage) return 0f
-        val targetPage = round(currentOffsetPx / visibleFieldListAreaHeightPx)
-        return (targetPage * visibleFieldListAreaHeightPx)
-            .coerceIn(0f, maxScrollOffsetPx)
-    }
-
-    private val canPage: Boolean
-        get() = visibleFieldListAreaHeightPx > 0f &&
-            contentHeightPx > visibleFieldListAreaHeightPx &&
-            maxScrollOffsetPx > 0f
-}
-```
-
-- [ ] **Step 4: Run paging tests and full unit tests**
-
-Run:
-
-```bash
-./gradlew :app:testDebugUnitTest --tests "io.github.togls.kp2acomposekeyboard.ui.keyboard.layout.EntryFieldPagingTest"
-./gradlew :app:testDebugUnitTest
-```
-
-Expected: PASS.
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryFieldPaging.kt app/src/test/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryFieldPagingTest.kt
-git commit -m "feat(keyboard): add entry field paging math"
-```
-
----
-
-## Task 6: Implement Normal Entry Continuous Scroll
+**Goal:** Render normal entry as fixed fields, remaining fields scroll area, and actions; remove normal previous/next controls.
 
 **Files:**
 - Create: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryFieldGrid.kt`
 - Modify: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryKeyboardLayout.kt`
 - Modify: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/row/EntryActionRows.kt`
 
-- [ ] **Step 1: Add field grid renderer**
+- [ ] **Step 6.1: Add field grid**
 
 Create `EntryFieldGrid.kt`:
 
@@ -1018,19 +967,30 @@ internal fun EntryFieldGrid(
 }
 ```
 
-- [ ] **Step 2: Replace normal entry paging path**
+- [ ] **Step 6.2: Add reset key helper**
 
-In `EntryKeyboardLayout.kt`, keep the external function signature. In `EntryFieldDisplayMode.Paged`, render:
+In `EntryKeyboardLayout.kt`, add:
 
 ```kotlin
-NormalEntryContent(
-    state = state,
-    onIntent = onIntent,
-    modifier = Modifier.weight(1f),
-)
+private fun KeyboardUiState.entryScrollResetKey(): String {
+    val fixedIds = fixedFields.joinToString(separator = "|") { it.id }
+    val extraIds = extraFields.joinToString(separator = "|") { it.id }
+    return listOf(
+        mainLayout.name,
+        entryFieldDisplayMode.name,
+        hasActiveSession.toString(),
+        currentEntryName.orEmpty(),
+        fixedIds,
+        extraIds,
+    ).joinToString(separator = "::")
+}
 ```
 
-Add `NormalEntryContent`:
+This key intentionally uses field ids and safe state only.
+
+- [ ] **Step 6.3: Render normal entry**
+
+Replace the normal entry path with:
 
 ```kotlin
 @Composable
@@ -1041,8 +1001,9 @@ private fun NormalEntryContent(
 ) {
     val metrics = LocalKeyboardLayoutMetrics.current
     val scrollState = rememberScrollState()
+    val resetKey = state.entryScrollResetKey()
 
-    LaunchedEffect(state.currentEntryName, state.fixedFields, state.extraFields) {
+    LaunchedEffect(resetKey) {
         scrollState.scrollTo(0)
     }
 
@@ -1056,7 +1017,9 @@ private fun NormalEntryContent(
             fields = state.fixedFields,
             columns = ENTRY_FIELD_COLUMNS,
             onIntent = onIntent,
-            modifier = Modifier.height(metrics.keyboardRowHeight),
+            modifier = Modifier
+                .height(metrics.keyboardRowHeight)
+                .testTag(KeyboardTestTags.EntryFixedFields),
         )
 
         EntryFieldGrid(
@@ -1066,12 +1029,14 @@ private fun NormalEntryContent(
             modifier = Modifier
                 .height(metrics.remainingFieldsAreaHeight)
                 .verticalScroll(scrollState)
-                .testTag(KeyboardTestTags.RemainingFields),
+                .testTag(KeyboardTestTags.EntryRemainingFields),
         )
 
         NormalEntryActionRow(
             onIntent = onIntent,
-            modifier = Modifier.height(metrics.keyboardRowHeight),
+            modifier = Modifier
+                .height(metrics.keyboardRowHeight)
+                .testTag(KeyboardTestTags.EntryActions),
         )
     }
 }
@@ -1079,18 +1044,11 @@ private fun NormalEntryContent(
 private const val ENTRY_FIELD_COLUMNS = 3
 ```
 
-Add imports:
+Required imports include `height`, `verticalScroll`, `rememberScrollState`, `LaunchedEffect`, and `testTag`.
 
-```kotlin
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.ui.platform.testTag
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardTestTags
-```
+- [ ] **Step 6.4: Replace normal action row**
 
-- [ ] **Step 3: Remove previous and next from normal action row**
-
-In `EntryActionRows.kt`, replace `PagedEntryActionRow` with `NormalEntryActionRow`:
+In `EntryActionRows.kt`, replace `PagedEntryActionRow` with:
 
 ```kotlin
 @Composable
@@ -1127,7 +1085,7 @@ fun NormalEntryActionRow(
 }
 ```
 
-- [ ] **Step 4: Run checks**
+- [ ] **Step 6.5: Run checks**
 
 Run:
 
@@ -1138,7 +1096,7 @@ Run:
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6.6: Commit**
 
 ```bash
 git add app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryFieldGrid.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryKeyboardLayout.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/row/EntryActionRows.kt
@@ -1147,37 +1105,147 @@ git commit -m "feat(keyboard): make normal entry fields scroll"
 
 ---
 
-## Task 7: Implement Expanded Entry Paging Controls
+## Stage 7: Expanded Entry Paging Controls
+
+**Goal:** Render expanded entry as one continuous list and wire previous/next to page math.
 
 **Files:**
+- Create: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryFieldPaging.kt`
+- Create: `app/src/test/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryFieldPagingTest.kt`
 - Modify: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryKeyboardLayout.kt`
 - Modify: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/row/ExpandedEntryActionRows.kt`
 
-- [ ] **Step 1: Render expanded list as one continuous grid**
+- [ ] **Step 7.1: Write failing paging tests**
 
-In `EntryKeyboardLayout.kt`, replace `ExpandedEntryContent` internals with a single field list:
-
-```kotlin
-val expandedFields = state.fixedFields + state.extraFields
-```
-
-Render with:
+Create `EntryFieldPagingTest.kt`:
 
 ```kotlin
-EntryFieldGrid(
-    fields = expandedFields,
-    columns = ENTRY_FIELD_COLUMNS,
-    onIntent = onIntent,
-    modifier = Modifier
-        .weight(1f)
-        .verticalScroll(scrollState)
-        .testTag(KeyboardTestTags.ExpandedFields),
-)
+package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
+
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Test
+
+class EntryFieldPagingTest {
+    @Test
+    fun `previous and next targets clamp to bounds`() {
+        val state = EntryFieldPageState(
+            currentOffsetPx = 150f,
+            maxScrollOffsetPx = 260f,
+            visibleFieldListAreaHeightPx = 100f,
+            contentHeightPx = 360f,
+        )
+
+        assertEquals(50f, state.previousTargetPx(), 0.001f)
+        assertEquals(250f, state.nextTargetPx(), 0.001f)
+    }
+
+    @Test
+    fun `controls disable when content fits one page`() {
+        val state = EntryFieldPageState(
+            currentOffsetPx = 0f,
+            maxScrollOffsetPx = 0f,
+            visibleFieldListAreaHeightPx = 200f,
+            contentHeightPx = 180f,
+        )
+
+        assertFalse(state.previousEnabled)
+        assertFalse(state.nextEnabled)
+        assertEquals(0f, state.snapTargetPx(), 0.001f)
+    }
+
+    @Test
+    fun `snap target uses nearest page and clamps`() {
+        val state = EntryFieldPageState(
+            currentOffsetPx = 151f,
+            maxScrollOffsetPx = 260f,
+            visibleFieldListAreaHeightPx = 100f,
+            contentHeightPx = 360f,
+        )
+
+        assertEquals(200f, state.snapTargetPx(), 0.001f)
+    }
+
+    @Test
+    fun `zero visible height disables page math`() {
+        val state = EntryFieldPageState(
+            currentOffsetPx = 100f,
+            maxScrollOffsetPx = 200f,
+            visibleFieldListAreaHeightPx = 0f,
+            contentHeightPx = 300f,
+        )
+
+        assertFalse(state.previousEnabled)
+        assertFalse(state.nextEnabled)
+        assertEquals(0f, state.previousTargetPx(), 0.001f)
+        assertEquals(0f, state.nextTargetPx(), 0.001f)
+        assertEquals(0f, state.snapTargetPx(), 0.001f)
+    }
+}
 ```
 
-- [ ] **Step 2: Add page-state measurement without metrics state writes**
+- [ ] **Step 7.2: Run paging tests and verify failure**
 
-Inside `ExpandedEntryContent`, derive current page state from `scrollState` and the visible field-list area. This uses size state only for scroll controls; it must not feed back into layout metrics.
+Run:
+
+```bash
+./gradlew :app:testDebugUnitTest --tests "io.github.togls.kp2acomposekeyboard.ui.keyboard.layout.EntryFieldPagingTest"
+```
+
+Expected: FAIL because `EntryFieldPageState` does not exist.
+
+- [ ] **Step 7.3: Implement paging helper**
+
+Create `EntryFieldPaging.kt`:
+
+```kotlin
+package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
+
+import kotlin.math.round
+
+internal data class EntryFieldPageState(
+    val currentOffsetPx: Float,
+    val maxScrollOffsetPx: Float,
+    val visibleFieldListAreaHeightPx: Float,
+    val contentHeightPx: Float,
+) {
+    val previousEnabled: Boolean
+        get() = canPage && currentOffsetPx > 0f
+
+    val nextEnabled: Boolean
+        get() = canPage && currentOffsetPx < maxScrollOffsetPx
+
+    fun previousTargetPx(): Float {
+        if (!canPage) return 0f
+        return (currentOffsetPx - visibleFieldListAreaHeightPx).coerceAtLeast(0f)
+    }
+
+    fun nextTargetPx(): Float {
+        if (!canPage) return 0f
+        return (currentOffsetPx + visibleFieldListAreaHeightPx)
+            .coerceAtMost(maxScrollOffsetPx)
+    }
+
+    fun snapTargetPx(): Float {
+        if (!canPage) return 0f
+        val targetPage = round(currentOffsetPx / visibleFieldListAreaHeightPx)
+        return (targetPage * visibleFieldListAreaHeightPx)
+            .coerceIn(0f, maxScrollOffsetPx)
+    }
+
+    private val canPage: Boolean
+        get() = visibleFieldListAreaHeightPx > 0f &&
+            contentHeightPx > visibleFieldListAreaHeightPx &&
+            maxScrollOffsetPx > 0f
+}
+```
+
+- [ ] **Step 7.4: Render expanded list with page controls**
+
+In `EntryKeyboardLayout.kt`, expanded mode uses `state.fixedFields + state.extraFields` exactly once as the field source.
+
+Use local visible-height state for scroll controls. This state must not feed metrics:
 
 ```kotlin
 var visibleFieldListAreaHeightPx by remember { mutableFloatStateOf(0f) }
@@ -1187,57 +1255,9 @@ val pageState = EntryFieldPageState(
     visibleFieldListAreaHeightPx = visibleFieldListAreaHeightPx,
     contentHeightPx = scrollState.maxValue.toFloat() + visibleFieldListAreaHeightPx,
 )
-
-Box(modifier = Modifier.weight(1f)) {
-    EntryFieldGrid(
-        fields = state.fixedFields + state.extraFields,
-        columns = ENTRY_FIELD_COLUMNS,
-        onIntent = onIntent,
-        modifier = Modifier
-            .fillMaxSize()
-            .onSizeChanged { size ->
-                visibleFieldListAreaHeightPx = size.height.toFloat()
-            }
-            .verticalScroll(scrollState)
-            .testTag(KeyboardTestTags.ExpandedFields),
-    )
-}
 ```
 
-Add imports:
-
-```kotlin
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.layout.onSizeChanged
-```
-
-- [ ] **Step 3: Wire previous and next buttons to page targets**
-
-Use a `CoroutineScope` already created in `EntryKeyboardLayout`:
-
-```kotlin
-ExpandedEntryActionRows(
-    canScrollUp = pageState.previousEnabled,
-    canScrollDown = pageState.nextEnabled,
-    onScrollUp = {
-        coroutineScope.launch {
-            scrollState.animateScrollTo(pageState.previousTargetPx().toInt())
-        }
-    },
-    onScrollDown = {
-        coroutineScope.launch {
-            scrollState.animateScrollTo(pageState.nextTargetPx().toInt())
-        }
-    },
-    onIntent = onIntent,
-)
-```
-
-The expanded content root must expose the safe test tag and keep `pageState` in the same scope as the action rows:
+Render:
 
 ```kotlin
 Column(
@@ -1257,7 +1277,7 @@ Column(
                     visibleFieldListAreaHeightPx = size.height.toFloat()
                 }
                 .verticalScroll(scrollState)
-                .testTag(KeyboardTestTags.ExpandedFields),
+                .testTag(KeyboardTestTags.EntryExpandedFields),
         )
     }
 
@@ -1279,163 +1299,192 @@ Column(
 }
 ```
 
-In `ExpandedEntryActionRows.kt`, attach tags to previous and next page controls:
+- [ ] **Step 7.5: Reset and clamp expanded scroll**
+
+Reset key:
 
 ```kotlin
-PreviousPageKey(
-    enabled = canScrollUp,
-    onClick = onScrollUp,
-    modifier = Modifier
-        .weight(1f)
-        .testTag(KeyboardTestTags.PreviousPage),
-)
+val resetKey = state.entryScrollResetKey()
 
-NextPageKey(
-    enabled = canScrollDown,
-    onClick = onScrollDown,
-    modifier = Modifier
-        .weight(1f)
-        .testTag(KeyboardTestTags.NextPage),
-)
-```
-
-- [ ] **Step 4: Reset and clamp scroll when mode or content changes**
-
-Keep the existing reset effect and expand it:
-
-```kotlin
-LaunchedEffect(
-    state.entryFieldDisplayMode,
-    state.currentEntryName,
-    state.fixedFields,
-    state.extraFields,
-) {
+LaunchedEffect(resetKey) {
     scrollState.scrollTo(0)
 }
 ```
 
-Add a clamp effect:
+Clamp key:
 
 ```kotlin
-LaunchedEffect(scrollState.maxValue) {
+LaunchedEffect(
+    scrollState.maxValue,
+    visibleFieldListAreaHeightPx,
+    state.fixedFields.map { it.id },
+    state.extraFields.map { it.id },
+    state.entryFieldDisplayMode,
+) {
     if (scrollState.value > scrollState.maxValue) {
         scrollState.scrollTo(scrollState.maxValue)
     }
 }
 ```
 
-- [ ] **Step 5: Run checks**
+- [ ] **Step 7.6: Run checks**
 
 Run:
 
 ```bash
+./gradlew :app:testDebugUnitTest --tests "io.github.togls.kp2acomposekeyboard.ui.keyboard.layout.EntryFieldPagingTest"
 ./gradlew :app:testDebugUnitTest
 ./gradlew :app:assembleDebug
 ```
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 7.7: Commit**
 
 ```bash
-git add app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryKeyboardLayout.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/row/ExpandedEntryActionRows.kt
+git add app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryFieldPaging.kt app/src/test/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryFieldPagingTest.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryKeyboardLayout.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/row/ExpandedEntryActionRows.kt
 git commit -m "feat(keyboard): page expanded entry fields"
 ```
 
 ---
 
-## Task 8: Add Drag-End Snap for Expanded Entry
+## Stage 8: Drag-End Snap
+
+**Goal:** Snap expanded entry list to the nearest page boundary after user drag ends without restarting effects on every offset change.
 
 **Files:**
 - Modify: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryKeyboardLayout.kt`
+- Modify: `app/src/test/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryFieldPagingTest.kt`
 
-- [ ] **Step 1: Add snap state guard**
+- [ ] **Step 8.1: Add snap boundary test**
 
-Inside expanded field list composition, track user scroll completion with `LaunchedEffect`:
+Add to `EntryFieldPagingTest.kt`:
 
 ```kotlin
-LaunchedEffect(scrollState.isScrollInProgress, pageState) {
-    if (!scrollState.isScrollInProgress) {
-        val target = pageState.snapTargetPx().toInt()
-        if (target != scrollState.value) {
-            scrollState.animateScrollTo(target)
-        }
-    }
+@Test
+fun `snap target clamps at bottom boundary`() {
+    val state = EntryFieldPageState(
+        currentOffsetPx = 255f,
+        maxScrollOffsetPx = 260f,
+        visibleFieldListAreaHeightPx = 100f,
+        contentHeightPx = 360f,
+    )
+
+    assertEquals(260f, state.snapTargetPx(), 0.001f)
 }
 ```
 
-Keep the `EntryFieldPageState` `canPage` guard as the only place deciding whether snap is meaningful.
+- [ ] **Step 8.2: Use snapshotFlow for scroll-end detection**
 
-- [ ] **Step 2: Avoid snap during reset**
-
-If the snap animation fights the reset effect, add a local boolean:
+In expanded content, add guards:
 
 ```kotlin
 var isResettingScroll by remember { mutableStateOf(false) }
+var isProgrammaticScroll by remember { mutableStateOf(false) }
+var latestPageState by remember { mutableStateOf(pageState) }
+latestPageState = pageState
 ```
 
-Set it around `scrollState.scrollTo(0)`:
+Use `snapshotFlow`:
 
 ```kotlin
-isResettingScroll = true
-scrollState.scrollTo(0)
-isResettingScroll = false
+LaunchedEffect(scrollState) {
+    var wasScrolling = scrollState.isScrollInProgress
+    snapshotFlow { scrollState.isScrollInProgress }
+        .collect { isScrolling ->
+            val endedUserScroll = wasScrolling &&
+                !isScrolling &&
+                !isResettingScroll &&
+                !isProgrammaticScroll
+            wasScrolling = isScrolling
+
+            if (endedUserScroll) {
+                val target = latestPageState.snapTargetPx().toInt()
+                if (target != scrollState.value) {
+                    isProgrammaticScroll = true
+                    try {
+                        scrollState.animateScrollTo(target)
+                    } finally {
+                        isProgrammaticScroll = false
+                    }
+                }
+            }
+        }
+}
 ```
 
-Then guard snap:
+Required imports:
 
 ```kotlin
-if (!isResettingScroll && !scrollState.isScrollInProgress) {
-    val target = pageState.snapTargetPx().toInt()
-    if (target != scrollState.value) {
-        scrollState.animateScrollTo(target)
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshotFlow
+```
+
+- [ ] **Step 8.3: Guard reset and programmatic page buttons**
+
+Around resets:
+
+```kotlin
+LaunchedEffect(resetKey) {
+    isResettingScroll = true
+    try {
+        scrollState.scrollTo(0)
+    } finally {
+        isResettingScroll = false
     }
 }
 ```
 
-- [ ] **Step 3: Run checks**
+Around previous/next animations:
+
+```kotlin
+isProgrammaticScroll = true
+try {
+    scrollState.animateScrollTo(pageState.nextTargetPx().toInt())
+} finally {
+    isProgrammaticScroll = false
+}
+```
+
+- [ ] **Step 8.4: Run checks**
 
 Run:
 
 ```bash
+./gradlew :app:testDebugUnitTest --tests "io.github.togls.kp2acomposekeyboard.ui.keyboard.layout.EntryFieldPagingTest"
 ./gradlew :app:testDebugUnitTest
 ./gradlew :app:assembleDebug
 ```
 
 Expected: PASS.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 8.5: Commit**
 
 ```bash
-git add app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryKeyboardLayout.kt
+git add app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryKeyboardLayout.kt app/src/test/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/EntryFieldPagingTest.kt
 git commit -m "feat(keyboard): snap expanded fields to pages"
 ```
 
 ---
 
-## Task 9: Add Compose UI Regression Tests
+## Stage 9: Compose UI Regression Tests
+
+**Goal:** Cover the design-critical layout behavior and sensitive-data boundary with instrumented Compose tests.
 
 **Files:**
-- Create: `app/src/androidTest/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardRootLayoutTest.kt`
+- Create: `app/src/androidTest/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardRootTestFixtures.kt`
+- Create: `app/src/androidTest/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardRootDefaultLayoutTest.kt`
+- Create: `app/src/androidTest/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardRootEntryLayoutTest.kt`
+- Create: `app/src/androidTest/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardRootSensitiveDataTest.kt`
 
-- [ ] **Step 1: Add Compose UI tests**
+- [ ] **Step 9.1: Add test fixtures**
 
-Create `KeyboardRootLayoutTest.kt`:
+Create `KeyboardRootTestFixtures.kt` with fake sensitive values in source data comments only if needed, never in UI labels:
 
 ```kotlin
 package io.github.togls.kp2acomposekeyboard.ui.keyboard
 
-import androidx.compose.ui.test.assertCountEquals
-import androidx.compose.ui.test.assertExists
-import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasContentDescription
-import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onAllNodes
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
+import androidx.compose.runtime.Composable
 import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldType
 import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldUiModel
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.EntryFieldDisplayMode
@@ -1444,18 +1493,89 @@ import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.MainKeyboardLayout
 import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
 import io.github.togls.kp2acomposekeyboard.ui.theme.KeyboardTheme
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+
+internal const val PASSWORD_SHOULD_NOT_APPEAR = "PASSWORD_SHOULD_NOT_APPEAR"
+internal const val TOTP_SHOULD_NOT_APPEAR = "TOTP_SHOULD_NOT_APPEAR"
+internal const val RECOVERY_CODE_SHOULD_NOT_APPEAR = "RECOVERY_CODE_SHOULD_NOT_APPEAR"
+
+internal val forbiddenSensitiveValues = listOf(
+    PASSWORD_SHOULD_NOT_APPEAR,
+    TOTP_SHOULD_NOT_APPEAR,
+    RECOVERY_CODE_SHOULD_NOT_APPEAR,
+)
+
+@Composable
+internal fun KeyboardRootTestContent(
+    state: KeyboardUiState,
+    onIntent: (KeyboardIntent) -> Unit = {},
+) {
+    val settings = KeyboardSettings()
+    KeyboardTheme(settings = settings) {
+        KeyboardRoot(
+            state = state,
+            settings = settings,
+            onIntent = onIntent,
+        )
+    }
+}
+
+internal fun testDefaultState() = KeyboardUiState()
+
+internal fun testEntryState(
+    displayMode: EntryFieldDisplayMode,
+    extraFieldCount: Int = 8,
+) = KeyboardUiState(
+    mainLayout = MainKeyboardLayout.Entry,
+    entryFieldDisplayMode = displayMode,
+    currentEntryName = "Example",
+    hasActiveSession = true,
+    fixedFields = fixedFields(),
+    extraFields = extraFields(extraFieldCount),
+    allFields = fixedFields() + extraFields(extraFieldCount),
+)
+
+private fun fixedFields() = listOf(
+    KeyboardFieldUiModel("username", "Username", KeyboardFieldType.Username, sensitive = false),
+    KeyboardFieldUiModel("password", "Password", KeyboardFieldType.Password, sensitive = true),
+    KeyboardFieldUiModel("totp", "TOTP", KeyboardFieldType.Totp, sensitive = true),
+)
+
+private fun extraFields(count: Int) = List(count) { index ->
+    KeyboardFieldUiModel(
+        id = "extra-$index",
+        label = "Extra $index",
+        type = KeyboardFieldType.Custom,
+        sensitive = index % 2 == 0,
+    )
+}
+```
+
+- [ ] **Step 9.2: Add default keyboard tests**
+
+Create `KeyboardRootDefaultLayoutTest.kt`:
+
+```kotlin
+package io.github.togls.kp2acomposekeyboard.ui.keyboard
+
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 
-class KeyboardRootLayoutTest {
+class KeyboardRootDefaultLayoutTest {
     @get:Rule
     val composeRule = createComposeRule()
 
     @Test
     fun rendersDefaultKeyboard() {
-        setKeyboardContent(KeyboardUiState())
+        composeRule.setContent {
+            KeyboardRootTestContent(state = testDefaultState())
+        }
 
         composeRule.onNodeWithTag(KeyboardTestTags.Root).assertIsDisplayed()
         composeRule.onNodeWithText("q").assertIsDisplayed()
@@ -1463,8 +1583,55 @@ class KeyboardRootLayoutTest {
     }
 
     @Test
-    fun normalEntryDoesNotShowPageControls() {
-        setKeyboardContent(entryState(EntryFieldDisplayMode.Paged))
+    fun tenKeyReferenceRowUsesConsistentWidths() {
+        composeRule.setContent {
+            KeyboardRootTestContent(state = testDefaultState())
+        }
+
+        val widths = "qwertyuiop".map { key ->
+            composeRule.onNodeWithText(key.toString())
+                .getUnclippedBoundsInRoot()
+                .width
+        }
+        val firstWidth = widths.first()
+
+        widths.forEach { width ->
+            assertEquals(firstWidth.value, width.value, 0.5f)
+        }
+    }
+}
+```
+
+- [ ] **Step 9.3: Add entry layout tests**
+
+Create `KeyboardRootEntryLayoutTest.kt` with tests for normal structure, no previous/next, expanded controls, disabled content-fits controls, and scroll. Use `performTouchInput { swipeUp() }` for scrollable areas.
+
+```kotlin
+package io.github.togls.kp2acomposekeyboard.ui.keyboard
+
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodes
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeUp
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.EntryFieldDisplayMode
+import org.junit.Rule
+import org.junit.Test
+
+class KeyboardRootEntryLayoutTest {
+    @get:Rule
+    val composeRule = createComposeRule()
+
+    @Test
+    fun normalEntryHasNoPageControls() {
+        composeRule.setContent {
+            KeyboardRootTestContent(testEntryState(EntryFieldDisplayMode.Paged))
+        }
 
         composeRule.onNodeWithTag(KeyboardTestTags.EntryNormalContent).assertIsDisplayed()
         composeRule.onAllNodes(hasTestTag(KeyboardTestTags.PreviousPage)).assertCountEquals(0)
@@ -1472,100 +1639,112 @@ class KeyboardRootLayoutTest {
     }
 
     @Test
-    fun expandedEntryShowsPageControls() {
-        setKeyboardContent(entryState(EntryFieldDisplayMode.Expanded))
+    fun normalRemainingFieldsScrollVertically() {
+        composeRule.setContent {
+            KeyboardRootTestContent(testEntryState(EntryFieldDisplayMode.Paged, extraFieldCount = 12))
+        }
 
-        composeRule.onNodeWithTag(KeyboardTestTags.EntryExpandedContent).assertIsDisplayed()
-        composeRule.onNodeWithTag(KeyboardTestTags.PreviousPage).assertExists()
-        composeRule.onNodeWithTag(KeyboardTestTags.NextPage).assertExists()
+        composeRule.onNodeWithTag(KeyboardTestTags.EntryRemainingFields)
+            .performTouchInput { swipeUp() }
+        composeRule.waitForIdle()
+        composeRule.onNodeWithText("Extra 11").assertIsDisplayed()
     }
 
     @Test
-    fun fieldValuesDoNotAppearInTextSemanticsOrTags() {
-        setKeyboardContent(entryState(EntryFieldDisplayMode.Paged))
+    fun expandedEntryShowsPageControls() {
+        composeRule.setContent {
+            KeyboardRootTestContent(testEntryState(EntryFieldDisplayMode.Expanded))
+        }
 
-        forbiddenValues.forEach { forbiddenValue ->
+        composeRule.onNodeWithTag(KeyboardTestTags.EntryExpandedContent).assertIsDisplayed()
+        composeRule.onNodeWithTag(KeyboardTestTags.PreviousPage).assertIsDisplayed()
+        composeRule.onNodeWithTag(KeyboardTestTags.NextPage).assertIsDisplayed()
+    }
+
+    @Test
+    fun expandedControlsDisableWhenContentFitsOnePage() {
+        composeRule.setContent {
+            KeyboardRootTestContent(testEntryState(EntryFieldDisplayMode.Expanded, extraFieldCount = 0))
+        }
+
+        composeRule.onNodeWithTag(KeyboardTestTags.PreviousPage).assertIsNotEnabled()
+        composeRule.onNodeWithTag(KeyboardTestTags.NextPage).assertIsNotEnabled()
+    }
+}
+```
+
+- [ ] **Step 9.4: Add sensitive-data tests**
+
+Create `KeyboardRootSensitiveDataTest.kt`:
+
+```kotlin
+package io.github.togls.kp2acomposekeyboard.ui.keyboard
+
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodes
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.printToString
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.onNodeWithTag
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.EntryFieldDisplayMode
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Rule
+import org.junit.Test
+
+class KeyboardRootSensitiveDataTest {
+    @get:Rule
+    val composeRule = createComposeRule()
+
+    @Test
+    fun sensitiveValuesDoNotAppearInTextContentDescriptionsOrSemanticsDump() {
+        composeRule.setContent {
+            KeyboardRootTestContent(testEntryState(EntryFieldDisplayMode.Paged))
+        }
+
+        val semanticsDump = composeRule.onRoot(useUnmergedTree = true).printToString()
+
+        forbiddenSensitiveValues.forEach { forbiddenValue ->
             composeRule.onAllNodes(hasText(forbiddenValue, substring = true)).assertCountEquals(0)
-            composeRule.onAllNodes(hasContentDescription(forbiddenValue, substring = true)).assertCountEquals(0)
-            composeRule.onAllNodes(hasTestTag(forbiddenValue)).assertCountEquals(0)
+            composeRule.onAllNodes(hasContentDescription(forbiddenValue, substring = true))
+                .assertCountEquals(0)
+            assertFalse(semanticsDump.contains(forbiddenValue))
         }
     }
 
     @Test
-    fun clickingFieldSendsFieldIdOnly() {
+    fun fieldClickSendsFieldIdOnly() {
         val intents = mutableListOf<KeyboardIntent>()
-        setKeyboardContent(entryState(EntryFieldDisplayMode.Paged), onIntent = intents::add)
+        composeRule.setContent {
+            KeyboardRootTestContent(
+                state = testEntryState(EntryFieldDisplayMode.Paged),
+                onIntent = intents::add,
+            )
+        }
 
         composeRule.onNodeWithTag(KeyboardTestTags.field("password")).performClick()
 
         assertTrue(intents.contains(KeyboardIntent.CommitField("password")))
         assertFalse(intents.contains(KeyboardIntent.CommitText(PASSWORD_SHOULD_NOT_APPEAR)))
     }
-
-    private fun setKeyboardContent(
-        state: KeyboardUiState,
-        onIntent: (KeyboardIntent) -> Unit = {},
-    ) {
-        val settings = KeyboardSettings()
-        composeRule.setContent {
-            KeyboardTheme(settings = settings) {
-                KeyboardRoot(
-                    state = state,
-                    settings = settings,
-                    onIntent = onIntent,
-                )
-            }
-        }
-    }
-
-    private fun entryState(displayMode: EntryFieldDisplayMode): KeyboardUiState {
-        val fixedFields = listOf(
-            KeyboardFieldUiModel("username", "Username", KeyboardFieldType.Username, sensitive = false),
-            KeyboardFieldUiModel("password", "Password", KeyboardFieldType.Password, sensitive = true),
-            KeyboardFieldUiModel("totp", "TOTP", KeyboardFieldType.Totp, sensitive = true),
-        )
-        val extraFields = listOf(
-            KeyboardFieldUiModel("email", "Email", KeyboardFieldType.Email, sensitive = false),
-            KeyboardFieldUiModel("recovery", "Recovery", KeyboardFieldType.Recovery, sensitive = true),
-            KeyboardFieldUiModel("token", "Token", KeyboardFieldType.Custom, sensitive = true),
-            KeyboardFieldUiModel("notes", "Notes", KeyboardFieldType.Notes, sensitive = false),
-        )
-        return KeyboardUiState(
-            mainLayout = MainKeyboardLayout.Entry,
-            entryFieldDisplayMode = displayMode,
-            currentEntryName = "Example",
-            hasActiveSession = true,
-            fixedFields = fixedFields,
-            extraFields = extraFields,
-            allFields = fixedFields + extraFields,
-        )
-    }
-
-    private companion object {
-        const val PASSWORD_SHOULD_NOT_APPEAR = "PASSWORD_SHOULD_NOT_APPEAR"
-        const val TOTP_SHOULD_NOT_APPEAR = "TOTP_SHOULD_NOT_APPEAR"
-        const val RECOVERY_CODE_SHOULD_NOT_APPEAR = "RECOVERY_CODE_SHOULD_NOT_APPEAR"
-
-        val forbiddenValues = listOf(
-            PASSWORD_SHOULD_NOT_APPEAR,
-            TOTP_SHOULD_NOT_APPEAR,
-            RECOVERY_CODE_SHOULD_NOT_APPEAR,
-        )
-    }
 }
 ```
 
-- [ ] **Step 2: Run instrumented tests**
+- [ ] **Step 9.5: Run instrumented tests**
 
-Run with an attached emulator or device:
+Run:
 
 ```bash
 ./gradlew :app:connectedDebugAndroidTest
 ```
 
-Expected: PASS. If no device is attached, record the exact failure in the implementation report and continue only after unit tests and assemble pass.
+Expected: PASS with an attached Android device or emulator. If no device exists, capture the exact no-device output in the implementation report.
 
-- [ ] **Step 3: Run full local checks**
+- [ ] **Step 9.6: Run local checks**
 
 Run:
 
@@ -1576,56 +1755,69 @@ Run:
 
 Expected: PASS.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 9.7: Commit**
 
 ```bash
-git add app/src/androidTest/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardRootLayoutTest.kt
+git add app/src/androidTest/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardRootTestFixtures.kt app/src/androidTest/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardRootDefaultLayoutTest.kt app/src/androidTest/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardRootEntryLayoutTest.kt app/src/androidTest/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/KeyboardRootSensitiveDataTest.kt
 git commit -m "test(keyboard): cover keyboard root layout behavior"
 ```
 
 ---
 
-## Task 10: Add Previews and Cleanup Old Components
+## Stage 10: Add Previews
+
+**Goal:** Add preview coverage without runtime behavior changes.
 
 **Files:**
 - Modify: `app/src/debug/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/preview/KeyboardPreviewFixtures.kt`
 - Modify: `app/src/debug/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/preview/EntryKeyboardPreviews.kt`
-- Delete only after references are gone: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardWidthLayout.kt`
-- Candidate delete after references are gone: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/row/TextKeyRow.kt`
-- Candidate delete after references are gone: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/row/LetterRow.kt`
-- Candidate delete after references are gone: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/row/FixedTextKeyRow.kt`
-- Candidate delete after references are gone: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/row/FixedFieldRow.kt`
-- Candidate delete after references are gone: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/entry/ExtraFieldPagedPanel.kt`
-- Candidate delete after references are gone: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/entry/AllFieldsExpandedPanel.kt`
+- Modify: `app/src/debug/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/preview/LandscapeKeyboardPreviews.kt`
 
-- [ ] **Step 1: Add preview fixtures**
+- [ ] **Step 10.1: Add safe preview fixtures**
 
-Add safe long-label fields to `KeyboardPreviewFixtures.kt`:
+Add to `KeyboardPreviewFixtures.kt`:
 
 ```kotlin
 internal fun previewLongLabelEntryKeyboardState(): KeyboardUiState {
-    return previewEntryKeyboardState().copy(
-        extraFields = listOf(
-            KeyboardFieldUiModel(
-                id = "very-long-label",
-                label = "Very Long Field Label For Layout",
-                type = KeyboardFieldType.Custom,
-                sensitive = false,
-            ),
-            KeyboardFieldUiModel(
-                id = "blank-label",
-                label = "",
-                type = KeyboardFieldType.Custom,
-                sensitive = false,
-            ),
+    val fixedFields = listOf(
+        KeyboardFieldUiModel("username", "Username", KeyboardFieldType.Username, sensitive = false),
+        KeyboardFieldUiModel("password", "Password", KeyboardFieldType.Password, sensitive = true),
+    )
+    val extraFields = listOf(
+        KeyboardFieldUiModel(
+            id = "very-long-label",
+            label = "Very Long Field Label For Layout",
+            type = KeyboardFieldType.Custom,
+            sensitive = false,
         ),
+        KeyboardFieldUiModel(
+            id = "blank-label",
+            label = "",
+            type = KeyboardFieldType.Custom,
+            sensitive = false,
+        ),
+        KeyboardFieldUiModel(
+            id = "duplicate-label",
+            label = "Username",
+            type = KeyboardFieldType.Custom,
+            sensitive = false,
+        ),
+    )
+    return KeyboardUiState(
+        mainLayout = MainKeyboardLayout.Entry,
+        entryFieldDisplayMode = EntryFieldDisplayMode.Paged,
+        currentEntryName = "Preview",
+        hasActiveSession = true,
+        fixedFields = fixedFields,
+        extraFields = extraFields,
+        allFields = fixedFields + extraFields,
     )
 }
 ```
 
-- [ ] **Step 2: Add entry previews**
+- [ ] **Step 10.2: Add normal and expanded long-label previews**
 
-Add previews in `EntryKeyboardPreviews.kt`:
+Add to `EntryKeyboardPreviews.kt`:
 
 ```kotlin
 @Preview(
@@ -1641,11 +1833,62 @@ private fun EntryKeyboardNormalLongLabelsPreview() {
         state = previewLongLabelEntryKeyboardState(),
     )
 }
+
+@Preview(
+    name = "Expanded - Long Labels",
+    group = "Keyboard / Entry",
+    showBackground = true,
+    widthDp = 411,
+    heightDp = 360,
+)
+@Composable
+private fun EntryKeyboardExpandedLongLabelsPreview() {
+    KeyboardPreviewContent(
+        state = previewLongLabelEntryKeyboardState().copy(
+            entryFieldDisplayMode = EntryFieldDisplayMode.Expanded,
+        ),
+        settings = previewTallLightSettings(),
+    )
+}
 ```
 
-Keep existing dark and landscape previews, updating names from `Paged` to `Normal` where the UI has changed.
+- [ ] **Step 10.3: Rename preview labels from Paged to Normal**
 
-- [ ] **Step 3: Find unused old components**
+In `EntryKeyboardPreviews.kt`, rename preview display names from `"Paged"` to `"Normal"` where the UI now renders normal continuous-scroll entry mode. Do not rename `EntryFieldDisplayMode.Paged` yet unless a separate model cleanup is planned.
+
+- [ ] **Step 10.4: Run preview build**
+
+Run:
+
+```bash
+./gradlew :app:assembleDebug
+```
+
+Expected: PASS.
+
+- [ ] **Step 10.5: Commit**
+
+```bash
+git add app/src/debug/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/preview/KeyboardPreviewFixtures.kt app/src/debug/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/preview/EntryKeyboardPreviews.kt app/src/debug/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/preview/LandscapeKeyboardPreviews.kt
+git commit -m "test(keyboard): add layout refactor previews"
+```
+
+---
+
+## Stage 11: Cleanup Old Components
+
+**Goal:** Delete unused old layout components only after new paths are covered.
+
+**Files:**
+- Candidate delete: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/layout/KeyboardWidthLayout.kt`
+- Candidate delete: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/row/TextKeyRow.kt`
+- Candidate delete: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/row/LetterRow.kt`
+- Candidate delete: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/row/FixedTextKeyRow.kt`
+- Candidate delete: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/row/FixedFieldRow.kt`
+- Candidate delete: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/entry/ExtraFieldPagedPanel.kt`
+- Candidate delete: `app/src/main/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/entry/AllFieldsExpandedPanel.kt`
+
+- [ ] **Step 11.1: Confirm references before deleting**
 
 Run:
 
@@ -1653,11 +1896,11 @@ Run:
 rg -n "KeyboardWidthLayout|TextKeyRow|LetterRow|FixedTextKeyRow|FixedFieldRow|ExtraFieldPagedPanel|AllFieldsExpandedPanel|PagedEntryActionRow" app/src
 ```
 
-Expected: any remaining matches are either intentional compatibility wrappers or files safe to delete.
+Expected: only definitions in candidate files remain. If any active reference remains, do not delete that file.
 
-- [ ] **Step 4: Delete unused old files with `apply_patch`**
+- [ ] **Step 11.2: Delete files with no references**
 
-Delete only files with no references from Step 3. Use one delete hunk per file, for example:
+Use `apply_patch` delete hunks. Example:
 
 ```diff
 *** Begin Patch
@@ -1665,7 +1908,9 @@ Delete only files with no references from Step 3. Use one delete hunk per file, 
 *** End Patch
 ```
 
-- [ ] **Step 5: Run final validation**
+Repeat only for files confirmed safe by Step 11.1.
+
+- [ ] **Step 11.3: Run final validation**
 
 Run:
 
@@ -1675,32 +1920,35 @@ Run:
 ./gradlew :app:connectedDebugAndroidTest
 ```
 
-Expected: unit tests and assemble pass. `connectedDebugAndroidTest` passes when a device or emulator is attached. If no device exists, record the exact no-device result in the final report.
+Expected: unit tests and assemble pass. `connectedDebugAndroidTest` passes when a device or emulator is attached. If no device exists, record the exact no-device result.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 11.4: Commit**
 
 ```bash
-git add app/src/debug/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/preview/KeyboardPreviewFixtures.kt app/src/debug/kotlin/io/github/togls/kp2acomposekeyboard/ui/keyboard/preview/EntryKeyboardPreviews.kt app/src/main/kotlin/io/github/togls/kp2acomposekeyboard
-git commit -m "refactor(keyboard): clean up migrated layout components"
+git add app/src/main/kotlin/io/github/togls/kp2acomposekeyboard
+git commit -m "refactor(keyboard): remove migrated layout components"
 ```
 
 ---
 
 ## Final Verification Checklist
 
-- [ ] `KeyboardRoot` public function signature is unchanged.
-- [ ] No full layout DSL was introduced.
-- [ ] No `minKeyHeight` visual fallback was introduced.
+- [ ] `KeyboardRoot` public signature is unchanged.
+- [ ] No full layout DSL or key-spec renderer was introduced.
+- [ ] No `minKeyHeight` fallback was introduced.
+- [ ] Bottom gap visual value is unchanged.
 - [ ] Metrics formulas are centralized in `KeyboardLayoutMetrics.kt`.
 - [ ] Metrics calculation does not write Compose state.
 - [ ] Default keyboard uses shared metrics.
+- [ ] 10-key reference row has consistent key widths.
+- [ ] Width policy sample can express standard, side, and flexible keys.
 - [ ] Normal entry mode has no previous or next page controls.
 - [ ] Normal entry remaining fields scroll vertically.
 - [ ] Expanded entry fields render as one continuous list.
 - [ ] Expanded entry previous and next controls page by visible field-list height.
-- [ ] Expanded drag-end snap clamps to valid bounds.
+- [ ] Expanded drag-end snap uses `snapshotFlow` and guards reset/programmatic scroll.
 - [ ] Field commit remains `KeyboardIntent.CommitField(fieldId)`.
 - [ ] Field values do not appear in UI state, Composable params, semantics, test tags, logs, tests, screenshots, or docs.
 - [ ] `./gradlew :app:testDebugUnitTest` passes.
 - [ ] `./gradlew :app:assembleDebug` passes.
-- [ ] `./gradlew :app:connectedDebugAndroidTest` passes, or the final report states no device/emulator was available.
+- [ ] `./gradlew :app:connectedDebugAndroidTest` passes or no-device failure is reported.
