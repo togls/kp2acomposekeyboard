@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved for design documentation.
+Approved for staged implementation planning after this revision is reviewed.
 
 ## Context
 
@@ -30,8 +30,8 @@ versions.
 - Keep Compose implementation direct and readable instead of introducing a full
   layout specification DSL.
 - Use a four-row keyboard area height model for default and entry layouts.
-- Keep the utility or candidate row height independent from the four-row
-  keyboard area.
+- Keep the candidate row height independent from the four-row keyboard area.
+  The current utility row is treated as the candidate row for this refactor.
 - Keep the bottom spacer and navigation bar spacer outside keyboard row height
   calculation.
 - Add Compose UI tests for the new layout behavior.
@@ -62,6 +62,27 @@ would also require a second mapping layer from layout specs to composables,
 intents, enabled states, field models, and security-sensitive behavior. That is
 too much abstraction for the current keyboard scope.
 
+## P0 Execution Constraints
+
+Implementation must be staged. Do not implement this as one large keyboard UI
+rewrite.
+
+Required stages:
+
+1. Add `KeyboardLayoutMetrics` and pure measurement formulas.
+2. Migrate the default keyboard to the shared metrics.
+3. Implement normal entry continuous scrolling.
+4. Implement expanded entry continuous list and page controls.
+5. Implement drag-end page snapping after expanded paging is stable.
+6. Add Compose UI tests, previews where useful, and then clean up old components.
+
+Each stage must compile independently and be reviewable on its own. Old
+components should not be deleted in the same patch that changes behavior.
+
+Do not introduce a `minKeyHeight` visual fallback. The only lower bound in the
+measurement formulas is `coerceAtLeast(0.dp)` to prevent invalid negative sizes
+from reaching Compose layout modifiers.
+
 ## Architecture
 
 `KeyboardRoot` remains the public entry point.
@@ -80,8 +101,8 @@ layout components, including:
 
 The new internal structure should be organized around these responsibilities:
 
-- `KeyboardFrame`: hosts the utility or candidate row, keyboard content area,
-  bottom spacer, and navigation spacer.
+- `KeyboardFrame`: hosts the candidate row, keyboard content area, bottom
+  spacer, and navigation spacer.
 - `KeyboardLayoutMetrics`: calculates shared row height and key widths from the
   actual available constraints.
 - `KeyboardRow`: applies common row width, spacing, alignment, and clipping.
@@ -93,31 +114,120 @@ The new internal structure should be organized around these responsibilities:
 The exact names can change during implementation if a clearer local convention
 emerges.
 
+## Metrics Contract
+
+`KeyboardLayoutMetrics` must be a read-only result derived from constraints,
+density, tokens, and known spacer heights. ViewModels must not calculate layout
+sizes.
+
+The implementation should use this shape or an equivalent one:
+
+```kotlin
+data class KeyboardLayoutInput(
+    val totalWidth: Dp,
+    val totalHeight: Dp,
+    val candidateRowHeight: Dp,
+    val horizontalPadding: Dp,
+    val verticalOuterPadding: Dp,
+    val keySpacing: Dp,
+    val rowSpacing: Dp,
+    val bottomSpacerHeight: Dp,
+    val navigationSpacerHeight: Dp,
+)
+
+data class KeyboardLayoutMetrics(
+    val standardKeyWidth: Dp,
+    val sideKeyWidth: Dp,
+    val keyboardRowHeight: Dp,
+    val remainingFieldsAreaHeight: Dp,
+) {
+    fun fieldKeyWidth(columns: Int): Dp
+}
+```
+
+`columns` must be at least 1. The implementation must either throw a clear
+argument error for invalid columns or coerce the value in one centralized place.
+
+All width and height formulas must live in the metrics layer. Composables may
+consume metrics but must not duplicate the measurement formulas.
+
+### Metrics Recomposition Rules
+
+Metrics calculation must not write Compose state.
+
+Avoid this pattern when the state can affect the same layout:
+
+```kotlin
+onGloballyPositioned {
+    state = calculateKeyboardLayoutMetrics(...)
+}
+```
+
+Prefer calculating from constraints and stable inputs:
+
+```kotlin
+val metrics = remember(
+    constraints.maxWidth,
+    constraints.maxHeight,
+    density,
+    tokens,
+    bottomSpacerHeight,
+    navigationSpacerHeight,
+) {
+    calculateKeyboardLayoutMetrics(...)
+}
+```
+
+or an equivalent `derivedStateOf` based on the same stable inputs.
+
+Only constraints, density, tokens, and spacer heights should trigger metrics
+recalculation. The metrics path must avoid measurement -> state write ->
+recomposition loops.
+
 ## Frame Model
 
 The root frame is conceptually:
 
 ```text
-[utility / candidate row]
+[candidate row]
 [keyboard area]
 [bottom spacer]
 [navigation spacer]
 ```
 
-The utility or candidate row has independent height. It does not count as one of
+The candidate row has independent height. It does not count as one of
 the four keyboard rows.
 
 The keyboard area gets the remaining height after excluding:
 
-- utility or candidate row height
+- candidate row height
 - vertical outer padding
-- row spacing
 - bottom spacer
 - navigation bar spacer
 
-The keyboard area key height is calculated by dividing its available height by
-four rows. Every key in default and entry keyboard content uses that resolved
-height.
+The required formula is:
+
+```kotlin
+keyboardAreaHeight =
+    totalHeight -
+        candidateRowHeight -
+        verticalOuterPadding * 2 -
+        bottomSpacerHeight -
+        navigationSpacerHeight
+
+keyboardRowHeight =
+    ((keyboardAreaHeight - rowSpacing * 3) / 4).coerceAtLeast(0.dp)
+```
+
+`rowSpacing * 3` is removed once because the keyboard area has four rows. The
+bottom spacer and navigation spacer are not mixed into `keyboardRowHeight`.
+Every key in default and entry keyboard content uses this resolved height.
+
+Normal entry remaining fields use:
+
+```kotlin
+remainingFieldsAreaHeight = keyboardRowHeight * 2 + rowSpacing
+```
 
 Necessary code comments should be written in English and explain why this
 separation exists. In particular, comments should document that IME navigation
@@ -144,9 +254,26 @@ The measurement layer should expose at least:
 - `keyboardRowHeight`
 - spacing and padding values from existing keyboard tokens
 
+The required width formulas are:
+
+```kotlin
+availableWidth =
+    (totalWidth - horizontalPadding * 2).coerceAtLeast(0.dp)
+
+standardKeyWidth =
+    ((availableWidth - keySpacing * 9) / 10).coerceAtLeast(0.dp)
+
+fieldKeyWidth(columns) =
+    ((availableWidth - keySpacing * (columns - 1)) / columns)
+        .coerceAtLeast(0.dp)
+```
+
 `sideKeyWidth` is not a generic action-key width. Action keys still default to
 `standardKeyWidth`. `sideKeyWidth` is only for rows that explicitly want matching
 left and right edge keys.
+
+Rows must not infer key widths from key type. `space` and other long keys must
+explicitly request flexible width.
 
 ### Width Policy Acceptance Sample
 
@@ -207,6 +334,7 @@ Height rules:
 - Remaining fields are shown as a continuous scrollable list, not paged.
 - Scroll edges may clip partial field keys when content does not align exactly
   with the visible area.
+- Remaining fields are accessed only by vertical drag scrolling.
 
 Width rules:
 
@@ -218,6 +346,8 @@ Width rules:
   requests flexible or side widths.
 
 Normal entry mode removes previous and next page buttons.
+If field count is smaller than the visible area, the remaining field area does
+not force filler rows.
 
 ## Entry Expanded Mode
 
@@ -235,12 +365,65 @@ Scrolling:
 
 - Expanded mode keeps previous and next page buttons.
 - One page equals the visible field-list area height.
-- Previous and next page buttons scroll by one page.
-- Vertical drag can move the list continuously while the gesture is active, then
-  should settle near a page boundary when practical.
+- Previous and next page buttons scroll by one page and clamp to valid bounds.
+- Vertical drag can move the list continuously while the gesture is active.
+- Drag end snaps to the nearest page boundary when content is taller than one
+  page.
+- Snap does not run when content fits inside one visible page.
 - The underlying content remains one continuous scroll area.
 
 Field buttons still use the configured field column count.
+
+Required paging formulas:
+
+```kotlin
+pageSizePx = visibleFieldListAreaHeightPx
+
+previousTarget =
+    (currentOffsetPx - pageSizePx).coerceAtLeast(0f)
+
+nextTarget =
+    (currentOffsetPx + pageSizePx).coerceAtMost(maxScrollOffsetPx)
+
+targetPage =
+    round(currentOffsetPx / pageSizePx)
+
+targetOffsetPx =
+    (targetPage * pageSizePx).coerceIn(0f, maxScrollOffsetPx)
+
+previousEnabled = currentOffsetPx > 0f
+nextEnabled = currentOffsetPx < maxScrollOffsetPx
+```
+
+If `contentHeightPx <= visibleFieldListAreaHeightPx`, both controls are disabled
+and snap is skipped.
+
+If `visibleFieldListAreaHeightPx <= 0f`, both controls are disabled and page
+math is skipped.
+
+## Scroll State Rules
+
+Scroll state must reset when:
+
+- the active entry changes
+- the session is cleared or expires
+- normal and expanded modes switch
+- the UI returns from entry layout to default layout
+
+Scroll state must clamp to the valid range when:
+
+- field list size changes
+- visible field-list area height changes
+- page size changes
+- orientation changes
+- Compose view is rebuilt
+
+The implementation may use `ScrollState`, `LazyListState`, `LazyGridState`, or a
+small custom state holder. Regardless of API, the effective offset must satisfy:
+
+```kotlin
+currentOffsetPx = currentOffsetPx.coerceIn(0f, maxScrollOffsetPx)
+```
 
 ## Sensitive Data Rules
 
@@ -267,13 +450,39 @@ Compose UI tests must assert labels, layout behavior, and interaction effects
 without embedding real passwords, tokens, TOTP values, recovery codes, or raw
 Keepass2Android output.
 
+The field commit intent must stay id-based:
+
+```kotlin
+KeyboardIntent.CommitField(fieldId)
+```
+
+Do not replace it with value-based UI intents.
+
+Forbidden examples:
+
+```kotlin
+Text(field.value)
+Modifier.testTag(field.value)
+contentDescription = field.value
+KeyboardFieldUiModel(value = field.value)
+```
+
+Allowed examples:
+
+```kotlin
+Modifier.testTag("field-${field.id}")
+Text(field.safeLabel)
+contentDescription = field.safeLabel
+KeyboardIntent.CommitField(field.id)
+```
+
 ## Comment Rules
 
 Code comments must be written in English.
 
 Add comments only when they explain non-obvious behavior, for example:
 
-- why utility/candidate row, bottom spacer, and navigation spacer are excluded
+- why candidate row, bottom spacer, and navigation spacer are excluded
   from four-row key height calculation
 - why IME navigation insets are handled defensively for vendor ROM differences
 - why entry scroll areas allow partially clipped field keys at the edges
@@ -301,6 +510,10 @@ Add `app/src/androidTest/...` tests using `createComposeRule()` or
 `createAndroidComposeRule<ComponentActivity>()`, depending on whether the test
 needs activity resources.
 
+If metrics are implemented as a pure function, add JVM unit tests for
+`calculateKeyboardLayoutMetrics(input)` where practical. Compose UI tests remain
+the required layout-behavior guard.
+
 Test coverage should include:
 
 - `KeyboardRoot` renders default keyboard content.
@@ -312,12 +525,120 @@ Test coverage should include:
 - Normal entry mode shows fixed fields, remaining fields, and actions in the
   expected structure.
 - Normal entry mode does not expose previous or next page buttons.
+- Normal entry remaining fields can scroll when content exceeds the visible
+  area.
 - Expanded entry mode puts fixed fields first inside one list.
 - Expanded entry mode keeps previous and next page controls.
+- Expanded entry previous and next controls scroll by one page.
+- Expanded entry previous and next controls are disabled at the top, bottom, and
+  when content fits in one page.
 - Field values are not displayed.
+- Field values are not exposed through semantics or test tags.
 
 The implementation may add test tags or semantics for layout areas and safe
 field labels. Test tags must not include sensitive values.
+
+Sensitive-data regression tests must use obvious fake values, such as:
+
+```text
+PASSWORD_SHOULD_NOT_APPEAR
+TOTP_SHOULD_NOT_APPEAR
+RECOVERY_CODE_SHOULD_NOT_APPEAR
+```
+
+and assert that they do not appear in UI text, semantics, or test tags.
+
+## Implementation Stages
+
+### Stage 1: Metrics
+
+Add the metrics input model, output model, and pure calculation path. This stage
+must not change existing keyboard behavior.
+
+Validation:
+
+```bash
+./gradlew :app:testDebugUnitTest
+./gradlew :app:assembleDebug
+```
+
+### Stage 2: Default Keyboard
+
+Migrate letter, number, and symbol layouts to shared metrics and the lightweight
+row helper. Keep existing key visuals, semantics, and click behavior.
+
+Validation must confirm:
+
+- letter, number, and symbol modes render
+- 10-key reference rows use consistent widths
+- rows with fewer keys remain centered
+- action keys default to `standardKeyWidth`
+- flexible width is explicit
+
+### Stage 3: Normal Entry
+
+Implement normal entry as fixed fields, continuous remaining-field scroll area,
+and actions. Remove normal-mode previous and next controls.
+
+Validation must confirm:
+
+- fixed fields occupy one row
+- actions occupy one row
+- remaining fields occupy the two-row scroll area
+- remaining fields can scroll when content exceeds the visible area
+- field values are not displayed or exposed
+
+### Stage 4: Expanded Entry Paging
+
+Implement the continuous expanded field list with previous and next controls
+that scroll one visible field-list page.
+
+Validation must confirm:
+
+- fixed fields appear first in the same list
+- remaining fields immediately follow fixed fields
+- previous and next targets clamp
+- controls are disabled at top, bottom, and when content fits in one page
+
+### Stage 5: Drag-End Snap
+
+Add drag-end snapping after expanded paging is stable.
+
+Validation must confirm:
+
+- drag end snaps to the nearest page boundary
+- snap does not run for content that fits in one page
+- orientation or content changes clamp the offset
+
+### Stage 6: Tests, Previews, Cleanup
+
+Add Compose UI tests, add useful previews, and delete old components only after
+the new paths are covered. Deleting old components should be a separate cleanup
+change from behavior migration.
+
+## Boundary Conditions
+
+Implementation must handle these cases without crashing:
+
+- very small available height
+- landscape orientation
+- split-screen or otherwise constrained IME height
+- candidate row height changes
+- navigation spacer height is zero
+- bottom spacer height is zero
+- row spacing is larger than the available keyboard area
+- field column count changes from 3 to 4
+- fixed fields are empty, fewer than one row, or more than one row capacity
+- remaining fields are empty, less than one screen, exactly one screen, or more
+  than one screen
+- field labels are long, duplicated, or blank
+- active session is missing, replaced, cleared, or expired
+- default, entry normal, and entry expanded modes switch repeatedly
+- Compose view is rebuilt
+
+All final dimensions passed to Compose layout modifiers must be non-negative.
+No field value may enter UI state, Composable parameters, semantics, test tags,
+content descriptions, logs, tests, screenshots, or docs.
 
 ## Validation
 
@@ -336,4 +657,4 @@ the reason.
 
 ## Open Decisions
 
-No unresolved product decisions are intentionally left in this design.
+No product decisions are intentionally left open in this design.
