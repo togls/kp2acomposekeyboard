@@ -1,7 +1,6 @@
 package io.github.togls.kp2acomposekeyboard.ui.keyboard
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
@@ -14,7 +13,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.layout.KeyboardContentArea
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.layout.KeyboardFrame
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardAdaptiveMetrics
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.LocalKeyboardAdaptiveMetrics
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.toKeyboardHeight
@@ -54,23 +53,12 @@ fun KeyboardRoot(
             color = MaterialTheme.colorScheme.surfaceContainerHigh,
             contentColor = MaterialTheme.colorScheme.onSurface,
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clipToBounds(),
-            ) {
-                KeyboardContentArea(
-                    state = state,
-                    adaptiveMetrics = adaptiveMetrics,
-                    isLandscape = isLandscape,
-                    onIntent = onIntent,
-                    modifier = Modifier.weight(1f),
-                )
-
-                KeyboardBottomGap(isLandscape = isLandscape)
-
-                KeyboardNavigationBarSpacer()
-            }
+            KeyboardFrame(
+                state = state,
+                adaptiveMetrics = adaptiveMetrics,
+                isLandscape = isLandscape,
+                onIntent = onIntent,
+            )
         }
     }
 }

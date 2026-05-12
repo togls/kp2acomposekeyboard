@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
@@ -18,15 +19,15 @@ internal fun KeyboardBottomGap(
     isLandscape: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val height = if (isLandscape) {
-        0.dp
-    } else {
-        32.dp
-    }
-
     Spacer(
         modifier = modifier
             .fillMaxWidth()
-            .height(height),
+            .height(keyboardBottomGapHeight(isLandscape)),
     )
+}
+
+internal fun keyboardBottomGapHeight(isLandscape: Boolean): Dp = if (isLandscape) {
+    0.dp
+} else {
+    32.dp
 }
