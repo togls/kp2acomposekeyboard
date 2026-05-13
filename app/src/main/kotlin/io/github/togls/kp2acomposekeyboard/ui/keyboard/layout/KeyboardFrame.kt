@@ -37,7 +37,10 @@ internal fun KeyboardFrame(
     ) {
         val density = LocalDensity.current
         val navigationSpacerHeight = with(density) {
-            WindowInsets.navigationBars.getBottom(this).toDp()
+            WindowInsets.navigationBars
+                .getBottom(this)
+                .toDp()
+                .coerceAtMost(adaptiveMetrics.maxNavigationAwareBottomPadding)
         }
         val bottomSpacerHeight = keyboardBottomGapHeight(isLandscape)
         val metrics = remember(
@@ -69,14 +72,15 @@ internal fun KeyboardFrame(
             Column(modifier = Modifier.fillMaxWidth()) {
                 KeyboardContentArea(
                     state = state,
-                    adaptiveMetrics = adaptiveMetrics,
-                    isLandscape = isLandscape,
                     onIntent = onIntent,
                     modifier = Modifier.weight(1f),
                 )
 
                 KeyboardBottomGap(isLandscape = isLandscape)
-                KeyboardNavigationBarSpacer()
+
+                KeyboardNavigationBarSpacer(
+                    height = navigationSpacerHeight,
+                )
             }
         }
     }

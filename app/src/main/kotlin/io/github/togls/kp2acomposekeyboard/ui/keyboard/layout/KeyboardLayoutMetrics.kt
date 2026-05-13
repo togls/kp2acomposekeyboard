@@ -45,7 +45,7 @@ internal fun calculateKeyboardLayoutMetrics(
     val availableWidth = (input.totalWidth - input.horizontalPadding * 2f)
         .coerceAtLeast(0.dp)
     val standardKeyWidth = ((availableWidth - input.keySpacing * STANDARD_GAP_COUNT) /
-        STANDARD_KEY_COUNT.toFloat())
+            STANDARD_KEY_COUNT.toFloat())
         .coerceAtLeast(0.dp)
         .snapDownToPixel(input.pixelSnapDensity)
     val sideKeyWidth = sideKeyWidth(
@@ -58,19 +58,21 @@ internal fun calculateKeyboardLayoutMetrics(
 
     // Candidate, bottom, and navigation areas live outside the four keyboard rows.
     val keyboardAreaHeight = input.totalHeight -
-        input.candidateRowHeight -
-        input.verticalOuterPadding * 2f -
-        input.bottomSpacerHeight -
-        input.navigationSpacerHeight
+            input.candidateRowHeight -
+            input.verticalOuterPadding * 2f -
+            input.bottomSpacerHeight -
+            input.navigationSpacerHeight
     val keyboardRowHeight = ((keyboardAreaHeight - input.rowSpacing * KEYBOARD_ROW_GAP_COUNT) /
-        KEYBOARD_ROW_COUNT.toFloat()).coerceAtLeast(0.dp)
+            KEYBOARD_ROW_COUNT.toFloat())
+        .coerceAtLeast(0.dp)
+        .snapDownToPixel(input.pixelSnapDensity)
 
     return KeyboardLayoutMetrics(
         standardKeyWidth = standardKeyWidth,
         sideKeyWidth = sideKeyWidth,
         keyboardRowHeight = keyboardRowHeight,
         remainingFieldsAreaHeight = keyboardRowHeight * REMAINING_FIELD_ROW_COUNT.toFloat() +
-            input.rowSpacing,
+                input.rowSpacing,
         availableWidth = availableWidth,
         keySpacing = input.keySpacing,
         pixelSnapDensity = input.pixelSnapDensity,
@@ -89,8 +91,8 @@ private fun sideKeyWidth(
     val totalKeyCount = standardKeyCount + SIDE_KEY_COUNT
     val gapCount = (totalKeyCount - 1).coerceAtLeast(0)
     return ((availableWidth -
-        standardKeyWidth * standardKeyCount.toFloat() -
-        keySpacing * gapCount.toFloat()) / SIDE_KEY_COUNT.toFloat())
+            standardKeyWidth * standardKeyCount.toFloat() -
+            keySpacing * gapCount.toFloat()) / SIDE_KEY_COUNT.toFloat())
         .coerceAtLeast(0.dp)
         .snapDownToPixel(pixelSnapDensity)
 }

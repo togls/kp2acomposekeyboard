@@ -1,7 +1,7 @@
 package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -31,14 +31,12 @@ import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
 @Composable
 internal fun KeyboardContentArea(
     state: KeyboardUiState,
-    adaptiveMetrics: KeyboardAdaptiveMetrics,
-    isLandscape: Boolean,
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var contentBoundsInRoot by remember { mutableStateOf<Rect?>(null) }
 
-    BoxWithConstraints(
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .clipToBounds()
@@ -50,7 +48,6 @@ internal fun KeyboardContentArea(
 
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
         ) {
             UtilityRow(
                 state = state,

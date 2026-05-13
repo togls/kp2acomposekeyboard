@@ -18,8 +18,7 @@ internal fun KeyboardRow(
 ) {
     Row(
         modifier = modifier
-            .fillMaxWidth()
-            .clipToBounds(),
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(
             space = KeyboardMetrics.KeySpacing,
             alignment = horizontalAlignment,

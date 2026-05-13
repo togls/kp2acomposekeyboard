@@ -110,6 +110,28 @@ class KeyboardLayoutMetricsTest {
     }
 
     @Test
+    fun `keyboard row height snaps down to avoid cumulative pixel overflow`() {
+        val metrics = calculateKeyboardLayoutMetrics(
+            KeyboardLayoutInput(
+                totalWidth = 360.dp,
+                totalHeight = 300.dp,
+                candidateRowHeight = 46.dp,
+                horizontalPadding = 8.dp,
+                verticalOuterPadding = 8.dp,
+                keySpacing = 6.dp,
+                rowSpacing = 7.dp,
+                bottomSpacerHeight = 32.dp,
+                navigationSpacerHeight = 24.dp,
+                sideKeyStandardKeyCount = 7,
+                pixelSnapDensity = 3.5f,
+            ),
+        )
+
+        assertEquals(40f, metrics.keyboardRowHeight.value, 0.001f)
+        assertEquals(87f, metrics.remainingFieldsAreaHeight.value, 0.001f)
+    }
+
+    @Test
     fun `small height and large spacing do not produce negative dimensions`() {
         val metrics = calculateKeyboardLayoutMetrics(
             KeyboardLayoutInput(

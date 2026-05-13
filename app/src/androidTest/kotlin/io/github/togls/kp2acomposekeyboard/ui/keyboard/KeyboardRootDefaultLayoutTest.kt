@@ -4,6 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import org.junit.Assert.assertTrue
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -40,5 +41,24 @@ class KeyboardRootDefaultLayoutTest {
         widths.forEach { width ->
             assertEquals("keyBounds=$keyBounds", firstWidth, width, 0.5f)
         }
+    }
+
+    @Test
+    fun defaultRowsFitInsideKeyboardContent() {
+        composeRule.setContent {
+            KeyboardRootTestContent(state = testDefaultState())
+        }
+
+        val contentBounds = composeRule.onNodeWithTag(KeyboardTestTags.DefaultContent)
+            .fetchSemanticsNode()
+            .boundsInRoot
+        val switchKeyBounds = composeRule.onNodeWithTag(KeyboardTestTags.DefaultSwitchKey)
+            .fetchSemanticsNode()
+            .boundsInRoot
+
+        assertTrue(
+            "contentBounds=$contentBounds switchKeyBounds=$switchKeyBounds",
+            switchKeyBounds.bottom <= contentBounds.bottom,
+        )
     }
 }
