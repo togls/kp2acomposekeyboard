@@ -39,6 +39,51 @@ private fun EntryKeyboardExpandedPreview() {
 }
 
 @Preview(
+    name = "Paged - Long Labels",
+    group = "Keyboard / Entry",
+    showBackground = true,
+    widthDp = 411,
+    heightDp = 320,
+)
+@Composable
+private fun EntryKeyboardLongLabelsPreview() {
+    KeyboardPreviewContent(
+        state = previewLongLabelEntryKeyboardState(),
+    )
+}
+
+@Preview(
+    name = "Paged - Empty Fields",
+    group = "Keyboard / Entry",
+    showBackground = true,
+    widthDp = 411,
+    heightDp = 320,
+)
+@Composable
+private fun EntryKeyboardEmptyFieldsPreview() {
+    KeyboardPreviewContent(
+        state = previewEmptyEntryKeyboardState(),
+    )
+}
+
+@Preview(
+    name = "Expanded - Empty Fields",
+    group = "Keyboard / Entry",
+    showBackground = true,
+    widthDp = 411,
+    heightDp = 360,
+)
+@Composable
+private fun EntryKeyboardExpandedEmptyFieldsPreview() {
+    KeyboardPreviewContent(
+        state = previewEmptyEntryKeyboardState(
+            displayMode = EntryFieldDisplayMode.Expanded,
+        ),
+        settings = previewTallLightSettings(),
+    )
+}
+
+@Preview(
     name = "Paged - Dark",
     group = "Keyboard / Entry",
     showBackground = true,

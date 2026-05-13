@@ -98,13 +98,53 @@ internal fun previewRightUtilitySlotState(): KeyboardUiState {
 internal fun previewEntryKeyboardState(
     displayMode: EntryFieldDisplayMode = EntryFieldDisplayMode.Paged,
 ): KeyboardUiState {
-    val fixedFields = previewFixedFields()
-    val extraFields = previewExtraFields()
+    return previewEntryKeyboardState(
+        displayMode = displayMode,
+        fixedFields = previewFixedFields(),
+        extraFields = previewExtraFields(),
+        currentEntryName = "GitHub Personal",
+    )
+}
 
+internal fun previewLongLabelEntryKeyboardState(): KeyboardUiState {
+    return previewEntryKeyboardState(
+        displayMode = EntryFieldDisplayMode.Paged,
+        fixedFields = listOf(
+            previewField("username", "Very Long Username Label", KeyboardFieldType.Username),
+            previewField("password", "Long Password Field Label", KeyboardFieldType.Password, true),
+            previewField("totp", "One Time Password", KeyboardFieldType.Totp, true),
+        ),
+        extraFields = listOf(
+            previewField("backup-1", "Backup Code", KeyboardFieldType.Recovery, true),
+            previewField("backup-2", "Backup Code", KeyboardFieldType.Recovery, true),
+            previewField("blank-label", "", KeyboardFieldType.Custom),
+            previewField("security-question", "Security Question With A Long Label", KeyboardFieldType.Custom, true),
+        ),
+        currentEntryName = "Long Label Entry",
+    )
+}
+
+internal fun previewEmptyEntryKeyboardState(
+    displayMode: EntryFieldDisplayMode = EntryFieldDisplayMode.Paged,
+): KeyboardUiState {
+    return previewEntryKeyboardState(
+        displayMode = displayMode,
+        fixedFields = emptyList(),
+        extraFields = emptyList(),
+        currentEntryName = "Empty Entry",
+    )
+}
+
+private fun previewEntryKeyboardState(
+    displayMode: EntryFieldDisplayMode,
+    fixedFields: List<KeyboardFieldUiModel>,
+    extraFields: List<KeyboardFieldUiModel>,
+    currentEntryName: String,
+): KeyboardUiState {
     return KeyboardUiState(
         mainLayout = MainKeyboardLayout.Entry,
         entryFieldDisplayMode = displayMode,
-        currentEntryName = "GitHub Personal",
+        currentEntryName = currentEntryName,
         hasActiveSession = true,
         fixedFields = fixedFields,
         extraFields = extraFields,
