@@ -2,8 +2,10 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -12,14 +14,18 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.testTag
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.EntryFieldDisplayMode
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardTestTags
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.entry.AllFieldsExpandedPanel
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.row.ExpandedEntryActionRows
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.row.NormalEntryActionRow
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
@@ -36,15 +42,8 @@ fun EntryKeyboardLayout(
     val adaptiveMetrics = LocalKeyboardAdaptiveMetrics.current
     val normalScrollState = rememberScrollState()
     val expandedScrollState = rememberScrollState()
-    val coroutineScope = rememberCoroutineScope()
     val fixedFieldIds = state.fixedFields.map { field -> field.id }
     val extraFieldIds = state.extraFields.map { field -> field.id }
-
-    LaunchedEffect(state.entryFieldDisplayMode, state.currentEntryName) {
-        if (state.entryFieldDisplayMode == EntryFieldDisplayMode.Expanded) {
-            expandedScrollState.scrollTo(0)
-        }
-    }
 
     LaunchedEffect(
         state.mainLayout,
@@ -55,6 +54,7 @@ fun EntryKeyboardLayout(
         extraFieldIds,
     ) {
         normalScrollState.scrollTo(0)
+        expandedScrollState.scrollTo(0)
     }
 
     CompositionLocalProvider(
@@ -86,22 +86,6 @@ fun EntryKeyboardLayout(
                     ExpandedEntryContent(
                         state = state,
                         scrollState = expandedScrollState,
-                        onScrollUp = {
-                            coroutineScope.launch {
-                                expandedScrollState.animateScrollTo(
-                                    (expandedScrollState.value - EXPANDED_SCROLL_PAGE_SIZE_PX)
-                                        .coerceAtLeast(0),
-                                )
-                            }
-                        },
-                        onScrollDown = {
-                            coroutineScope.launch {
-                                expandedScrollState.animateScrollTo(
-                                    (expandedScrollState.value + EXPANDED_SCROLL_PAGE_SIZE_PX)
-                                        .coerceAtMost(expandedScrollState.maxValue),
-                                )
-                            }
-                        },
                         onIntent = onIntent,
                         modifier = Modifier.weight(1f),
                     )
@@ -156,31 +140,64 @@ private fun NormalEntryContent(
 private fun ExpandedEntryContent(
     state: KeyboardUiState,
     scrollState: ScrollState,
-    onScrollUp: () -> Unit,
-    onScrollDown: () -> Unit,
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val expandedFields = state.fixedFields + state.extraFields
+    var visibleFieldListAreaHeightPx by remember { mutableFloatStateOf(0f) }
+    val pageState = EntryFieldPageState(
+        currentOffsetPx = scrollState.value.toFloat(),
+        maxScrollOffsetPx = scrollState.maxValue.toFloat(),
+        visibleFieldListAreaHeightPx = visibleFieldListAreaHeightPx,
+        contentHeightPx = scrollState.maxValue.toFloat() + visibleFieldListAreaHeightPx,
+    )
+
+    LaunchedEffect(
+        scrollState.maxValue,
+        visibleFieldListAreaHeightPx,
+        expandedFields.map { field -> field.id },
+        state.entryFieldDisplayMode,
+    ) {
+        if (scrollState.value > scrollState.maxValue) {
+            scrollState.scrollTo(scrollState.maxValue)
+        }
+    }
+
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .testTag(KeyboardTestTags.EntryExpandedContent),
         verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
     ) {
-        AllFieldsExpandedPanel(
-            fields = state.allFields,
-            scrollState = scrollState,
-            onIntent = onIntent,
-            modifier = Modifier.weight(1f),
-        )
+        Box(modifier = Modifier.weight(1f)) {
+            EntryFieldGrid(
+                fields = expandedFields,
+                onIntent = onIntent,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .onSizeChanged { size ->
+                        visibleFieldListAreaHeightPx = size.height.toFloat()
+                    }
+                    .verticalScroll(scrollState)
+                    .testTag(KeyboardTestTags.EntryExpandedFields),
+            )
+        }
 
         ExpandedEntryActionRows(
-            canScrollUp = scrollState.value > 0,
-            canScrollDown = scrollState.value < scrollState.maxValue,
-            onScrollUp = onScrollUp,
-            onScrollDown = onScrollDown,
+            canScrollUp = pageState.previousEnabled,
+            canScrollDown = pageState.nextEnabled,
+            onScrollUp = {
+                coroutineScope.launch {
+                    scrollState.animateScrollTo(pageState.previousTargetPx().toInt())
+                }
+            },
+            onScrollDown = {
+                coroutineScope.launch {
+                    scrollState.animateScrollTo(pageState.nextTargetPx().toInt())
+                }
+            },
             onIntent = onIntent,
         )
     }
 }
-
-// Stage 7 replaces this fixed step with visible-page sized paging.
-private const val EXPANDED_SCROLL_PAGE_SIZE_PX = 220
