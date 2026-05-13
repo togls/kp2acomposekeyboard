@@ -2,9 +2,11 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard.key
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import io.github.togls.kp2acomposekeyboard.R
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardTestTags
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardKeyEmphasis
 
 @Composable
@@ -111,7 +113,7 @@ internal fun PreviousPageKey(
     modifier: Modifier = Modifier,
 ) {
     KeyboardIconKey(
-        modifier = modifier,
+        modifier = modifier.testTag(KeyboardTestTags.PreviousPage),
         iconRes = R.drawable.ic_navigate_before_24,
         contentDescription = stringResource(R.string.cd_key_previous_page),
         enabled = enabled,
@@ -126,7 +128,7 @@ internal fun NextPageKey(
     modifier: Modifier = Modifier,
 ) {
     KeyboardIconKey(
-        modifier = modifier,
+        modifier = modifier.testTag(KeyboardTestTags.NextPage),
         iconRes = R.drawable.ic_navigate_next_24,
         contentDescription = stringResource(R.string.cd_key_next_page),
         enabled = enabled,

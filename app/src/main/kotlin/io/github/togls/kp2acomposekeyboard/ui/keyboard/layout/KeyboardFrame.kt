@@ -11,10 +11,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardBottomGap
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardNavigationBarSpacer
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardTestTags
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keyboardBottomGapHeight
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardAdaptiveMetrics
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
@@ -30,7 +32,8 @@ internal fun KeyboardFrame(
     BoxWithConstraints(
         modifier = modifier
             .fillMaxWidth()
-            .clipToBounds(),
+            .clipToBounds()
+            .testTag(KeyboardTestTags.Root),
     ) {
         val density = LocalDensity.current
         val navigationSpacerHeight = with(density) {
