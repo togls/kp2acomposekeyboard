@@ -2,7 +2,6 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -11,7 +10,6 @@ import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.CommitTextKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.DeleteKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.KeyboardKey
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.row.TextKeyRow
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardKeyEmphasis
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
 
@@ -20,63 +18,63 @@ internal fun NumberKeyboard(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    KeyboardWidthLayout(
-        modifier = modifier,
-        referenceKeyCount = 10,
-    ) { widths ->
-        val keyWidth = widths.standardKeyWidth
+    val metrics = LocalKeyboardLayoutMetrics.current
 
-        val sideKeyWidth = widths.flexibleKeyWidth(
-            fixedKeyCount = NumberKeyboardLastRow.size,
-            flexibleKeyCount = 2,
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
+    ) {
+        TextKeyRow(
+            keys = NumberKeyboardRows[0],
+            onIntent = onIntent,
         )
 
-        Column(
-            modifier = modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
-        ) {
-            TextKeyRow(
-                keys = NumberKeyboardRows[0],
-                keyWidth = keyWidth,
-                onIntent = onIntent,
+        TextKeyRow(
+            keys = NumberKeyboardRows[1],
+            onIntent = onIntent,
+        )
+
+        KeyboardRow {
+            KeyboardKey(
+                text = "=\\<",
+                onClick = {
+                    onIntent(KeyboardIntent.SwitchToSymbols)
+                },
+                emphasis = KeyboardKeyEmphasis.Action,
+                modifier = Modifier.width(metrics.sideKeyWidth),
             )
 
-            TextKeyRow(
-                keys = NumberKeyboardRows[1],
-                keyWidth = keyWidth,
-                onIntent = onIntent,
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
-            ) {
-
-                KeyboardKey(
-                    text = "=\\<",
-                    onClick = {
-                        onIntent(KeyboardIntent.SwitchToSymbols)
-                    },
-                    emphasis = KeyboardKeyEmphasis.Action,
-                    modifier = Modifier
-                        .width(sideKeyWidth),
-                )
-
-                NumberKeyboardLastRow.forEach { text ->
-                    CommitTextKey(
-                        text = text,
-                        onIntent = onIntent,
-                        modifier = Modifier
-                            .width(keyWidth),
-                    )
-                }
-
-                DeleteKey(
-                    modifier = Modifier
-                        .width(sideKeyWidth),
+            NumberKeyboardLastRow.forEach { text ->
+                CommitTextKey(
+                    text = text,
                     onIntent = onIntent,
+                    modifier = Modifier.width(metrics.standardKeyWidth),
                 )
             }
+
+            DeleteKey(
+                modifier = Modifier.width(metrics.sideKeyWidth),
+                onIntent = onIntent,
+            )
+        }
+    }
+}
+
+@Composable
+private fun TextKeyRow(
+    keys: List<String>,
+    onIntent: (KeyboardIntent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val metrics = LocalKeyboardLayoutMetrics.current
+
+    KeyboardRow(modifier = modifier) {
+        keys.forEach { text ->
+            CommitTextKey(
+                modifier = Modifier.width(metrics.standardKeyWidth),
+                text = text,
+                onIntent = onIntent,
+            )
         }
     }
 }
