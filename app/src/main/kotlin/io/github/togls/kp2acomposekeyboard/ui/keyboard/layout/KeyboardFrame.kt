@@ -1,15 +1,23 @@
 package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
 
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.platform.LocalDensity
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardBottomGap
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardNavigationBarSpacer
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.keyboardBottomGapHeight
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardAdaptiveMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
 
 @Composable
 internal fun KeyboardFrame(
@@ -19,20 +27,52 @@ internal fun KeyboardFrame(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
+    BoxWithConstraints(
         modifier = modifier
             .fillMaxWidth()
             .clipToBounds(),
     ) {
-        KeyboardContentArea(
-            state = state,
-            adaptiveMetrics = adaptiveMetrics,
-            isLandscape = isLandscape,
-            onIntent = onIntent,
-            modifier = Modifier.weight(1f),
-        )
+        val density = LocalDensity.current
+        val navigationSpacerHeight = with(density) {
+            WindowInsets.navigationBars.getBottom(this).toDp()
+        }
+        val bottomSpacerHeight = keyboardBottomGapHeight(isLandscape)
+        val metrics = remember(
+            maxWidth,
+            maxHeight,
+            adaptiveMetrics.keyHeight,
+            navigationSpacerHeight,
+            bottomSpacerHeight,
+        ) {
+            calculateKeyboardLayoutMetrics(
+                KeyboardLayoutInput(
+                    totalWidth = maxWidth,
+                    totalHeight = maxHeight,
+                    candidateRowHeight = adaptiveMetrics.keyHeight,
+                    horizontalPadding = KeyboardMetrics.OuterPaddingHorizontal,
+                    verticalOuterPadding = KeyboardMetrics.OuterPaddingVertical,
+                    keySpacing = KeyboardMetrics.KeySpacing,
+                    rowSpacing = KeyboardMetrics.RowSpacing,
+                    bottomSpacerHeight = bottomSpacerHeight,
+                    navigationSpacerHeight = navigationSpacerHeight,
+                    sideKeyStandardKeyCount = 7,
+                ),
+            )
+        }
 
-        KeyboardBottomGap(isLandscape = isLandscape)
-        KeyboardNavigationBarSpacer()
+        CompositionLocalProvider(LocalKeyboardLayoutMetrics provides metrics) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                KeyboardContentArea(
+                    state = state,
+                    adaptiveMetrics = adaptiveMetrics,
+                    isLandscape = isLandscape,
+                    onIntent = onIntent,
+                    modifier = Modifier.weight(1f),
+                )
+
+                KeyboardBottomGap(isLandscape = isLandscape)
+                KeyboardNavigationBarSpacer()
+            }
+        }
     }
 }
