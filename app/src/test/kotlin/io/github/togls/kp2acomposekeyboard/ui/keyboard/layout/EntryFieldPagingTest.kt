@@ -76,4 +76,16 @@ class EntryFieldPagingTest {
         assertTrue(bottom.previousEnabled)
         assertFalse(bottom.nextEnabled)
     }
+
+    @Test
+    fun `snap target clamps at bottom boundary`() {
+        val state = EntryFieldPageState(
+            currentOffsetPx = 255f,
+            maxScrollOffsetPx = 260f,
+            visibleFieldListAreaHeightPx = 100f,
+            contentHeightPx = 360f,
+        )
+
+        assertEquals(260f, state.snapTargetPx(), 0.001f)
+    }
 }
