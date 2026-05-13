@@ -15,5 +15,7 @@ internal object KeyboardTestTags {
     const val PreviousPage = "keyboard-previous-page"
     const val NextPage = "keyboard-next-page"
 
+    fun letterKey(letter: Char): String = "keyboard-letter-key-$letter"
+
     fun field(fieldId: String): String = "keyboard-field-$fieldId"
 }

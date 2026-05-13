@@ -46,6 +46,7 @@ internal fun KeyboardFrame(
             adaptiveMetrics.keyHeight,
             navigationSpacerHeight,
             bottomSpacerHeight,
+            density.density,
         ) {
             calculateKeyboardLayoutMetrics(
                 KeyboardLayoutInput(
@@ -59,6 +60,7 @@ internal fun KeyboardFrame(
                     bottomSpacerHeight = bottomSpacerHeight,
                     navigationSpacerHeight = navigationSpacerHeight,
                     sideKeyStandardKeyCount = 7,
+                    pixelSnapDensity = density.density,
                 ),
             )
         }

@@ -89,6 +89,27 @@ class KeyboardLayoutMetricsTest {
     }
 
     @Test
+    fun `fixed widths snap down to device pixels when density is provided`() {
+        val metrics = calculateKeyboardLayoutMetrics(
+            KeyboardLayoutInput(
+                totalWidth = 360.dp,
+                totalHeight = 260.dp,
+                candidateRowHeight = 40.dp,
+                horizontalPadding = 8.dp,
+                verticalOuterPadding = 8.dp,
+                keySpacing = 6.dp,
+                rowSpacing = 4.dp,
+                bottomSpacerHeight = 0.dp,
+                navigationSpacerHeight = 0.dp,
+                sideKeyStandardKeyCount = 7,
+                pixelSnapDensity = 3.5f,
+            ),
+        )
+
+        assertEquals(28.857f, metrics.standardKeyWidth.value, 0.001f)
+    }
+
+    @Test
     fun `small height and large spacing do not produce negative dimensions`() {
         val metrics = calculateKeyboardLayoutMetrics(
             KeyboardLayoutInput(

@@ -2,7 +2,9 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard.key
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardTestTags
 
 class LetterKey
 
@@ -18,7 +20,7 @@ internal fun LetterKey(
     CommitTextKey(
         text = text,
         onIntent = onIntent,
-        modifier = modifier,
+        modifier = modifier.testTag(KeyboardTestTags.letterKey(letter)),
     )
 }
 

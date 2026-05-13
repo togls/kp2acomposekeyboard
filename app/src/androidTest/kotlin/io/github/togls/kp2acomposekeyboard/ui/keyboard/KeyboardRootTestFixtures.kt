@@ -1,0 +1,72 @@
+package io.github.togls.kp2acomposekeyboard.ui.keyboard
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldType
+import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldUiModel
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.EntryFieldDisplayMode
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.MainKeyboardLayout
+import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
+import io.github.togls.kp2acomposekeyboard.ui.theme.KeyboardTheme
+
+internal const val PASSWORD_SHOULD_NOT_APPEAR = "PASSWORD_SHOULD_NOT_APPEAR"
+internal const val TOTP_SHOULD_NOT_APPEAR = "TOTP_SHOULD_NOT_APPEAR"
+internal const val RECOVERY_CODE_SHOULD_NOT_APPEAR = "RECOVERY_CODE_SHOULD_NOT_APPEAR"
+
+internal val forbiddenSensitiveValues = listOf(
+    PASSWORD_SHOULD_NOT_APPEAR,
+    TOTP_SHOULD_NOT_APPEAR,
+    RECOVERY_CODE_SHOULD_NOT_APPEAR,
+)
+
+@Composable
+internal fun KeyboardRootTestContent(
+    state: KeyboardUiState,
+    onIntent: (KeyboardIntent) -> Unit = {},
+) {
+    val settings = KeyboardSettings(useDynamicColor = false)
+    KeyboardTheme(settings = settings) {
+        Box(modifier = Modifier.width(360.dp)) {
+            KeyboardRoot(
+                state = state,
+                settings = settings,
+                onIntent = onIntent,
+            )
+        }
+    }
+}
+
+internal fun testDefaultState() = KeyboardUiState()
+
+internal fun testEntryState(
+    displayMode: EntryFieldDisplayMode,
+    extraFieldCount: Int = 8,
+) = KeyboardUiState(
+    mainLayout = MainKeyboardLayout.Entry,
+    entryFieldDisplayMode = displayMode,
+    currentEntryName = "Example",
+    hasActiveSession = true,
+    fixedFields = fixedFields(),
+    extraFields = extraFields(extraFieldCount),
+    allFields = fixedFields() + extraFields(extraFieldCount),
+)
+
+private fun fixedFields() = listOf(
+    KeyboardFieldUiModel("username", "Username", KeyboardFieldType.Username, sensitive = false),
+    KeyboardFieldUiModel("password", "Password", KeyboardFieldType.Password, sensitive = true),
+    KeyboardFieldUiModel("totp", "TOTP", KeyboardFieldType.Totp, sensitive = true),
+)
+
+private fun extraFields(count: Int) = List(count) { index ->
+    KeyboardFieldUiModel(
+        id = "extra-$index",
+        label = "Extra $index",
+        type = KeyboardFieldType.Custom,
+        sensitive = index % 2 == 0,
+    )
+}

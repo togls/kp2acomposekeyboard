@@ -3,6 +3,7 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlin.math.floor
 
 @Immutable
 internal data class KeyboardLayoutInput(
@@ -16,6 +17,7 @@ internal data class KeyboardLayoutInput(
     val bottomSpacerHeight: Dp,
     val navigationSpacerHeight: Dp,
     val sideKeyStandardKeyCount: Int,
+    val pixelSnapDensity: Float? = null,
 )
 
 @Immutable
@@ -26,12 +28,14 @@ internal data class KeyboardLayoutMetrics(
     val remainingFieldsAreaHeight: Dp,
     private val availableWidth: Dp,
     private val keySpacing: Dp,
+    private val pixelSnapDensity: Float?,
 ) {
     fun fieldKeyWidth(columns: Int): Dp {
         require(columns >= 1) { "columns must be >= 1." }
 
         return ((availableWidth - keySpacing * (columns - 1).toFloat()) / columns.toFloat())
             .coerceAtLeast(0.dp)
+            .snapDownToPixel(pixelSnapDensity)
     }
 }
 
@@ -41,12 +45,15 @@ internal fun calculateKeyboardLayoutMetrics(
     val availableWidth = (input.totalWidth - input.horizontalPadding * 2f)
         .coerceAtLeast(0.dp)
     val standardKeyWidth = ((availableWidth - input.keySpacing * STANDARD_GAP_COUNT) /
-        STANDARD_KEY_COUNT.toFloat()).coerceAtLeast(0.dp)
+        STANDARD_KEY_COUNT.toFloat())
+        .coerceAtLeast(0.dp)
+        .snapDownToPixel(input.pixelSnapDensity)
     val sideKeyWidth = sideKeyWidth(
         availableWidth = availableWidth,
         standardKeyWidth = standardKeyWidth,
         keySpacing = input.keySpacing,
         standardKeyCount = input.sideKeyStandardKeyCount,
+        pixelSnapDensity = input.pixelSnapDensity,
     )
 
     // Candidate, bottom, and navigation areas live outside the four keyboard rows.
@@ -66,6 +73,7 @@ internal fun calculateKeyboardLayoutMetrics(
             input.rowSpacing,
         availableWidth = availableWidth,
         keySpacing = input.keySpacing,
+        pixelSnapDensity = input.pixelSnapDensity,
     )
 }
 
@@ -74,6 +82,7 @@ private fun sideKeyWidth(
     standardKeyWidth: Dp,
     keySpacing: Dp,
     standardKeyCount: Int,
+    pixelSnapDensity: Float?,
 ): Dp {
     require(standardKeyCount >= 0) { "standardKeyCount must be >= 0." }
 
@@ -81,7 +90,19 @@ private fun sideKeyWidth(
     val gapCount = (totalKeyCount - 1).coerceAtLeast(0)
     return ((availableWidth -
         standardKeyWidth * standardKeyCount.toFloat() -
-        keySpacing * gapCount.toFloat()) / SIDE_KEY_COUNT.toFloat()).coerceAtLeast(0.dp)
+        keySpacing * gapCount.toFloat()) / SIDE_KEY_COUNT.toFloat())
+        .coerceAtLeast(0.dp)
+        .snapDownToPixel(pixelSnapDensity)
+}
+
+private fun Dp.snapDownToPixel(density: Float?): Dp {
+    if (density == null || density <= 0f) {
+        return this
+    }
+
+    // Repeated fixed-width keys are measured independently; snapping down avoids
+    // cumulative rounding overflow that would clip the trailing key.
+    return (floor(value * density) / density).dp
 }
 
 private const val STANDARD_KEY_COUNT = 10
