@@ -97,7 +97,9 @@ private fun DefaultKeyboardActionRow(
 
     KeyboardRow {
         KeyboardKey(
-            modifier = Modifier.width(metrics.standardKeyWidth),
+            modifier = Modifier
+                .width(metrics.sideKeyWidth)
+                .testTag(KeyboardTestTags.DefaultSwitchKey),
             text = when (state.defaultInputMode) {
                 DefaultInputMode.Letters -> "?123"
                 DefaultInputMode.Numbers -> "ABC"
@@ -125,7 +127,7 @@ private fun DefaultKeyboardActionRow(
 
         EnterKey(
             onIntent = onIntent,
-            modifier = Modifier.width(metrics.standardKeyWidth),
+            modifier = Modifier.width(metrics.sideKeyWidth),
         )
     }
 }

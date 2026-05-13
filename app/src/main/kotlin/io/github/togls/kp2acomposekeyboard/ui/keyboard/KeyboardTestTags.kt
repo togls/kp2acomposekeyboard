@@ -5,6 +5,7 @@ internal object KeyboardTestTags {
     const val CandidateRow = "keyboard-candidate-row"
     const val DefaultContent = "keyboard-default-content"
     const val LetterReferenceRow = "keyboard-letter-reference-row"
+    const val DefaultSwitchKey = "keyboard-default-switch-key"
     const val WidthPolicySample = "keyboard-width-policy-sample"
     const val EntryNormalContent = "keyboard-entry-normal-content"
     const val EntryFixedFields = "keyboard-entry-fixed-fields"
