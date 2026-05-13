@@ -1,6 +1,7 @@
 package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.floor
@@ -113,3 +114,20 @@ private const val KEYBOARD_ROW_COUNT = 4
 private const val KEYBOARD_ROW_GAP_COUNT = KEYBOARD_ROW_COUNT - 1
 private const val REMAINING_FIELD_ROW_COUNT = 2
 private const val SIDE_KEY_COUNT = 2
+
+internal val LocalKeyboardLayoutMetrics = compositionLocalOf {
+    calculateKeyboardLayoutMetrics(
+        KeyboardLayoutInput(
+            totalWidth = 0.dp,
+            totalHeight = 0.dp,
+            candidateRowHeight = 0.dp,
+            horizontalPadding = 0.dp,
+            verticalOuterPadding = 0.dp,
+            keySpacing = 0.dp,
+            rowSpacing = 0.dp,
+            bottomSpacerHeight = 0.dp,
+            navigationSpacerHeight = 0.dp,
+            sideKeyStandardKeyCount = 7,
+        ),
+    )
+}
