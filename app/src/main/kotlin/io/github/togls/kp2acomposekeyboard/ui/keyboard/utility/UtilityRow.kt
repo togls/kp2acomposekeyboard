@@ -20,10 +20,10 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUtilityItemId
 import io.github.togls.kp2acomposekeyboard.R
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUtilityItemId
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.ExistingEntryHint
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.LocalKeyboardAdaptiveMetrics

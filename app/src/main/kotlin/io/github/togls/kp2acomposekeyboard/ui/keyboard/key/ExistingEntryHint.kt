@@ -19,7 +19,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.togls.kp2acomposekeyboard.R
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.dpCompat
 
 @Composable
 fun ExistingEntryHint(
@@ -36,7 +35,7 @@ fun ExistingEntryHint(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 12.dpCompat, end = 4.dpCompat),
+                .padding(start = 12.dp, end = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {

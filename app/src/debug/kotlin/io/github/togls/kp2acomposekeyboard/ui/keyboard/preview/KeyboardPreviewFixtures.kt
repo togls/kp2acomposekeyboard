@@ -118,7 +118,12 @@ internal fun previewLongLabelEntryKeyboardState(): KeyboardUiState {
             previewField("backup-1", "Backup Code", KeyboardFieldType.Recovery, true),
             previewField("backup-2", "Backup Code", KeyboardFieldType.Recovery, true),
             previewField("blank-label", "", KeyboardFieldType.Custom),
-            previewField("security-question", "Security Question With A Long Label", KeyboardFieldType.Custom, true),
+            previewField(
+                "security-question",
+                "Security Question With A Long Label",
+                KeyboardFieldType.Custom,
+                true
+            ),
         ),
         currentEntryName = "Long Label Entry",
     )

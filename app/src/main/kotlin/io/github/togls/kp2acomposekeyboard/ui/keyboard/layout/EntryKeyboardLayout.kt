@@ -190,9 +190,9 @@ private fun ExpandedEntryContent(
         snapshotFlow { scrollState.isScrollInProgress }
             .collect { isScrolling ->
                 val endedUserScroll = wasScrolling &&
-                    !isScrolling &&
-                    !isResettingScroll &&
-                    !isProgrammaticScroll
+                        !isScrolling &&
+                        !isResettingScroll &&
+                        !isProgrammaticScroll
                 wasScrolling = isScrolling
 
                 if (endedUserScroll) {

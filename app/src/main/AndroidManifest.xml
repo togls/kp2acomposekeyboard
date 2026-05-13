@@ -47,8 +47,7 @@
 
         <activity
             android:name=".feature.plugin.Kp2aPluginActivity"
-            android:exported="true">
-        </activity>
+            android:exported="true"></activity>
 
         <service
             android:name=".ime.KeyboardImeService"

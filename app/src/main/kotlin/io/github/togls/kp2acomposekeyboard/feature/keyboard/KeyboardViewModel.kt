@@ -61,12 +61,14 @@ class KeyboardViewModel(
                     targetIndex = intent.targetIndex,
                 )
             }
+
             is KeyboardIntent.MoveUtilityItemToRight -> updateUtilitySlots { slots ->
                 utilitySlotsReducer.moveToRight(
                     slots = slots,
                     itemId = intent.itemId,
                 )
             }
+
             is KeyboardIntent.RemoveUtilityItem -> updateUtilitySlots { slots ->
                 utilitySlotsReducer.remove(
                     slots = slots,

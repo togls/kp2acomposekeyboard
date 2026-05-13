@@ -11,6 +11,7 @@ sealed interface KeyboardIntent {
         val itemId: KeyboardUtilityItemId,
         val targetIndex: Int,
     ) : KeyboardIntent
+
     data class MoveUtilityItemToRight(val itemId: KeyboardUtilityItemId) : KeyboardIntent
     data class RemoveUtilityItem(val itemId: KeyboardUtilityItemId) : KeyboardIntent
 

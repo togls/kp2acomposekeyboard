@@ -182,7 +182,7 @@ private fun KeyboardKeySurface(
                 indication = ripple(),
                 onClick = onClick,
             ),
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(adaptiveMetrics.keyCornerRadius),
         color = containerColor,
         contentColor = contentColor,
         // Keep the actual key color clean. Tonal elevation changes the visual color.

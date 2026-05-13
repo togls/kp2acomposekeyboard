@@ -38,6 +38,6 @@ internal data class EntryFieldPageState(
 
     private val canPage: Boolean
         get() = visibleFieldListAreaHeightPx > 0f &&
-            contentHeightPx > visibleFieldListAreaHeightPx &&
-            maxOffsetPx > 0f
+                contentHeightPx > visibleFieldListAreaHeightPx &&
+                maxOffsetPx > 0f
 }

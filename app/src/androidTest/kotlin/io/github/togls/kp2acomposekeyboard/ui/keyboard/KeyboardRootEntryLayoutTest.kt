@@ -31,7 +31,12 @@ class KeyboardRootEntryLayoutTest {
     @Test
     fun normalRemainingFieldsScrollVertically() {
         composeRule.setContent {
-            KeyboardRootTestContent(testEntryState(EntryFieldDisplayMode.Paged, extraFieldCount = 12))
+            KeyboardRootTestContent(
+                testEntryState(
+                    EntryFieldDisplayMode.Paged,
+                    extraFieldCount = 12
+                )
+            )
         }
 
         composeRule.onNodeWithTag(KeyboardTestTags.EntryRemainingFields)

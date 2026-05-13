@@ -1,6 +1,5 @@
 package io.github.togls.kp2acomposekeyboard.ui.keyboard.layout
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,8 +20,6 @@ import io.github.togls.kp2acomposekeyboard.ui.keyboard.utility.UtilityDragPrevie
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.utility.UtilityPanel
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.utility.UtilityRow
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.utility.rememberUtilityDragState
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardAdaptiveMetrics
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
 
 /**
  * Hosts the main keyboard content. Drag-preview bounds are measured here, but
