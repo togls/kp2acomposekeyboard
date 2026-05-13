@@ -4,7 +4,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardHeightMode
 
-fun KeyboardHeightMode.toKeyboardHeight(
+internal fun KeyboardHeightMode.toKeyboardHeight(
     isLandscape: Boolean,
 ): Dp {
     if (isLandscape) {

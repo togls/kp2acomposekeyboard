@@ -36,7 +36,7 @@ import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.LocalKeyboardAdapti
 import kotlinx.coroutines.launch
 
 @Composable
-fun EntryKeyboardLayout(
+internal fun EntryKeyboardLayout(
     state: KeyboardUiState,
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,

@@ -21,7 +21,7 @@ import io.github.togls.kp2acomposekeyboard.R
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 
 @Composable
-fun ExistingEntryHint(
+internal fun ExistingEntryHint(
     entryName: String,
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,

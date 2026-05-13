@@ -6,8 +6,6 @@ import androidx.compose.ui.platform.testTag
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardTestTags
 
-class LetterKey
-
 @Composable
 internal fun LetterKey(
     letter: Char,

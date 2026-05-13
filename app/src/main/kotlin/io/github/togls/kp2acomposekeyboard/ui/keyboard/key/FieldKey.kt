@@ -30,11 +30,11 @@ internal fun FieldKey(
 
 @Composable
 private fun KeyboardFieldUiModel.safeDisplayLabel(): String {
-    val label = label.trim()
+    val trimmedLabel = label.trim()
 
-    if (label.isBlank()) {
+    if (trimmedLabel.isBlank()) {
         return stringResource(R.string.entry_name_unnamed)
     }
 
-    return label
+    return trimmedLabel
 }

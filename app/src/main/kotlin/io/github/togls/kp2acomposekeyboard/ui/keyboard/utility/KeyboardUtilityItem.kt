@@ -14,18 +14,20 @@ internal data class KeyboardUtilityItem(
 )
 
 internal fun availableKeyboardUtilityItems(): List<KeyboardUtilityItem> {
-    return listOf(
-        KeyboardUtilityItem(
-            id = SettingsUtilityItemId,
-            iconRes = R.drawable.ic_settings_24,
-            labelRes = R.string.keyboard_utility_settings,
-            contentDescriptionRes = R.string.cd_key_open_settings,
-        ),
-    )
+    return AvailableKeyboardUtilityItems
 }
 
 internal fun KeyboardUtilityItemId.toKeyboardUtilityItem(): KeyboardUtilityItem? {
-    return availableKeyboardUtilityItems().firstOrNull { item ->
+    return AvailableKeyboardUtilityItems.firstOrNull { item ->
         item.id == this
     }
 }
+
+private val AvailableKeyboardUtilityItems = listOf(
+    KeyboardUtilityItem(
+        id = SettingsUtilityItemId,
+        iconRes = R.drawable.ic_settings_24,
+        labelRes = R.string.keyboard_utility_settings,
+        contentDescriptionRes = R.string.cd_key_open_settings,
+    ),
+)

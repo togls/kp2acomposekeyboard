@@ -1,6 +1,5 @@
 package io.github.togls.kp2acomposekeyboard.ui.keyboard
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
@@ -9,13 +8,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.platform.LocalConfiguration
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.layout.KeyboardFrame
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardAdaptiveMetrics
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.LocalKeyboardAdaptiveMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.isKeyboardLandscape
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.toKeyboardHeight
 
 
@@ -32,8 +31,7 @@ fun KeyboardRoot(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val configuration = LocalConfiguration.current
-    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val isLandscape = isKeyboardLandscape()
 
     val adaptiveMetrics = KeyboardAdaptiveMetrics.resolve(
         heightMode = settings.keyboardHeightMode,

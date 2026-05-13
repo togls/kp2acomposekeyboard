@@ -114,20 +114,3 @@ private const val KEYBOARD_ROW_COUNT = 4
 private const val KEYBOARD_ROW_GAP_COUNT = KEYBOARD_ROW_COUNT - 1
 private const val REMAINING_FIELD_ROW_COUNT = 2
 private const val SIDE_KEY_COUNT = 2
-
-internal val LocalKeyboardLayoutMetrics = compositionLocalOf {
-    calculateKeyboardLayoutMetrics(
-        KeyboardLayoutInput(
-            totalWidth = 0.dp,
-            totalHeight = 0.dp,
-            candidateRowHeight = 0.dp,
-            horizontalPadding = 0.dp,
-            verticalOuterPadding = 0.dp,
-            keySpacing = 0.dp,
-            rowSpacing = 0.dp,
-            bottomSpacerHeight = 0.dp,
-            navigationSpacerHeight = 0.dp,
-            sideKeyStandardKeyCount = 7,
-        ),
-    )
-}

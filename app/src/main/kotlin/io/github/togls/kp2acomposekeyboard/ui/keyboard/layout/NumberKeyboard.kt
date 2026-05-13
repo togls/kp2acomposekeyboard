@@ -24,12 +24,12 @@ internal fun NumberKeyboard(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
     ) {
-        TextKeyRow(
+        CommitTextKeyRow(
             keys = NumberKeyboardRows[0],
             onIntent = onIntent,
         )
 
-        TextKeyRow(
+        CommitTextKeyRow(
             keys = NumberKeyboardRows[1],
             onIntent = onIntent,
         )
@@ -54,25 +54,6 @@ internal fun NumberKeyboard(
 
             DeleteKey(
                 modifier = Modifier.width(metrics.sideKeyWidth),
-                onIntent = onIntent,
-            )
-        }
-    }
-}
-
-@Composable
-private fun TextKeyRow(
-    keys: List<String>,
-    onIntent: (KeyboardIntent) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val metrics = LocalKeyboardLayoutMetrics.current
-
-    KeyboardRow(modifier = modifier) {
-        keys.forEach { text ->
-            CommitTextKey(
-                modifier = Modifier.width(metrics.standardKeyWidth),
-                text = text,
                 onIntent = onIntent,
             )
         }

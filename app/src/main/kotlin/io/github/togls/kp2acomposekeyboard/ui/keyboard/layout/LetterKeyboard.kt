@@ -16,7 +16,7 @@ import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.ShiftKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
 
 @Composable
-fun LetterKeyboard(
+internal fun LetterKeyboard(
     state: KeyboardUiState,
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,

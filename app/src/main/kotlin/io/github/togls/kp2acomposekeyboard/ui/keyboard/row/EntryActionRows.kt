@@ -13,7 +13,7 @@ import io.github.togls.kp2acomposekeyboard.ui.keyboard.layout.KeyboardRow
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.layout.LocalKeyboardLayoutMetrics
 
 @Composable
-fun NormalEntryActionRow(
+internal fun NormalEntryActionRow(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {

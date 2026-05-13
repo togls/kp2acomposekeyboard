@@ -23,7 +23,7 @@ import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.LocalKeyboardAdaptiveMetrics
 
 @Composable
-fun DefaultKeyboardLayout(
+internal fun DefaultKeyboardLayout(
     state: KeyboardUiState,
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,

@@ -5,10 +5,8 @@ import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -49,13 +47,11 @@ internal fun UtilityItemSlot(
     dragState: UtilityDragState? = null,
     dragSource: UtilityDragSource = UtilityDragSource.Pinned,
     onBoundsChanged: ((KeyboardUtilityItemId, Rect) -> Unit)? = null,
-    onDrop: (
-        (
+    onDrop: ((
         itemId: KeyboardUtilityItemId,
         source: UtilityDragSource,
         target: UtilityDropTarget?,
-    ) -> Unit
-    )? = null,
+    ) -> Unit)? = null,
 ) {
     val item = itemId?.toKeyboardUtilityItem()
 
@@ -120,13 +116,10 @@ internal fun UtilityItemSlot(
 
             UtilityIconButton(
                 modifier = modifier
-                    .width(iconSize)
-                    .height(iconSize)
                     .alpha(sourceItemAlpha)
                     .then(draggableModifier),
                 iconRes = item.iconRes,
                 contentDescription = stringResource(item.contentDescriptionRes),
-
                 onClick = { onIntent(KeyboardIntent.ClickUtilityItem(item.id)) },
             )
         }
