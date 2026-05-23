@@ -3,8 +3,8 @@
     android:supportsSwitchingToNextInputMethod="true">
 
     <subtype
-        android:imeSubtypeLocale="en_US"
+        android:imeSubtypeExtraValue="layout=entry"
         android:imeSubtypeMode="keyboard"
-        android:isAsciiCapable="true"
-        android:label="@string/ime_subtype_en_us" />
+        android:label="@string/ime_subtype_entry"
+        android:subtypeId="1001" />
 </input-method>

@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">KP2A Compose Keyboard</string>
     <string name="ime_name">KP2A Compose Keyboard</string>
+    <string name="ime_subtype_entry">Entry</string>
     <string name="ime_subtype_en_us">English (US)</string>
     <string name="settings_title">Keyboard settings</string>
 
