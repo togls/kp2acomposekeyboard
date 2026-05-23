@@ -177,7 +177,7 @@ selection to the ViewModel.
 
 Required platform hooks:
 
-- Read the current subtype when input starts.
+- Read the current subtype when the service starts or the input view starts.
 - Handle subtype changes through the IME callback when the system switches
   between KP2A subtypes.
 - Parse subtype extras into `KeyboardSubtype`.
@@ -198,6 +198,31 @@ Behavior:
   `Entry`.
 - Clearing the session leaves the active subtype layout intact. If the active
   subtype is `Entry`, show the empty entry layout.
+
+## Direct System Picker Activation
+
+The implementation must handle the user opening the Android input method picker
+while another IME is active, such as Gboard, then choosing either KP2A `Entry`
+or KP2A `English (US)` directly.
+
+This path may start or recreate `KeyboardImeService` with the selected KP2A
+subtype already active. The ViewModel must not rely only on
+`onCurrentInputMethodSubtypeChanged()`, because that callback is for subtype
+changes after the IME is already active. On service/input-view startup, the IME
+must read `InputMethodManager.getCurrentInputMethodSubtype()`, parse it, and
+send `KeyboardIntent.ChangeSubtype(...)` before or during first UI collection.
+
+Expected outcomes:
+
+- Gboard -> KP2A `Entry`: the first rendered KP2A layout is `Entry`; if no
+  KP2A session exists, it shows the empty entry layout.
+- Gboard -> KP2A `English (US)`: the first rendered KP2A layout is the default
+  English letter layout.
+- Unknown or missing subtype at startup: fall back to `Entry`.
+
+The IME should apply this same subtype synchronization from `onStartInputView`
+so repeated picker switches and ROM-specific service recreation still converge
+to the selected system subtype.
 
 ## Empty Entry Layout
 
@@ -289,6 +314,10 @@ Add or update focused tests:
 - ViewModel tests:
   - `Entry` subtype selects entry layout without requiring a session.
   - `EnglishUs` subtype selects default layout.
+  - initial subtype synchronization from `EnglishUs` selects default layout
+    before user keyboard intents.
+  - initial subtype synchronization from `Entry` selects entry empty state when
+    no session exists.
   - language switch from `Entry` emits `SwitchToSubtype(EnglishUs)` when enabled.
   - language switch from `Entry` emits `SwitchToNextInputMethod` when English is
     disabled.
@@ -320,6 +349,10 @@ Manual validation:
   - `Entry -> English (US)` when English is enabled.
   - `English (US) -> next system IME`.
   - `Entry -> next system IME` when English is disabled.
+- With Gboard active, open the system input method picker and select KP2A
+  `English (US)` directly; verify KP2A opens in the English letter layout.
+- With Gboard active, open the system input method picker and select KP2A
+  `Entry` directly; verify KP2A opens in the entry layout.
 
 ## Risks
 
