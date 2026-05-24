@@ -25,6 +25,10 @@ class KeyboardSessionRepository @Inject constructor() {
         SecureLog.d("Session cleared")
     }
 
+    fun currentSession(): KeyboardSession? {
+        return _session.value
+    }
+
     fun getFieldValue(fieldId: String): String? {
         return _session.value
             ?.fields
