@@ -1,10 +1,15 @@
 package io.github.togls.kp2acomposekeyboard.ime
 
 import android.content.ActivityNotFoundException
+import android.content.ComponentName
 import android.content.Intent
 import android.inputmethodservice.InputMethodService
+import android.os.Build
+import android.os.IBinder
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.view.inputmethod.InputMethodSubtype
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -24,6 +29,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.github.togls.kp2acomposekeyboard.feature.entrypicker.EntryPickerActivity
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardEffect
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardSubtype
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardViewModel
 import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
 import io.github.togls.kp2acomposekeyboard.feature.settings.SettingsActivity
@@ -104,6 +110,16 @@ class KeyboardImeService :
         )
     }
 
+    private val inputMethodManager: InputMethodManager? by lazy {
+        getSystemService(InputMethodManager::class.java)
+    }
+
+    private val imeId: String
+        get() = ComponentName(this, KeyboardImeService::class.java).flattenToShortString()
+
+    private val imeToken: IBinder?
+        get() = window?.window?.attributes?.token
+
     /**
      * Tracks whether the IME is currently launching the entry picker.
      *
@@ -146,6 +162,8 @@ class KeyboardImeService :
 
         // Use a safe default before settings are collected inside Compose.
         configureImeNavigationBar(isDarkTheme = false)
+
+        syncCurrentSubtypeFromSystem()
 
         return ComposeView(this).apply {
             installViewTreeOwners(this)
@@ -223,10 +241,17 @@ class KeyboardImeService :
 
         installViewTreeOwners(window?.window?.decorView)
 
+        syncCurrentSubtypeFromSystem()
+
         // A new input view session starts outside the entry picker flow by default.
         entryPickerFlowActive = false
 
         SecureLog.d("input view started")
+    }
+
+    override fun onCurrentInputMethodSubtypeChanged(newSubtype: InputMethodSubtype) {
+        super.onCurrentInputMethodSubtypeChanged(newSubtype)
+        applyCurrentSubtype(newSubtype)
     }
 
     override fun onFinishInputView(finishingInput: Boolean) {
@@ -338,9 +363,77 @@ class KeyboardImeService :
                 SecureLog.d("Launch settings requested")
             }
 
-            is KeyboardEffect.SwitchToSubtype -> Unit
+            is KeyboardEffect.SwitchToSubtype -> {
+                switchToSubtype(effect.subtype)
+            }
 
-            KeyboardEffect.SwitchToNextInputMethod -> Unit
+            KeyboardEffect.SwitchToNextInputMethod -> {
+                switchToNextKeyboard()
+            }
+        }
+    }
+
+    private fun syncCurrentSubtypeFromSystem() {
+        val subtype = inputMethodManager?.currentInputMethodSubtype
+        applyCurrentSubtype(subtype)
+    }
+
+    private fun applyCurrentSubtype(subtype: InputMethodSubtype?) {
+        val keyboardSubtype = KeyboardSubtypeRegistry.fromInputMethodSubtype(subtype)
+        viewModel.onIntent(KeyboardIntent.ChangeSubtype(keyboardSubtype))
+        SecureLog.d(
+            message = "ime subtype applied",
+            "subtype" to keyboardSubtype.name,
+        )
+    }
+
+    private fun switchToSubtype(subtype: KeyboardSubtype) {
+        val inputMethodSubtype = KeyboardSubtypeRegistry.inputMethodSubtypeFor(subtype)
+        if (inputMethodSubtype == null) {
+            SecureLog.w(
+                message = "subtype switch ignored",
+                throwable = null,
+                "subtype" to subtype.name,
+            )
+            return
+        }
+
+        runCatching {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                switchInputMethod(imeId, inputMethodSubtype)
+            } else {
+                val token = imeToken ?: error("IME token unavailable")
+                @Suppress("DEPRECATION")
+                inputMethodManager?.setInputMethodAndSubtype(token, imeId, inputMethodSubtype)
+                    ?: error("InputMethodManager unavailable")
+            }
+        }.onFailure { error ->
+            SecureLog.w(
+                message = "subtype switch failed",
+                throwable = error,
+                "subtype" to subtype.name,
+                "errorType" to error::class.java.simpleName,
+            )
+            switchToNextKeyboard()
+        }
+    }
+
+    private fun switchToNextKeyboard() {
+        runCatching {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                switchToNextInputMethod(false)
+            } else {
+                val token = imeToken ?: error("IME token unavailable")
+                @Suppress("DEPRECATION")
+                inputMethodManager?.switchToNextInputMethod(token, false)
+                    ?: error("InputMethodManager unavailable")
+            }
+        }.onFailure { error ->
+            SecureLog.w(
+                message = "next input method switch failed",
+                throwable = error,
+                "errorType" to error::class.java.simpleName,
+            )
         }
     }
 
