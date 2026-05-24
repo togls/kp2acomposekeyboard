@@ -3,7 +3,7 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard.utility
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUtilityItemId
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilityItemId
 
 internal sealed interface UtilityDragSource {
     data object Panel : UtilityDragSource

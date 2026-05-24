@@ -1,8 +1,8 @@
 package io.github.togls.kp2acomposekeyboard.kp2a
 
-import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldClassifier
-import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldType
-import io.github.togls.kp2acomposekeyboard.domain.SensitiveFieldPolicy
+import io.github.togls.kp2acomposekeyboard.domain.field.KeyboardFieldType
+import io.github.togls.kp2acomposekeyboard.domain.policy.KeyboardFieldClassifier
+import io.github.togls.kp2acomposekeyboard.domain.policy.SensitiveFieldPolicy
 import keepass2android.pluginsdk.KeepassDefs
 import keepass2android.pluginsdk.Strings
 import org.junit.Assert.assertEquals

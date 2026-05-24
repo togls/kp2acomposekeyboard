@@ -1,8 +1,8 @@
 package io.github.togls.kp2acomposekeyboard.ime
 
 import android.view.inputmethod.InputMethodSubtype
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardSubtype
-import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardSubtype
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardSettings
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

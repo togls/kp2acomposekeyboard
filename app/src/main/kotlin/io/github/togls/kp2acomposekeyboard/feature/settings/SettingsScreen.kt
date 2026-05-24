@@ -1,5 +1,9 @@
 package io.github.togls.kp2acomposekeyboard.feature.settings
 
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardHeightMode
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardSettings
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardThemeMode
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

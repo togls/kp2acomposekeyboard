@@ -1,6 +1,10 @@
 package io.github.togls.kp2acomposekeyboard.feature.keyboard
 
-import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardSubtype
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.MainKeyboardLayout
+
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardSettings
 import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettingsStore
 import io.github.togls.kp2acomposekeyboard.session.KeyboardSessionRepository
 import io.github.togls.kp2acomposekeyboard.session.SessionTimeoutController

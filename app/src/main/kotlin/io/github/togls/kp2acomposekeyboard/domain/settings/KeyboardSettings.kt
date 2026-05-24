@@ -1,6 +1,6 @@
-package io.github.togls.kp2acomposekeyboard.feature.settings
+package io.github.togls.kp2acomposekeyboard.domain.settings
 
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUtilitySlots
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
 
 data class KeyboardSettings(
     val themeMode: KeyboardThemeMode = KeyboardThemeMode.System,
@@ -14,7 +14,7 @@ data class KeyboardSettings(
     val utilitySlots: KeyboardUtilitySlots = KeyboardUtilitySlots(),
 ) {
     init {
-        // Keep the invariant close to the model so DataStore, UI, and tests share one safe range.
+        // Keep the invariant close to the model so storage, UI, and tests share one safe range.
         require(sessionTimeoutSeconds in MIN_SESSION_TIMEOUT_SECONDS..MAX_SESSION_TIMEOUT_SECONDS) {
             "sessionTimeoutSeconds must be in $MIN_SESSION_TIMEOUT_SECONDS..$MAX_SESSION_TIMEOUT_SECONDS"
         }

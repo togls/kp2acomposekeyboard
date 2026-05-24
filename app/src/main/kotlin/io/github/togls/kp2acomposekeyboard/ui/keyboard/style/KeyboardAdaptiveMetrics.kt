@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardHeightMode
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardHeightMode
 
 @Immutable
 internal data class KeyboardAdaptiveMetrics(

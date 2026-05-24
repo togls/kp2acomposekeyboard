@@ -3,7 +3,7 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard.preview
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.EntryFieldDisplayMode
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.EntryFieldDisplayMode
 
 @Preview(
     name = "Paged",

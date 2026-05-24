@@ -1,5 +1,8 @@
 package io.github.togls.kp2acomposekeyboard.feature.settings
 
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardHeightMode
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardThemeMode
+
 sealed interface SettingsIntent {
     data class ChangeThemeMode(
         val themeMode: KeyboardThemeMode,

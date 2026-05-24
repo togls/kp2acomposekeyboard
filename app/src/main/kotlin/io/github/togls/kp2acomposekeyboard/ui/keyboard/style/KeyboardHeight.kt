@@ -2,7 +2,7 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard.style
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardHeightMode
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardHeightMode
 
 internal fun KeyboardHeightMode.toKeyboardHeight(
     isLandscape: Boolean,

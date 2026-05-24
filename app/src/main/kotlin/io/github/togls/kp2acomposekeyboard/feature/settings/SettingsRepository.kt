@@ -1,5 +1,9 @@
 package io.github.togls.kp2acomposekeyboard.feature.settings
 
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardHeightMode
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardSettings
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardThemeMode
+
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.IOException
@@ -11,7 +15,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUtilitySlots
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map

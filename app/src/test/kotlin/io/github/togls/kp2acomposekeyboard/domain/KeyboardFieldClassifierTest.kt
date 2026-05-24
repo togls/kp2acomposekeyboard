@@ -1,6 +1,8 @@
 package io.github.togls.kp2acomposekeyboard.domain
 
-import keepass2android.pluginsdk.KeepassDefs
+import io.github.togls.kp2acomposekeyboard.domain.field.KeyboardFieldType
+import io.github.togls.kp2acomposekeyboard.domain.policy.KeyboardFieldClassifier
+
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -12,22 +14,22 @@ class KeyboardFieldClassifierTest {
     fun classify_returnsStandardKeepassFieldTypes() {
         assertEquals(
             KeyboardFieldType.Username,
-            classifier.classify(KeepassDefs.UserNameField),
+            classifier.classify("UserName"),
         )
 
         assertEquals(
             KeyboardFieldType.Password,
-            classifier.classify(KeepassDefs.PasswordField),
+            classifier.classify("Password"),
         )
 
         assertEquals(
             KeyboardFieldType.Url,
-            classifier.classify(KeepassDefs.UrlField),
+            classifier.classify("URL"),
         )
 
         assertEquals(
             KeyboardFieldType.Notes,
-            classifier.classify(KeepassDefs.NotesField),
+            classifier.classify("Notes"),
         )
     }
 

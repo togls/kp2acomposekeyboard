@@ -1,8 +1,8 @@
-package io.github.togls.kp2acomposekeyboard.domain
+package io.github.togls.kp2acomposekeyboard.domain.policy
 
-import javax.inject.Inject
+import io.github.togls.kp2acomposekeyboard.domain.field.KeyboardFieldType
 
-class SensitiveFieldPolicy @Inject constructor() {
+class SensitiveFieldPolicy {
 
     fun isSensitive(
         key: String,

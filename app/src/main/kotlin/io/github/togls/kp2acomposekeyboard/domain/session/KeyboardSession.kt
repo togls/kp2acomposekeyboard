@@ -1,6 +1,6 @@
-package io.github.togls.kp2acomposekeyboard.session
+package io.github.togls.kp2acomposekeyboard.domain.session
 
-import io.github.togls.kp2acomposekeyboard.domain.KeyboardField
+import io.github.togls.kp2acomposekeyboard.domain.field.KeyboardField
 
 data class KeyboardSession(
     val entryId: String?,

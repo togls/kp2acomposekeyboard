@@ -1,9 +1,9 @@
 package io.github.togls.kp2acomposekeyboard.kp2a
 
-import io.github.togls.kp2acomposekeyboard.domain.KeyboardField
-import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldClassifier
-import io.github.togls.kp2acomposekeyboard.domain.SensitiveFieldPolicy
-import io.github.togls.kp2acomposekeyboard.session.KeyboardSession
+import io.github.togls.kp2acomposekeyboard.domain.field.KeyboardField
+import io.github.togls.kp2acomposekeyboard.domain.session.KeyboardSession
+import io.github.togls.kp2acomposekeyboard.domain.policy.KeyboardFieldClassifier
+import io.github.togls.kp2acomposekeyboard.domain.policy.SensitiveFieldPolicy
 import keepass2android.pluginsdk.KeepassDefs
 import keepass2android.pluginsdk.Strings
 import javax.inject.Inject
@@ -48,7 +48,8 @@ class Kp2aEntryMapper @Inject constructor(
         value: String,
         protectedFields: Set<String>,
     ): KeyboardField {
-        val type = fieldClassifier.classify(key)
+        val normalizedKey = normalizeKp2aFieldKey(key)
+        val type = fieldClassifier.classify(normalizedKey)
 
         return KeyboardField(
             id = createFieldId(
@@ -57,17 +58,27 @@ class Kp2aEntryMapper @Inject constructor(
             ),
             key = key,
             label = fieldClassifier.displayLabel(
-                key = key,
+                key = normalizedKey,
                 type = type,
             ),
             value = value,
             type = type,
             sensitive = sensitiveFieldPolicy.isSensitive(
-                key = key,
+                key = normalizedKey,
                 type = type,
                 protectedFields = protectedFields,
             ),
         )
+    }
+
+    private fun normalizeKp2aFieldKey(key: String): String {
+        return when (key) {
+            KeepassDefs.UserNameField -> "username"
+            KeepassDefs.PasswordField -> "password"
+            KeepassDefs.UrlField -> "url"
+            KeepassDefs.NotesField -> "notes"
+            else -> key
+        }
     }
 
     private fun createFieldId(

@@ -1,8 +1,10 @@
 package io.github.togls.kp2acomposekeyboard.session
 
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.EntryFieldDisplayMode
+import io.github.togls.kp2acomposekeyboard.domain.session.KeyboardSessionSnapshot
+
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.EntryFieldDisplayMode
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.MainKeyboardLayout
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.MainKeyboardLayout
 
 fun KeyboardSessionSnapshot.toEntryUiState(
     previousState: KeyboardUiState,

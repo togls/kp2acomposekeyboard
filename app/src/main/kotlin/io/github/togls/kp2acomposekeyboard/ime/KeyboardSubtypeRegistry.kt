@@ -2,8 +2,8 @@ package io.github.togls.kp2acomposekeyboard.ime
 
 import android.view.inputmethod.InputMethodSubtype
 import io.github.togls.kp2acomposekeyboard.R
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardSubtype
-import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardSubtype
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardSettings
 
 object KeyboardSubtypeRegistry {
     const val ENTRY_SUBTYPE_ID = 1001

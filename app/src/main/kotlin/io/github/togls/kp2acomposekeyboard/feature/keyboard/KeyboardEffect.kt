@@ -1,5 +1,7 @@
 package io.github.togls.kp2acomposekeyboard.feature.keyboard
 
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardSubtype
+
 sealed interface KeyboardEffect {
     data class CommitText(val text: String) : KeyboardEffect
 

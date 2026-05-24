@@ -1,4 +1,4 @@
-package io.github.togls.kp2acomposekeyboard.feature.keyboard
+package io.github.togls.kp2acomposekeyboard.domain.keyboard
 
 data class KeyboardUtilitySlots(
     val centerItemIds: List<KeyboardUtilityItemId> = listOf(SettingsUtilityItemId),

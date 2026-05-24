@@ -10,7 +10,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.EntryFieldDisplayMode
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.EntryFieldDisplayMode
 import org.junit.Rule
 import org.junit.Test
 

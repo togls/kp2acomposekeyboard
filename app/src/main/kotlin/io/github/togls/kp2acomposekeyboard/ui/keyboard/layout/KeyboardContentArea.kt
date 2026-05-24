@@ -15,7 +15,7 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.MainKeyboardLayout
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.MainKeyboardLayout
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.utility.UtilityDragPreview
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.utility.UtilityPanel
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.utility.UtilityRow

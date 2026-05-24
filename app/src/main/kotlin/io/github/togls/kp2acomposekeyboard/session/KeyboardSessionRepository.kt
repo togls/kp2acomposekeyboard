@@ -1,5 +1,8 @@
 package io.github.togls.kp2acomposekeyboard.session
 
+import io.github.togls.kp2acomposekeyboard.domain.session.KeyboardSession
+import io.github.togls.kp2acomposekeyboard.domain.session.KeyboardSessionSnapshot
+
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

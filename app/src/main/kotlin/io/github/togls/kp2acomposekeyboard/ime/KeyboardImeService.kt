@@ -29,9 +29,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.github.togls.kp2acomposekeyboard.feature.entrypicker.EntryPickerActivity
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardEffect
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardSubtype
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardSubtype
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardViewModel
-import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardSettings
 import io.github.togls.kp2acomposekeyboard.feature.settings.SettingsActivity
 import io.github.togls.kp2acomposekeyboard.feature.settings.SettingsRepository
 import io.github.togls.kp2acomposekeyboard.security.SecureLog

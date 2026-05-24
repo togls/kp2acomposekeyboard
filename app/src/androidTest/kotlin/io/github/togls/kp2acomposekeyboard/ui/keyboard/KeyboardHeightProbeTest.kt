@@ -4,7 +4,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.EntryFieldDisplayMode
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.EntryFieldDisplayMode
 import org.junit.Assert.fail
 import org.junit.Rule
 

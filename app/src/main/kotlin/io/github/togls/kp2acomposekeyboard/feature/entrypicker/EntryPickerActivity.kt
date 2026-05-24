@@ -11,7 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardSettings
 import io.github.togls.kp2acomposekeyboard.feature.settings.SettingsRepository
 import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aContract
 import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aEntryResultParser

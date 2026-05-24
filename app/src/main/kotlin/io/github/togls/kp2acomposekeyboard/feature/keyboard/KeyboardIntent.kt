@@ -1,5 +1,8 @@
 package io.github.togls.kp2acomposekeyboard.feature.keyboard
 
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardSubtype
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilityItemId
+
 sealed interface KeyboardIntent {
     data object SelectEntry : KeyboardIntent
     data object OpenSettings : KeyboardIntent

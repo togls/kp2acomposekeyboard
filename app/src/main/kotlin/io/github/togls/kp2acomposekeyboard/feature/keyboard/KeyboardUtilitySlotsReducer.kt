@@ -1,5 +1,8 @@
 package io.github.togls.kp2acomposekeyboard.feature.keyboard
 
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilityItemId
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
+
 class KeyboardUtilitySlotsReducer(
     private val allowedItemIds: List<KeyboardUtilityItemId> = KeyboardUtilityItemId.productionItems,
 ) {

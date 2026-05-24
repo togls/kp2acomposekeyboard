@@ -1,4 +1,4 @@
-package io.github.togls.kp2acomposekeyboard.feature.keyboard
+package io.github.togls.kp2acomposekeyboard.domain.keyboard
 
 interface KeyboardUtilityItemId {
     val storageValue: String

@@ -1,19 +1,13 @@
-package io.github.togls.kp2acomposekeyboard.domain
+package io.github.togls.kp2acomposekeyboard.domain.policy
 
-import keepass2android.pluginsdk.KeepassDefs
-import javax.inject.Inject
+import io.github.togls.kp2acomposekeyboard.domain.field.KeyboardFieldType
 
-class KeyboardFieldClassifier @Inject constructor() {
+class KeyboardFieldClassifier {
 
     fun classify(key: String): KeyboardFieldType {
         val normalizedKey = key.normalizeFieldKey()
 
         return when {
-            key == KeepassDefs.UserNameField -> KeyboardFieldType.Username
-            key == KeepassDefs.PasswordField -> KeyboardFieldType.Password
-            key == KeepassDefs.UrlField -> KeyboardFieldType.Url
-            key == KeepassDefs.NotesField -> KeyboardFieldType.Notes
-
             normalizedKey == "username" ||
                     normalizedKey == "user" ||
                     normalizedKey == "login" ||

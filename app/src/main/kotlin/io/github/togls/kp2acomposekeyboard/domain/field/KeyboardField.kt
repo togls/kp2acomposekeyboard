@@ -1,4 +1,4 @@
-package io.github.togls.kp2acomposekeyboard.domain
+package io.github.togls.kp2acomposekeyboard.domain.field
 
 data class KeyboardField(
     val id: String,

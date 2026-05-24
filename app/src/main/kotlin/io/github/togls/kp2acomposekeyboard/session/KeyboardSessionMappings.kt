@@ -1,22 +1,25 @@
 package io.github.togls.kp2acomposekeyboard.session
 
-import io.github.togls.kp2acomposekeyboard.domain.KeyboardField
-import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldType
-import io.github.togls.kp2acomposekeyboard.domain.toUiModel
+import io.github.togls.kp2acomposekeyboard.domain.session.KeyboardSession
+import io.github.togls.kp2acomposekeyboard.domain.session.KeyboardSessionSnapshot
+
+import io.github.togls.kp2acomposekeyboard.domain.field.KeyboardField
+import io.github.togls.kp2acomposekeyboard.domain.field.KeyboardFieldType
+import io.github.togls.kp2acomposekeyboard.domain.field.toSummary
 
 fun KeyboardSession.toSnapshot(): KeyboardSessionSnapshot {
     val fixedFields = fields
         .filter { field -> field.isFixedField() }
         .sortedByFixedFieldOrder()
-        .map { field -> field.toUiModel() }
+        .map { field -> field.toSummary() }
 
     val extraFields = fields
         .filterNot { field -> field.isFixedField() }
-        .map { field -> field.toUiModel() }
+        .map { field -> field.toSummary() }
 
     val allFields = fields
         .sortedByDisplayOrder()
-        .map { field -> field.toUiModel() }
+        .map { field -> field.toSummary() }
 
     return KeyboardSessionSnapshot(
         entryName = entryName,

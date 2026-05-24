@@ -9,8 +9,8 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
-import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardThemeMode
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardSettings
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardThemeMode
 
 private val LightColorScheme = lightColorScheme()
 

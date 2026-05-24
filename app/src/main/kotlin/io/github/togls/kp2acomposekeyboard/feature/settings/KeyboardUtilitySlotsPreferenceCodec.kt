@@ -1,7 +1,7 @@
 package io.github.togls.kp2acomposekeyboard.feature.settings
 
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUtilityItemId
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUtilitySlots
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilityItemId
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUtilitySlotsReducer
 
 object KeyboardUtilitySlotsPreferenceCodec {

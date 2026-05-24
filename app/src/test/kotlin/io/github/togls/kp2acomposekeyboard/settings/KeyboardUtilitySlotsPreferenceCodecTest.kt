@@ -1,8 +1,8 @@
 package io.github.togls.kp2acomposekeyboard.settings
 
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUtilityItemId
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUtilitySlots
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.SettingsUtilityItemId
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilityItemId
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.SettingsUtilityItemId
 import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardUtilitySlotsPreferenceCodec
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull

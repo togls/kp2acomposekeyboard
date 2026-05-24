@@ -3,9 +3,9 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard.utility
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import io.github.togls.kp2acomposekeyboard.R
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.ClearEntryUtilityItemId
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUtilityItemId
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.SettingsUtilityItemId
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.ClearEntryUtilityItemId
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilityItemId
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.SettingsUtilityItemId
 
 internal data class KeyboardUtilityItem(
     val id: KeyboardUtilityItemId,

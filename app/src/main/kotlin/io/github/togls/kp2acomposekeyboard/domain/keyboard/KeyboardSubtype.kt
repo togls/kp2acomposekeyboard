@@ -1,4 +1,4 @@
-package io.github.togls.kp2acomposekeyboard.feature.keyboard
+package io.github.togls.kp2acomposekeyboard.domain.keyboard
 
 enum class KeyboardSubtype(
     val mainLayout: MainKeyboardLayout,

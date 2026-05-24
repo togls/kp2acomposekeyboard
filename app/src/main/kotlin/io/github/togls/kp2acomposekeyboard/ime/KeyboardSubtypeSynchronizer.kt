@@ -5,7 +5,7 @@ import android.content.Context
 import android.os.Build
 import android.view.inputmethod.InputMethodManager
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardSettings
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
 import javax.inject.Inject
 import javax.inject.Singleton

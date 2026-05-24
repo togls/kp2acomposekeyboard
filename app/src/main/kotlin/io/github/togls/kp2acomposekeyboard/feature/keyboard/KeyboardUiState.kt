@@ -1,6 +1,12 @@
 package io.github.togls.kp2acomposekeyboard.feature.keyboard
 
-import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldUiModel
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.DefaultInputMode
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.EntryFieldDisplayMode
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardSubtype
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.MainKeyboardLayout
+
+import io.github.togls.kp2acomposekeyboard.domain.field.KeyboardFieldSummary
 
 /**
  * Represents the complete UI state required to render the keyboard.
@@ -21,17 +27,17 @@ data class KeyboardUiState(
     /**
      * Fields that are always visible in the entry keyboard layout.
      */
-    val fixedFields: List<KeyboardFieldUiModel> = emptyList(),
+    val fixedFields: List<KeyboardFieldSummary> = emptyList(),
 
     /**
      * Additional fields that may be displayed by page or other display modes.
      */
-    val extraFields: List<KeyboardFieldUiModel> = emptyList(),
+    val extraFields: List<KeyboardFieldSummary> = emptyList(),
 
     /**
      * All available fields, including both fixed and extra fields.
      */
-    val allFields: List<KeyboardFieldUiModel> = emptyList(),
+    val allFields: List<KeyboardFieldSummary> = emptyList(),
 
     val extraFieldPageIndex: Int = 0,
     val extraFieldPageSize: Int = DEFAULT_EXTRA_FIELD_PAGE_SIZE,

@@ -1,7 +1,9 @@
 package io.github.togls.kp2acomposekeyboard.session
 
-import io.github.togls.kp2acomposekeyboard.domain.KeyboardField
-import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldType
+import io.github.togls.kp2acomposekeyboard.domain.session.KeyboardSession
+
+import io.github.togls.kp2acomposekeyboard.domain.field.KeyboardField
+import io.github.togls.kp2acomposekeyboard.domain.field.KeyboardFieldType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Test

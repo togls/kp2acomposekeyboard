@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.DefaultInputMode
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.DefaultInputMode
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardTestTags

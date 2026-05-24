@@ -5,14 +5,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldType
-import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldUiModel
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.EntryFieldDisplayMode
+import io.github.togls.kp2acomposekeyboard.domain.field.KeyboardFieldType
+import io.github.togls.kp2acomposekeyboard.domain.field.KeyboardFieldSummary
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.EntryFieldDisplayMode
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardSubtype
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardSubtype
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.MainKeyboardLayout
-import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.MainKeyboardLayout
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardSettings
 import io.github.togls.kp2acomposekeyboard.ui.theme.KeyboardTheme
 
 internal const val PASSWORD_SHOULD_NOT_APPEAR = "PASSWORD_SHOULD_NOT_APPEAR"
@@ -69,13 +69,13 @@ internal fun testEntryState(
 )
 
 private fun fixedFields() = listOf(
-    KeyboardFieldUiModel("username", "Username", KeyboardFieldType.Username, sensitive = false),
-    KeyboardFieldUiModel("password", "Password", KeyboardFieldType.Password, sensitive = true),
-    KeyboardFieldUiModel("totp", "TOTP", KeyboardFieldType.Totp, sensitive = true),
+    KeyboardFieldSummary("username", "Username", KeyboardFieldType.Username, sensitive = false),
+    KeyboardFieldSummary("password", "Password", KeyboardFieldType.Password, sensitive = true),
+    KeyboardFieldSummary("totp", "TOTP", KeyboardFieldType.Totp, sensitive = true),
 )
 
 private fun extraFields(count: Int) = List(count) { index ->
-    KeyboardFieldUiModel(
+    KeyboardFieldSummary(
         id = "extra-$index",
         label = "Extra $index",
         type = KeyboardFieldType.Custom,

@@ -1,9 +1,9 @@
 package io.github.togls.kp2acomposekeyboard.settings
 
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUtilitySlots
-import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardHeightMode
-import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
-import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardThemeMode
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardHeightMode
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardSettings
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardThemeMode
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

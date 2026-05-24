@@ -6,14 +6,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldUiModel
+import io.github.togls.kp2acomposekeyboard.domain.field.KeyboardFieldSummary
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.FieldKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
 
 @Composable
 internal fun EntryFieldGrid(
-    fields: List<KeyboardFieldUiModel>,
+    fields: List<KeyboardFieldSummary>,
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
     columns: Int = EntryFieldColumnCount,

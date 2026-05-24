@@ -1,6 +1,6 @@
-package io.github.togls.kp2acomposekeyboard.domain
+package io.github.togls.kp2acomposekeyboard.domain.field
 
-data class KeyboardFieldUiModel(
+data class KeyboardFieldSummary(
     val id: String,
     val label: String,
     val type: KeyboardFieldType,

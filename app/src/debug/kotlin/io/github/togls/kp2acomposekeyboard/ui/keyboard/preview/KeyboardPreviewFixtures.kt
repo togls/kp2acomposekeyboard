@@ -1,17 +1,17 @@
 package io.github.togls.kp2acomposekeyboard.ui.keyboard.preview
 
 import androidx.compose.runtime.Composable
-import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldType
-import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldUiModel
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.DefaultInputMode
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.EntryFieldDisplayMode
+import io.github.togls.kp2acomposekeyboard.domain.field.KeyboardFieldType
+import io.github.togls.kp2acomposekeyboard.domain.field.KeyboardFieldSummary
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.DefaultInputMode
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.EntryFieldDisplayMode
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUtilitySlots
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.MainKeyboardLayout
-import io.github.togls.kp2acomposekeyboard.feature.keyboard.SettingsUtilityItemId
-import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardHeightMode
-import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
-import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardThemeMode
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.MainKeyboardLayout
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.SettingsUtilityItemId
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardHeightMode
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardSettings
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardThemeMode
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardRoot
 import io.github.togls.kp2acomposekeyboard.ui.theme.KeyboardTheme
 
@@ -142,8 +142,8 @@ internal fun previewEmptyEntryKeyboardState(
 
 private fun previewEntryKeyboardState(
     displayMode: EntryFieldDisplayMode,
-    fixedFields: List<KeyboardFieldUiModel>,
-    extraFields: List<KeyboardFieldUiModel>,
+    fixedFields: List<KeyboardFieldSummary>,
+    extraFields: List<KeyboardFieldSummary>,
     currentEntryName: String,
 ): KeyboardUiState {
     return KeyboardUiState(
@@ -160,7 +160,7 @@ private fun previewEntryKeyboardState(
 /**
  * Fixed fields are always visible in the entry keyboard.
  */
-private fun previewFixedFields(): List<KeyboardFieldUiModel> {
+private fun previewFixedFields(): List<KeyboardFieldSummary> {
     return listOf(
         previewField(
             id = "username",
@@ -185,7 +185,7 @@ private fun previewFixedFields(): List<KeyboardFieldUiModel> {
 /**
  * Extra fields use mixed label lengths to reveal truncation and spacing issues.
  */
-private fun previewExtraFields(): List<KeyboardFieldUiModel> {
+private fun previewExtraFields(): List<KeyboardFieldSummary> {
     return listOf(
         previewField(
             id = "url",
@@ -237,8 +237,8 @@ private fun previewField(
     label: String,
     type: KeyboardFieldType,
     sensitive: Boolean = false,
-): KeyboardFieldUiModel {
-    return KeyboardFieldUiModel(
+): KeyboardFieldSummary {
+    return KeyboardFieldSummary(
         id = id,
         label = label,
         type = type,

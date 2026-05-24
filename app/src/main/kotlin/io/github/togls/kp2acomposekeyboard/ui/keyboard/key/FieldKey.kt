@@ -5,14 +5,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import io.github.togls.kp2acomposekeyboard.R
-import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldUiModel
+import io.github.togls.kp2acomposekeyboard.domain.field.KeyboardFieldSummary
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardTestTags
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardKeyEmphasis
 
 @Composable
 internal fun FieldKey(
-    field: KeyboardFieldUiModel,
+    field: KeyboardFieldSummary,
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -29,7 +29,7 @@ internal fun FieldKey(
 }
 
 @Composable
-private fun KeyboardFieldUiModel.safeDisplayLabel(): String {
+private fun KeyboardFieldSummary.safeDisplayLabel(): String {
     val trimmedLabel = label.trim()
 
     if (trimmedLabel.isBlank()) {

@@ -1,4 +1,4 @@
-package io.github.togls.kp2acomposekeyboard.feature.settings
+package io.github.togls.kp2acomposekeyboard.domain.settings
 
 enum class KeyboardHeightMode {
     Compact,
