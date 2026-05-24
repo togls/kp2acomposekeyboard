@@ -63,7 +63,7 @@ class KeyboardViewModelSubtypeTest {
         advanceUntilIdle()
 
         assertEquals(KeyboardSubtype.EnglishUs, viewModel.uiState.value.currentSubtype)
-        assertEquals(MainKeyboardLayout.Default, viewModel.uiState.value.mainLayout)
+        assertEquals(MainKeyboardLayout.TextInput, viewModel.uiState.value.mainLayout)
     }
 
     @Test
@@ -104,7 +104,7 @@ class KeyboardViewModelSubtypeTest {
         viewModel.onIntent(KeyboardIntent.SwitchLanguage)
         advanceUntilIdle()
 
-        assertEquals(MainKeyboardLayout.Default, viewModel.uiState.value.mainLayout)
+        assertEquals(MainKeyboardLayout.TextInput, viewModel.uiState.value.mainLayout)
         assertEquals(listOf(KeyboardEffect.SwitchToSubtype(KeyboardSubtype.EnglishUs)), effects)
         job.cancel()
     }

@@ -4,5 +4,5 @@ enum class KeyboardSubtype(
     val mainLayout: MainKeyboardLayout,
 ) {
     Entry(MainKeyboardLayout.Entry),
-    EnglishUs(MainKeyboardLayout.Default),
+    EnglishUs(MainKeyboardLayout.TextInput),
 }

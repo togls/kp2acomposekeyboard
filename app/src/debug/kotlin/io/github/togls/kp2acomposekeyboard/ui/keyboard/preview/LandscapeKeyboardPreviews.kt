@@ -2,7 +2,7 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard.preview
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.DefaultInputMode
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.TextInputMode
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.EntryFieldDisplayMode
 
 @Preview(
@@ -16,7 +16,7 @@ import io.github.togls.kp2acomposekeyboard.domain.keyboard.EntryFieldDisplayMode
 private fun LandscapeDefaultLettersPreview() {
     KeyboardPreviewContent(
         state = previewDefaultKeyboardState(
-            inputMode = DefaultInputMode.Letters,
+            inputMode = TextInputMode.Letters,
         ),
         settings = previewCompactLightSettings(),
     )
@@ -33,7 +33,7 @@ private fun LandscapeDefaultLettersPreview() {
 private fun LandscapeDefaultNumbersPreview() {
     KeyboardPreviewContent(
         state = previewDefaultKeyboardState(
-            inputMode = DefaultInputMode.Numbers,
+            inputMode = TextInputMode.Numbers,
         ),
         settings = previewCompactLightSettings(),
     )

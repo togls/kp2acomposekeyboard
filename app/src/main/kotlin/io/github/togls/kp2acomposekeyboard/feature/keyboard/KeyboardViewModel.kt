@@ -6,7 +6,7 @@ import io.github.togls.kp2acomposekeyboard.application.keyboard.ObserveKeyboardS
 import io.github.togls.kp2acomposekeyboard.application.session.SessionTimeoutController
 import io.github.togls.kp2acomposekeyboard.application.settings.KeyboardSettingsStore
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.ClearEntryUtilityItemId
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.DefaultInputMode
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.TextInputMode
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.EntryFieldDisplayMode
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardSubtype
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilityItemId
@@ -94,9 +94,9 @@ class KeyboardViewModel(
             is KeyboardIntent.ChangeSubtype -> changeSubtype(intent.subtype)
             KeyboardIntent.SwitchLanguage -> switchLanguage()
 
-            KeyboardIntent.SwitchToLetters -> updateDefaultInputMode(DefaultInputMode.Letters)
-            KeyboardIntent.SwitchToNumbers -> updateDefaultInputMode(DefaultInputMode.Numbers)
-            KeyboardIntent.SwitchToSymbols -> updateDefaultInputMode(DefaultInputMode.Symbols)
+            KeyboardIntent.SwitchToLetters -> updateTextInputMode(TextInputMode.Letters)
+            KeyboardIntent.SwitchToNumbers -> updateTextInputMode(TextInputMode.Numbers)
+            KeyboardIntent.SwitchToSymbols -> updateTextInputMode(TextInputMode.Symbols)
 
             KeyboardIntent.ToggleUppercase -> toggleUppercase()
 
@@ -194,7 +194,7 @@ class KeyboardViewModel(
 
     private fun switchToDefaultLayout() {
         _uiState.update { state ->
-            state.copy(mainLayout = MainKeyboardLayout.Default)
+            state.copy(mainLayout = MainKeyboardLayout.TextInput)
         }
     }
 
@@ -209,9 +209,9 @@ class KeyboardViewModel(
         }
     }
 
-    private fun updateDefaultInputMode(inputMode: DefaultInputMode) {
+    private fun updateTextInputMode(inputMode: TextInputMode) {
         _uiState.update { state ->
-            state.copy(defaultInputMode = inputMode)
+            state.copy(textInputMode = inputMode)
         }
     }
 
@@ -233,7 +233,7 @@ class KeyboardViewModel(
             _uiState.update { currentState ->
                 currentState.copy(
                     currentSubtype = KeyboardSubtype.EnglishUs,
-                    mainLayout = MainKeyboardLayout.Default,
+                    mainLayout = MainKeyboardLayout.TextInput,
                     entryFieldDisplayMode = EntryFieldDisplayMode.Paged,
                     extraFieldPageIndex = 0,
                 )

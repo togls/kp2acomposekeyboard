@@ -3,7 +3,7 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard.preview
 import androidx.compose.runtime.Composable
 import io.github.togls.kp2acomposekeyboard.domain.field.KeyboardFieldType
 import io.github.togls.kp2acomposekeyboard.domain.field.KeyboardFieldSummary
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.DefaultInputMode
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.TextInputMode
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.EntryFieldDisplayMode
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
@@ -65,11 +65,11 @@ internal fun previewDarkSettings(): KeyboardSettings {
 }
 
 internal fun previewDefaultKeyboardState(
-    inputMode: DefaultInputMode = DefaultInputMode.Letters,
+    inputMode: TextInputMode = TextInputMode.Letters,
 ): KeyboardUiState {
     return KeyboardUiState(
-        mainLayout = MainKeyboardLayout.Default,
-        defaultInputMode = inputMode,
+        mainLayout = MainKeyboardLayout.TextInput,
+        textInputMode = inputMode,
         currentEntryName = "GitHub Personal",
         hasActiveSession = true,
         isUppercase = false,

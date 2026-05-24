@@ -61,7 +61,7 @@ internal fun KeyboardContentArea(
                 )
             } else {
                 when (state.mainLayout) {
-                    MainKeyboardLayout.Default -> {
+                    MainKeyboardLayout.TextInput -> {
                         DefaultKeyboardLayout(
                             state = state,
                             onIntent = onIntent,

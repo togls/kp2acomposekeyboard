@@ -43,7 +43,7 @@ internal fun KeyboardRootTestContent(
 }
 
 internal fun testDefaultState() = KeyboardUiState(
-    mainLayout = MainKeyboardLayout.Default,
+    mainLayout = MainKeyboardLayout.TextInput,
     currentSubtype = KeyboardSubtype.EnglishUs,
     englishUsSubtypeEnabled = true,
 )

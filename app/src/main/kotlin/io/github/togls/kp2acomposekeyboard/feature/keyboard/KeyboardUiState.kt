@@ -1,6 +1,6 @@
 package io.github.togls.kp2acomposekeyboard.feature.keyboard
 
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.DefaultInputMode
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.TextInputMode
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.EntryFieldDisplayMode
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardSubtype
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
@@ -15,7 +15,7 @@ data class KeyboardUiState(
     val mainLayout: MainKeyboardLayout = MainKeyboardLayout.Entry,
     val currentSubtype: KeyboardSubtype = KeyboardSubtype.Entry,
     val englishUsSubtypeEnabled: Boolean = false,
-    val defaultInputMode: DefaultInputMode = DefaultInputMode.Letters,
+    val textInputMode: TextInputMode = TextInputMode.Letters,
     val entryFieldDisplayMode: EntryFieldDisplayMode = EntryFieldDisplayMode.Paged,
     val currentEntryName: String? = null,
 

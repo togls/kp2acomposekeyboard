@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.DefaultInputMode
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.TextInputMode
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardTestTags
@@ -67,21 +67,21 @@ private fun DefaultKeyboardContent(
     state: KeyboardUiState,
     onIntent: (KeyboardIntent) -> Unit,
 ) {
-    when (state.defaultInputMode) {
-        DefaultInputMode.Letters -> {
+    when (state.textInputMode) {
+        TextInputMode.Letters -> {
             LetterKeyboard(
                 state = state,
                 onIntent = onIntent,
             )
         }
 
-        DefaultInputMode.Numbers -> {
+        TextInputMode.Numbers -> {
             NumberKeyboard(
                 onIntent = onIntent,
             )
         }
 
-        DefaultInputMode.Symbols -> {
+        TextInputMode.Symbols -> {
             SymbolKeyboard(
                 onIntent = onIntent,
             )
@@ -101,22 +101,22 @@ private fun DefaultKeyboardActionRow(
             modifier = Modifier
                 .width(metrics.sideKeyWidth)
                 .testTag(KeyboardTestTags.DefaultSwitchKey),
-            text = when (state.defaultInputMode) {
-                DefaultInputMode.Letters -> "?123"
-                DefaultInputMode.Numbers -> "ABC"
-                DefaultInputMode.Symbols -> "ABC"
+            text = when (state.textInputMode) {
+                TextInputMode.Letters -> "?123"
+                TextInputMode.Numbers -> "ABC"
+                TextInputMode.Symbols -> "ABC"
             },
             onClick = {
-                when (state.defaultInputMode) {
-                    DefaultInputMode.Letters -> onIntent(KeyboardIntent.SwitchToNumbers)
-                    DefaultInputMode.Numbers -> onIntent(KeyboardIntent.SwitchToLetters)
-                    DefaultInputMode.Symbols -> onIntent(KeyboardIntent.SwitchToLetters)
+                when (state.textInputMode) {
+                    TextInputMode.Letters -> onIntent(KeyboardIntent.SwitchToNumbers)
+                    TextInputMode.Numbers -> onIntent(KeyboardIntent.SwitchToLetters)
+                    TextInputMode.Symbols -> onIntent(KeyboardIntent.SwitchToLetters)
                 }
             },
             emphasis = KeyboardKeyEmphasis.Action,
         )
 
-        if (state.defaultInputMode == DefaultInputMode.Letters) {
+        if (state.textInputMode == TextInputMode.Letters) {
             LanguageSwitchKey(
                 onIntent = onIntent,
                 modifier = Modifier.width(metrics.standardKeyWidth),

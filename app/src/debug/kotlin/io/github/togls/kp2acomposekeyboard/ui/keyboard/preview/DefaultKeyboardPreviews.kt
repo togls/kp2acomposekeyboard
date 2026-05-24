@@ -3,7 +3,7 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard.preview
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.DefaultInputMode
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.TextInputMode
 
 @Preview(
     name = "Letters",
@@ -16,7 +16,7 @@ import io.github.togls.kp2acomposekeyboard.domain.keyboard.DefaultInputMode
 private fun DefaultKeyboardLettersPreview() {
     KeyboardPreviewContent(
         state = previewDefaultKeyboardState(
-            inputMode = DefaultInputMode.Letters,
+            inputMode = TextInputMode.Letters,
         ),
     )
 }
@@ -32,7 +32,7 @@ private fun DefaultKeyboardLettersPreview() {
 private fun DefaultKeyboardNumbersPreview() {
     KeyboardPreviewContent(
         state = previewDefaultKeyboardState(
-            inputMode = DefaultInputMode.Numbers,
+            inputMode = TextInputMode.Numbers,
         ),
     )
 }
@@ -48,7 +48,7 @@ private fun DefaultKeyboardNumbersPreview() {
 private fun DefaultKeyboardSymbolsPreview() {
     KeyboardPreviewContent(
         state = previewDefaultKeyboardState(
-            inputMode = DefaultInputMode.Symbols,
+            inputMode = TextInputMode.Symbols,
         ),
     )
 }
@@ -65,7 +65,7 @@ private fun DefaultKeyboardSymbolsPreview() {
 private fun DefaultKeyboardLettersDarkPreview() {
     KeyboardPreviewContent(
         state = previewDefaultKeyboardState(
-            inputMode = DefaultInputMode.Letters,
+            inputMode = TextInputMode.Letters,
         ),
         settings = previewDarkSettings(),
     )
