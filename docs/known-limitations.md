@@ -26,6 +26,7 @@ Potentially unstable areas:
 - Launching activities from an input method
 - Activity result delivery after leaving the IME
 - Input method lifecycle callbacks
+- Android or vendor ROM settings may cache dynamically registered English (US) subtypes until the settings screen or IME is reopened.
 - Background activity restrictions
 - Vendor power management
 - Vendor security policies

@@ -12,7 +12,8 @@ Implemented:
 - Jetpack Compose keyboard UI.
 - Material 3 theme.
 - Light theme, dark theme, system theme, and Android 12+ dynamic color.
-- Default keyboard layout: letters, numbers, and symbols.
+- Entry system input layout with an optional English (US) system subtype.
+- English letters, numbers, and symbols layout when English (US) is enabled.
 - Entry keyboard layout: current entry header, fixed fields, paged extra fields, and expanded all-fields mode.
 - Adaptive keyboard sizing for compact, normal, and tall height modes.
 - Orientation-aware key metrics, bottom spacing, and navigation bar clearance.
@@ -56,6 +57,8 @@ The project is designed around these constraints:
 10. Tap field buttons such as `[Username]`, `[Password]`, `[TOTP]`, or custom fields to input values.
 
 ## Keyboard Layouts
+
+Android system input method settings always expose the Entry subtype. English (US) is registered as an additional subtype only when enabled from the app settings.
 
 Keyboard UI is split into focused Compose components under `ui/keyboard/`:
 
