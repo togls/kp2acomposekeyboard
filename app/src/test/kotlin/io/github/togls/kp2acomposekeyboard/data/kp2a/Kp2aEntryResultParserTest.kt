@@ -62,6 +62,27 @@ class Kp2aEntryResultParserTest {
     }
 
     @Test
+    fun parse_returnsProtectedFieldsFromJsonStringWithoutTypedGetter() {
+        val intent = IntentThatFailsTypedProtectedFieldAccess().apply {
+            putExtra(
+                Strings.EXTRA_ENTRY_OUTPUT_DATA,
+                """{"${KeepassDefs.UserNameField}":"octocat"}""",
+            )
+            putExtra(
+                Strings.EXTRA_PROTECTED_FIELDS_LIST,
+                """["${KeepassDefs.PasswordField}","TOTP"]""",
+            )
+        }
+
+        val result = parser.parse(intent)
+
+        assertEquals(
+            setOf(KeepassDefs.PasswordField, "TOTP"),
+            result.protectedFields,
+        )
+    }
+
+    @Test
     fun parse_returnsEmptyFieldsForInvalidJson() {
         val intent = Intent().apply {
             putExtra(Strings.EXTRA_ENTRY_OUTPUT_DATA, "{ invalid json")
@@ -79,5 +100,15 @@ class Kp2aEntryResultParserTest {
         assertTrue(result.fields.isEmpty())
         assertTrue(result.protectedFields.isEmpty())
         assertEquals(null, result.entryId)
+    }
+
+    private class IntentThatFailsTypedProtectedFieldAccess : Intent() {
+        override fun getStringArrayListExtra(name: String?): ArrayList<String>? {
+            if (name == Strings.EXTRA_PROTECTED_FIELDS_LIST) {
+                error("Protected field parser must not use typed ArrayList getter for mixed SDK formats.")
+            }
+
+            return super.getStringArrayListExtra(name)
+        }
     }
 }

@@ -47,18 +47,27 @@ class Kp2aEntryResultParser @Inject constructor() {
     }
 
     private fun parseProtectedFields(data: Intent?): Set<String> {
-        val arrayList = data?.getStringArrayListExtra(Strings.EXTRA_PROTECTED_FIELDS_LIST)
-
-        // SDK and app versions may return protected fields as either an ArrayList or JSON string.
-        if (!arrayList.isNullOrEmpty()) {
-            return arrayList
-                .filter { fieldName -> fieldName.isNotBlank() }
-                .toSet()
+        return when (val extra = protectedFieldsExtra(data)) {
+            is ArrayList<*> -> extra.parseProtectedFieldList()
+            is String -> parseProtectedFieldJson(extra)
+            else -> emptySet()
         }
+    }
 
-        val rawJson = data?.getStringExtra(Strings.EXTRA_PROTECTED_FIELDS_LIST)
-            ?: return emptySet()
+    @Suppress("DEPRECATION")
+    private fun protectedFieldsExtra(data: Intent?): Any? {
+        // KP2A versions may send this value as either ArrayList<String> or JSON string.
+        // Reading the raw extra avoids Android's typed getter cast warning for mixed formats.
+        return data?.extras?.get(Strings.EXTRA_PROTECTED_FIELDS_LIST)
+    }
 
+    private fun ArrayList<*>.parseProtectedFieldList(): Set<String> {
+        return filterIsInstance<String>()
+            .filter { fieldName -> fieldName.isNotBlank() }
+            .toSet()
+    }
+
+    private fun parseProtectedFieldJson(rawJson: String): Set<String> {
         if (rawJson.isBlank()) {
             return emptySet()
         }
