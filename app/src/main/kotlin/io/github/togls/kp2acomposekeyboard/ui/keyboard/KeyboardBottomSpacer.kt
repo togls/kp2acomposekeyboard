@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
  * the navigation bar spacer should only represent the real system inset.
  */
 @Composable
-internal fun KeyboardBottomGap(
+internal fun KeyboardBottomSpacer(
     isLandscape: Boolean,
     modifier: Modifier = Modifier,
 ) {

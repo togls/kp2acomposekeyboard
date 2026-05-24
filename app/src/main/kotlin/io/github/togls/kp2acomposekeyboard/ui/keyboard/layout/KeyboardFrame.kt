@@ -14,7 +14,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardBottomGap
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardBottomSpacer
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardNavigationBarSpacer
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardTestTags
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.keyboardBottomGapHeight
@@ -76,7 +76,7 @@ internal fun KeyboardFrame(
                     modifier = Modifier.weight(1f),
                 )
 
-                KeyboardBottomGap(isLandscape = isLandscape)
+                KeyboardBottomSpacer(isLandscape = isLandscape)
 
                 KeyboardNavigationBarSpacer(
                     height = navigationSpacerHeight,
