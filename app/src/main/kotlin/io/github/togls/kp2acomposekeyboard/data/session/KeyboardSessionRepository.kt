@@ -27,12 +27,6 @@ class KeyboardSessionRepository @Inject constructor() {
     }
 
     fun getFieldValue(fieldId: String): String? {
-        if (fieldId.isBlank()) {
-            SecureLog.d("Field commit ignored")
-            return null
-        }
-
-        // Raw values leave the session only at commit time and are never copied into UI state.
         return _session.value
             ?.fields
             ?.firstOrNull { field -> field.id == fieldId }
