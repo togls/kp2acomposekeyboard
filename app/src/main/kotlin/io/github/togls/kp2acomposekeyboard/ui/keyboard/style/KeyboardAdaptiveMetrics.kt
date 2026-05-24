@@ -26,7 +26,7 @@ internal data class KeyboardAdaptiveMetrics(
         private val Landscape = KeyboardAdaptiveMetrics(
             keyHeight = 38.dp,
             keyHorizontalPadding = 6.dp,
-            keyCornerRadius = 16.dp,
+            keyCornerRadius = KeyboardMetrics.KeyCornerRadius,
             bottomSafePadding = 6.dp,
             maxNavigationAwareBottomPadding = 12.dp,
         )

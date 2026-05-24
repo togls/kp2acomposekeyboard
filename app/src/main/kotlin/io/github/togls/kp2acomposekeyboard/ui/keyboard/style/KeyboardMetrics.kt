@@ -12,7 +12,7 @@ internal object KeyboardMetrics {
     val KeyBaseHeight = 46.dp
     val KeyHorizontalPadding = 8.dp
     val KeyVerticalPadding = 0.dp
-    val KeyCornerRadius = 18.dp
+    val KeyCornerRadius = 10.dp
 
     val PressedScale = 0.97f
     val NormalScale = 1f
