@@ -7,8 +7,8 @@ import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.ClearEntryKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.DeleteKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.ExpandFieldsKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.LanguageSwitchKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.SelectEntryKey
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.SwitchToDefaultLayoutKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.layout.KeyboardRow
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.layout.LocalKeyboardLayoutMetrics
 
@@ -20,7 +20,7 @@ internal fun NormalEntryActionRow(
     val metrics = LocalKeyboardLayoutMetrics.current
 
     KeyboardRow(modifier = modifier) {
-        SwitchToDefaultLayoutKey(
+        LanguageSwitchKey(
             onIntent = onIntent,
             modifier = Modifier.width(metrics.standardKeyWidth),
         )

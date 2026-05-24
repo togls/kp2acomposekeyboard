@@ -63,6 +63,7 @@
     <string name="cd_key_shift">Shift</string>
     <string name="cd_key_commit_text">Type %1$s</string>
     <string name="cd_key_switch_to_entry_layout">Switch to entry layout</string>
+    <string name="cd_key_switch_language">Switch language</string>
     <string name="cd_key_toggle_utility_panel">Open utility panel</string>
     <string name="cd_key_close_utility_panel">Close utility panel</string>
     <string name="cd_key_empty_utility_slot">Empty utility shortcut slot</string>

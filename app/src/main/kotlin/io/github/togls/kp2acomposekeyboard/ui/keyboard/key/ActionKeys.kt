@@ -66,6 +66,20 @@ internal fun SwitchToDefaultLayoutKey(
 }
 
 @Composable
+internal fun LanguageSwitchKey(
+    onIntent: (KeyboardIntent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    KeyboardIconKey(
+        modifier = modifier.testTag(KeyboardTestTags.LanguageSwitchKey),
+        iconRes = R.drawable.ic_language_24,
+        contentDescription = stringResource(R.string.cd_key_switch_language),
+        onClick = { onIntent(KeyboardIntent.SwitchLanguage) },
+        emphasis = KeyboardKeyEmphasis.Action,
+    )
+}
+
+@Composable
 internal fun ClearEntryKey(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,

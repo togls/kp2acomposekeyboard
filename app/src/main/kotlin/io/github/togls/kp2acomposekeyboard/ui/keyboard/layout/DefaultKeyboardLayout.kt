@@ -16,6 +16,7 @@ import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardTestTags
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.EnterKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.KeyboardKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.LanguageSwitchKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.SelectEntryKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.SpaceKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardKeyEmphasis
@@ -114,6 +115,13 @@ private fun DefaultKeyboardActionRow(
             },
             emphasis = KeyboardKeyEmphasis.Action,
         )
+
+        if (state.defaultInputMode == DefaultInputMode.Letters) {
+            LanguageSwitchKey(
+                onIntent = onIntent,
+                modifier = Modifier.width(metrics.sideKeyWidth),
+            )
+        }
 
         SpaceKey(
             onIntent = onIntent,

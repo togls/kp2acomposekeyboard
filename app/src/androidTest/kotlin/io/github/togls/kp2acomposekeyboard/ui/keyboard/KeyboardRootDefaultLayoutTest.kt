@@ -61,4 +61,23 @@ class KeyboardRootDefaultLayoutTest {
             switchKeyBounds.bottom <= contentBounds.bottom,
         )
     }
+
+    @Test
+    fun letterLayoutShowsLanguageSwitchNextToNumberSwitch() {
+        composeRule.setContent {
+            KeyboardRootTestContent(state = testDefaultState())
+        }
+
+        val switchBounds = composeRule.onNodeWithTag(KeyboardTestTags.DefaultSwitchKey)
+            .fetchSemanticsNode()
+            .boundsInRoot
+        val languageBounds = composeRule.onNodeWithTag(KeyboardTestTags.LanguageSwitchKey)
+            .fetchSemanticsNode()
+            .boundsInRoot
+
+        assertTrue(
+            "switchBounds=$switchBounds languageBounds=$languageBounds",
+            languageBounds.left >= switchBounds.right,
+        )
+    }
 }

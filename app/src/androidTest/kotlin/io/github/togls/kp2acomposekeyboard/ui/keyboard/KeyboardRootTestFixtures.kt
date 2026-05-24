@@ -9,6 +9,7 @@ import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldType
 import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldUiModel
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.EntryFieldDisplayMode
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
+import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardSubtype
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.MainKeyboardLayout
 import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
@@ -41,7 +42,18 @@ internal fun KeyboardRootTestContent(
     }
 }
 
-internal fun testDefaultState() = KeyboardUiState()
+internal fun testDefaultState() = KeyboardUiState(
+    mainLayout = MainKeyboardLayout.Default,
+    currentSubtype = KeyboardSubtype.EnglishUs,
+    englishUsSubtypeEnabled = true,
+)
+
+internal fun testEntryEmptyState() = KeyboardUiState(
+    mainLayout = MainKeyboardLayout.Entry,
+    currentSubtype = KeyboardSubtype.Entry,
+    englishUsSubtypeEnabled = true,
+    hasActiveSession = false,
+)
 
 internal fun testEntryState(
     displayMode: EntryFieldDisplayMode,
