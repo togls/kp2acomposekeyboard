@@ -106,6 +106,25 @@ Kp2aControl.getQueryEntryIntent(null)
 
 This intentionally does not pass `androidapp://packageName` by default. When launched from an IME flow, some Android, MIUI, or HyperOS builds may report a launcher or system component package, which is not suitable for manual credential lookup.
 
+## KP2A Plugin Action Sync Flow
+
+Keepass2Android can notify the plugin when the current entry or database state changes:
+
+```text
+Keepass2Android plugin action broadcast
+    -> Kp2aPluginActionReceiver
+    -> Kp2aEntrySyncHandler
+    -> Kp2aEntryResultParser
+    -> Kp2aEntryMapper
+    -> KeyboardSessionRepository
+    -> KeyboardViewModel observes Session
+    -> KeyboardUiState
+```
+
+`ACTION_OPEN_ENTRY` maps full entry output into a new keyboard session. `ACTION_ENTRY_OUTPUT_MODIFIED` maps the full modified output and replaces the active session when the entry identity is matching or unavailable. `ACTION_CLOSE_ENTRY_VIEW` clears the matching active session, and missing entry identity is treated conservatively. `ACTION_LOCK_DATABASE` and `ACTION_CLOSE_DATABASE` clear the session unconditionally. `ACTION_OPEN_DATABASE` and `ACTION_UNLOCK_DATABASE` never restore entry data.
+
+The receiver must not log raw entry JSON, field values, entry IDs, field IDs, database paths, or database display names.
+
 ## Session Boundary
 
 Sensitive field values are allowed only in:

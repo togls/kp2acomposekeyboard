@@ -225,30 +225,30 @@ SecureLog.d("launch query: $searchText")
 
 ## Session Timeout
 
-Default timeout:
+Default runtime fallback timeout:
 
 ```text
-60 seconds
+300 seconds
 ```
 
-Allowed range:
-
-```text
-15 to 300 seconds
-```
+Keepass2Android action broadcasts are the primary cleanup path. The timeout is a fallback for missed broadcasts or process leftovers.
 
 Clear triggers:
 
-- Timeout
-- Manual clear
-- Normal IME destruction
-- New successful entry selection replacing old session
+- Keepass2Android closes the active entry view.
+- Keepass2Android locks the database.
+- Keepass2Android closes the database.
+- Timeout fallback.
+- Manual clear.
+- Normal IME destruction.
+- New successful entry selection or open-entry broadcast replacing the old session.
 
 Do not clear the old session when:
 
 - Launching Keepass2Android selection temporarily hides or destroys the IME.
 - The user cancels entry selection.
 - Entry selection fails before a new session is created.
+- A modified or closed entry broadcast clearly belongs to a different entry.
 
 ## Clipboard Policy
 

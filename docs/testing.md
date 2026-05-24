@@ -11,11 +11,14 @@ Covered areas:
 - Field classification.
 - Sensitive field detection.
 - KP2A result to session mapping.
+- KP2A plugin action session synchronization.
+- KP2A plugin scope registration.
 - Filtering title fields.
 - Filtering binary fields.
 - Filtering empty fields.
 - Safe session snapshot mapping.
 - Commit-field use case behavior.
+- Session fallback timeout.
 - Settings default values.
 - Settings timeout bounds.
 - Settings persistence.
@@ -36,9 +39,12 @@ CommitKeyboardFieldUseCaseTest
 ObserveKeyboardSessionSnapshotUseCaseTest
 Kp2aEntryResultParserTest
 Kp2aEntryMapperTest
+Kp2aEntrySyncHandlerTest
+Kp2aPluginScopesTest
 KeyboardSessionMappingsTest
 KeyboardFieldClassifierTest
 SensitiveFieldPolicyTest
+SessionTimeoutControllerTest
 KeyboardQuickActionSlotsReducerTest
 KeyboardViewModelQuickActionTest
 KeyboardViewModelSubtypeTest
@@ -84,6 +90,14 @@ Run one unit test class:
 
 ```bash
 ./gradlew :app:testDebugUnitTest --tests "*Kp2aEntryMapperTest"
+```
+
+Run KP2A plugin action sync tests:
+
+```bash
+./gradlew :app:testDebugUnitTest --tests "*Kp2aEntrySyncHandlerTest"
+./gradlew :app:testDebugUnitTest --tests "*Kp2aPluginScopesTest"
+./gradlew :app:testDebugUnitTest --tests "*SessionTimeoutControllerTest"
 ```
 
 Run instrumentation tests on a connected device or emulator:
