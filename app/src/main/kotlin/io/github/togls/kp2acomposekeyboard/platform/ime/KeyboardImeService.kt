@@ -36,7 +36,7 @@ import io.github.togls.kp2acomposekeyboard.feature.settings.SettingsActivity
 import io.github.togls.kp2acomposekeyboard.data.settings.SettingsRepository
 import io.github.togls.kp2acomposekeyboard.platform.input.InputConnectionDispatcher
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardRoot
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardImeContent
 import io.github.togls.kp2acomposekeyboard.ui.theme.KeyboardTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -208,7 +208,7 @@ class KeyboardImeService :
                 configureImeNavigationBar(isDarkTheme = isDarkTheme)
 
                 KeyboardTheme(settings = settings) {
-                    KeyboardRoot(
+                    KeyboardImeContent(
                         state = state,
                         settings = settings,
                         onIntent = viewModel::onIntent,

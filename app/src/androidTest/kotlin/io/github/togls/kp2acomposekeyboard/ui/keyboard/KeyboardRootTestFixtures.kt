@@ -33,7 +33,7 @@ internal fun KeyboardRootTestContent(
     val settings = KeyboardSettings(useDynamicColor = false)
     KeyboardTheme(settings = settings) {
         Box(modifier = Modifier.width(360.dp)) {
-            KeyboardRoot(
+            KeyboardImeContent(
                 state = state,
                 settings = settings,
                 onIntent = onIntent,

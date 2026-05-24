@@ -12,7 +12,7 @@ import io.github.togls.kp2acomposekeyboard.domain.keyboard.SettingsQuickActionId
 import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardHeightMode
 import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardSettings
 import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardThemeMode
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardRoot
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.KeyboardImeContent
 import io.github.togls.kp2acomposekeyboard.ui.theme.KeyboardTheme
 
 /**
@@ -24,7 +24,7 @@ internal fun KeyboardPreviewContent(
     settings: KeyboardSettings = previewLightSettings(),
 ) {
     KeyboardTheme(settings = settings) {
-        KeyboardRoot(
+        KeyboardImeContent(
             state = state,
             settings = settings,
             onIntent = {},
