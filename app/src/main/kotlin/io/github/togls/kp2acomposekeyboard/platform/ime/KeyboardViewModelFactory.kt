@@ -1,7 +1,7 @@
 package io.github.togls.kp2acomposekeyboard.platform.ime
 
+import io.github.togls.kp2acomposekeyboard.application.settings.KeyboardSettingsStore
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardViewModel
-import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettingsStore
 import io.github.togls.kp2acomposekeyboard.data.session.KeyboardSessionRepository
 import io.github.togls.kp2acomposekeyboard.application.session.SessionTimeoutController
 import javax.inject.Inject

@@ -12,7 +12,7 @@ import io.github.togls.kp2acomposekeyboard.domain.keyboard.SettingsUtilityItemId
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettingsStore
+import io.github.togls.kp2acomposekeyboard.application.settings.KeyboardSettingsStore
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
 import io.github.togls.kp2acomposekeyboard.data.session.KeyboardSessionRepository
 import io.github.togls.kp2acomposekeyboard.domain.session.KeyboardSessionSnapshot

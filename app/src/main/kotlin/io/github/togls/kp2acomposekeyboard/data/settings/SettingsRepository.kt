@@ -15,8 +15,8 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.togls.kp2acomposekeyboard.application.settings.KeyboardSettingsStore
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
-import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettingsStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
