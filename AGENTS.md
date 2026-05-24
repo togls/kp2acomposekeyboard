@@ -12,7 +12,7 @@ Primary goals:
 - Let the user choose an entry from Keepass2Android through Plugin SDK2.
 - Let the user input selected entry fields through `InputConnection.commitText()`.
 - Avoid clipboard based password transfer.
-- Keep sensitive values out of UI state, logs, persistent storage, and documentation.
+- Keep sensitive values out of UI state, logs, persistent storage, screenshots, and documentation.
 
 Core stack:
 
@@ -24,7 +24,8 @@ Core stack:
 - DataStore Preferences
 - Keepass2Android Plugin SDK2
 - MVI / unidirectional data flow
-- JUnit / Robolectric
+- JUnit / Robolectric / Compose instrumentation tests
+- GitHub Actions
 
 ## Language and Communication
 
@@ -47,6 +48,7 @@ Before implementation, ask for confirmation when the task involves:
 - Security-sensitive changes
 - Keepass2Android integration changes
 - InputMethodService lifecycle changes
+- Build, signing, or release workflow changes
 
 For small, clearly scoped fixes, implement directly.
 
@@ -107,7 +109,7 @@ Comments:
 - Do not add comments that repeat what the code obviously does.
 - Add comments only for non-obvious logic.
 - Comments should explain **why**, not **what**.
-- Add background comments for API compatibility, vendor ROM differences, Android lifecycle behavior, and security boundaries.
+- Add background comments for API compatibility, vendor ROM differences, Android lifecycle behavior, layout measurement constraints, and security boundaries.
 
 Examples of good comments:
 
@@ -170,6 +172,16 @@ SettingsViewModel
     -> DataStore Preferences
 ```
 
+Keep package boundaries clear:
+
+- `domain` contains pure models and policies.
+- `application` contains focused use cases and small runtime ports.
+- `data` contains KP2A adapters, DataStore settings, and in-memory session storage.
+- `platform` contains Android IME, subtype, activity-launch, and `InputConnection` concerns.
+- `feature` contains MVI state, intents, effects, and ViewModels.
+- `ui` contains Compose rendering only.
+- `security` contains logging/safety utilities.
+
 ## Sensitive Data Rules
 
 This is a security-sensitive project. Treat all Keepass2Android field values as sensitive unless proven otherwise.
@@ -186,6 +198,7 @@ Sensitive values include:
 - Private key
 - Credential value
 - Keepass2Android raw entry JSON
+- Text carried by `KeyboardEffect.CommitText`
 
 Allowed to hold sensitive field values:
 
@@ -199,7 +212,7 @@ Not allowed to hold sensitive field values:
 
 ```text
 KeyboardUiState
-KeyboardFieldUiModel
+KeyboardFieldSummary
 Compose UI
 SettingsRepository
 DataStore
@@ -208,16 +221,17 @@ Logs
 Crash reports
 Docs
 Screenshots
+Quick-action slot preferences
 ```
 
-Field buttons must only use:
+Field keys must only use:
 
 - `id`
 - `label`
 - `type`
 - `sensitive`
 
-Field buttons must never display or log `value`.
+Field keys must never display or log `value`.
 
 Do not use clipboard for field transfer. Use:
 
@@ -268,6 +282,7 @@ Never log:
 - `Strings.EXTRA_ENTRY_OUTPUT_DATA`
 - access tokens
 - raw KP2A result JSON
+- keystore contents or signing passwords
 
 ## Keepass2Android Integration Rules
 
@@ -318,6 +333,7 @@ Be careful with:
 - `onDestroy`
 - launching Activity from IME
 - session cleanup during EntryPicker flow
+- subtype synchronization during settings or IME startup
 
 When launching Activity from IME, use:
 
@@ -334,6 +350,24 @@ Session cleanup should occur on:
 - normal IME destruction
 - replacement by a newly selected entry
 
+## Subtype Rules
+
+The IME uses a hybrid static-and-dynamic subtype model.
+
+Rules:
+
+- Keep `Entry` as the static subtype in `method.xml`.
+- Keep `English (US)` as a dynamic additional subtype controlled by settings.
+- Keep subtype IDs stable.
+- Keep subtype extra values stable.
+- Unknown or missing subtype extras must fall back to `Entry`.
+- Subtype changes should update `KeyboardUiState.currentSubtype` and `KeyboardUiState.mainLayout`.
+- Use `KeyboardSubtypeSynchronizer` for runtime subtype registration.
+- Use `setExplicitlyEnabledInputMethodSubtypes()` only behind Android version checks.
+- Treat ROM subtype caching as a known limitation.
+
+Do not store current entry data, target package data, or field values in subtype settings.
+
 ## UI Rules
 
 Use `KeyboardTheme` for Material 3 theming.
@@ -346,13 +380,19 @@ Support:
 - Android 12+ dynamic color
 - default Material 3 fallback color schemes
 
-Use shared keyboard components:
+Use current shared keyboard components:
 
-- `KeyboardKey`
-- `FieldButton`
-- `TextKeyRow`
-- `KeyboardWidthLayout`
+- `KeyboardImeContent`
+- `KeyboardFrame`
 - `KeyboardContentArea`
+- `TextInputKeyboardLayout`
+- `EntryKeyboardLayout`
+- `QuickActionBar`
+- `QuickActionPanel`
+- `KeyboardRow`
+- `KeyboardKey`
+- `FieldKey`
+- `EntryFieldGrid`
 
 Keyboard UI should support:
 
@@ -361,21 +401,21 @@ Keyboard UI should support:
 - press feedback
 - disabled state
 - action-button visual hierarchy
-- cautious visual styling for sensitive field buttons
+- cautious visual styling for sensitive field keys
+- quick-action drag preview and drop targets
 
-Sensitive field buttons may look different, but must not display field values.
+Sensitive field keys may look different, but must not display field values.
 
 Keyboard height must be bounded. Field-heavy layouts must not expand the IME window indefinitely.
 
-Use `KeyboardAdaptiveMetrics` for orientation-aware key height, key padding, corner radius, bottom safe padding, and navigation-aware bottom padding. Do not hard-code new keyboard sizing tokens in feature components when an existing token or adaptive metric fits.
-
-Use `KeyboardWidthLayout` when a row mixes standard-width keys with flexible action keys, so row alignment stays consistent across letter, number, and symbol layouts.
+Use `KeyboardAdaptiveMetrics` and `KeyboardLayoutMetrics` for orientation-aware key height, row height, field area height, key padding, corner radius, bottom gap, and navigation-aware bottom padding. Do not hard-code new keyboard sizing tokens in feature components when an existing token or adaptive metric fits.
 
 Entry layout requirements:
 
-- current entry header fixed at top
-- bottom action row fixed at bottom
-- expanded field area scrolls internally
+- fixed fields occupy a bounded row
+- extra fields scroll in the remaining field area
+- expanded fields scroll internally
+- bottom action rows stay fixed
 - fields do not push bottom action buttons into navigation bars
 
 Account for modern Android navigation:
@@ -385,6 +425,25 @@ Account for modern Android navigation:
 - vendor ROM IME inset differences
 
 Do not blindly apply full `navigationBarsPadding()` to the whole IME window. Use clamped bottom safe padding to avoid double inset issues.
+
+## Quick-action Rules
+
+Quick actions are safe only when they store action IDs.
+
+Rules:
+
+- Persist only `KeyboardQuickActionId.storageValue` strings.
+- Do not persist entry IDs, entry names, KP2A field IDs, KP2A field labels, or field values.
+- Sanitize unsupported quick-action IDs before using or persisting them.
+- Remove duplicate quick-action IDs.
+- Do not allow the same quick action to occupy both center and right slots.
+- Respect `KeyboardQuickActionSlots.MAX_PINNED_ITEMS`.
+- Keep right-slot replacement simple; do not introduce a general layout DSL or macro system.
+
+Current production quick actions:
+
+- Settings
+- Clear entry
 
 ## Settings Rules
 
@@ -396,13 +455,43 @@ Allowed settings:
 - dynamic color
 - session timeout seconds
 - keyboard height mode
+- English (US) subtype enabled
 - haptic feedback
 - key sound
 - key preview
+- quick-action slots
 
 Do not store sensitive KP2A values in DataStore.
 
 Session timeout must stay within the configured safe range.
+
+## Build, Signing, and CI Rules
+
+Local debug builds must work without signing inputs.
+
+Release signing may come from `keystore.properties` or environment variables:
+
+```text
+ANDROID_KEYSTORE_PATH
+ANDROID_KEYSTORE_PASSWORD
+ANDROID_KEY_ALIAS
+ANDROID_KEY_PASSWORD
+```
+
+GitHub Actions use this additional secret to reconstruct the keystore:
+
+```text
+ANDROID_KEYSTORE_BASE64
+```
+
+Rules:
+
+- Do not commit `keystore.properties`.
+- Do not commit `.jks` or `.keystore` files.
+- Do not print signing secrets.
+- Do not include real signing values in docs or examples.
+- Keep CI running unit tests, debug build, and lint.
+- Keep nightly and release builds signed release APK builds unless explicitly changed.
 
 ## Testing Rules
 
@@ -416,6 +505,18 @@ Run debug build after UI or Android integration changes:
 
 ```bash
 ./gradlew :app:assembleDebug
+```
+
+Run lint after build or CI changes:
+
+```bash
+./gradlew :app:lintDebug
+```
+
+Run instrumentation tests after Compose UI behavior changes when a device or emulator is available:
+
+```bash
+./gradlew :app:connectedDebugAndroidTest
 ```
 
 Use Robolectric only for Android framework dependent unit tests.
@@ -438,8 +539,12 @@ Prefer unit tests for:
 - field classification
 - sensitive field policy
 - KP2A result mapping
+- commit-field use case behavior
 - session snapshot value stripping
 - settings boundaries
+- subtype registry behavior
+- quick-action reducer behavior
+- keyboard layout metrics and paging math
 
 Do not write tests that assert or print real passwords or tokens.
 
@@ -447,16 +552,31 @@ Do not write tests that assert or print real passwords or tokens.
 
 Keep documentation in English unless the user explicitly asks otherwise.
 
+Canonical documentation locations:
+
+- `README.md`
+- `AGENTS.md`
+- `docs/architecture.md`
+- `docs/requirements.md`
+- `docs/security.md`
+- `docs/testing.md`
+- `docs/build-and-release.md`
+- `docs/known-limitations.md`
+
+Historical planning notes are not canonical documentation and should not be used for durable project docs. If they contain still-useful decisions, move the decision into the canonical docs before deleting or archiving those notes.
+
 Document:
 
 - current architecture
+- implemented runtime flows
 - known limitations
 - security constraints
-- tested devices
+- tested devices or validation scope
 - ROM compatibility disclaimer
 - setup and validation commands
+- signing and release workflow requirements
 
-Always include the disclaimer:
+Always include the disclaimer where compatibility is discussed:
 
 ```text
 This project is primarily built for personal devices and personal needs. It does not guarantee compatibility with all Android, HyperOS, MIUI, or vendor ROM versions.
@@ -469,6 +589,7 @@ Common commands:
 ```bash
 ./gradlew :app:assembleDebug
 ./gradlew :app:testDebugUnitTest
+./gradlew :app:lintDebug
 ./gradlew :app:installDebug
 ```
 
@@ -478,7 +599,11 @@ ADB checks:
 adb logcat | rg "Kp2aKeyboardIme|AndroidRuntime|FATAL EXCEPTION"
 ```
 
-Sensitive value log checks should never reveal actual values.
+Sensitive value log checks should never reveal actual values:
+
+```bash
+adb logcat | rg "password|token|secret|totp|otp|recovery"
+```
 
 ## Commit Message Style
 
@@ -499,11 +624,11 @@ Rules:
 
 - Use lowercase `type(scope)`.
 - Keep the subject concise and imperative.
-- Prefer clear scopes, for example `keyboard`, `ime`, `kp2a`, `settings`, `theme`, `session`, `docs`, `test`.
+- Prefer clear scopes, for example `keyboard`, `ime`, `kp2a`, `settings`, `theme`, `session`, `docs`, `test`, `build`.
 - Explain the reason for the change in the body.
 - Use bullet points for notable changed areas.
 - Do not include noisy implementation details unless they help future maintenance.
-- Do not include sensitive values, tokens, passwords, KP2A field values, or logs containing secrets.
+- Do not include sensitive values, tokens, passwords, KP2A field values, signing secrets, or logs containing secrets.
 
 Common types:
 
@@ -521,19 +646,21 @@ build
 Example:
 
 ```text
-ui(keyboard): adjust keyboard bottom safe padding token
+docs(project): consolidate canonical maintenance docs
 
-Increase the safety margin at the bottom of the keyboard UI to improve visual clearance and ergonomics relative to system navigation bars.
+Move implemented architecture and workflow decisions into the canonical repository docs so historical planning notes can be removed without losing maintenance context.
 
-* **Keyboard UI Tokens**: Update `BottomSafePadding` in `KeyboardUiTokens.kt` from `10.dp` to `15.dp` to provide additional spacing from the gesture or three-button navigation area.
+* **README**: Refresh implemented feature list and link canonical docs.
+* **Docs**: Document subtype, quick-action, signing, and validation rules based on current code.
 ```
 
 ## Current Known Limitations
 
 - The app is not a full general-purpose keyboard.
 - Pinyin, suggestions, autocorrect, and candidate words are out of scope for P0.
+- Additional language layouts beyond English (US) are out of scope for P0.
 - Landscape mode uses compressed shared layout for now.
 - Field classification uses Keepass standard fields plus heuristics.
-- ROM behavior may affect IME height, Activity launch, navigation insets, and lifecycle timing.
+- ROM behavior may affect IME height, Activity launch, navigation insets, subtype visibility, and lifecycle timing.
 - Keepass2Android Plugin SDK2 is required.
 - KeePassDX is not supported.

@@ -29,6 +29,10 @@ Sensitive data includes:
 - API keys
 - Private keys
 - Protected fields reported by Keepass2Android
+- Raw Keepass2Android entry result JSON
+- Text carried by `KeyboardEffect.CommitText`
+
+Treat all Keepass2Android field values as sensitive unless proven otherwise.
 
 ## Allowed Storage
 
@@ -40,12 +44,24 @@ KeyboardSessionRepository
    └─ KeyboardField.value
 ```
 
+Safe persistent settings may include:
+
+- Theme mode enum name.
+- Dynamic color boolean.
+- Keyboard height enum name.
+- Session timeout seconds after bounds checking.
+- English (US) subtype enabled boolean.
+- Haptic feedback boolean.
+- Key sound boolean.
+- Key preview boolean.
+- Quick-action IDs such as `settings`.
+
 ## Forbidden Storage
 
 Field values must not be stored in:
 
 - `KeyboardUiState`
-- `KeyboardFieldUiModel`
+- `KeyboardFieldSummary`
 - Compose UI state
 - DataStore
 - SharedPreferences
@@ -53,6 +69,9 @@ Field values must not be stored in:
 - Databases
 - Logs
 - Crash reports
+- Documentation
+- Screenshots
+- Quick-action slot preferences
 
 ## Field Value Lifecycle
 
@@ -67,7 +86,7 @@ Kp2aEntryMapper
     ↓
 KeyboardSessionRepository
     ↓
-KeyboardViewModel.commitField(fieldId)
+CommitKeyboardFieldUseCase(fieldId)
     ↓
 KeyboardEffect.CommitText(value)
     ↓
@@ -85,7 +104,7 @@ The value is passed through the shortest possible path and is not placed in UI s
 The UI receives only safe field metadata:
 
 ```text
-KeyboardFieldUiModel
+KeyboardFieldSummary
 ├─ id
 ├─ label
 ├─ type
@@ -99,6 +118,37 @@ value
 ```
 
 Sensitive fields may use a cautious visual style, but must still show only the label.
+
+The current-entry hint may show the selected entry name. It must never include field values or raw KP2A JSON.
+
+## Quick-action Safety
+
+Quick-action persistence stores only action IDs.
+
+Allowed examples:
+
+```text
+settings
+clear_entry
+```
+
+Forbidden quick-action data:
+
+- Entry ids.
+- Entry names.
+- Field ids from KP2A.
+- Field labels from KP2A.
+- Field values.
+- Raw KP2A JSON.
+- Access tokens.
+
+The quick-action reducer must sanitize unsupported IDs, remove duplicates, and enforce the maximum pinned count before values are persisted.
+
+## Subtype and Settings Safety
+
+Subtype settings are safe because they store only booleans and stable subtype identifiers. They must not include current app package credential queries, entry ids, field ids, or values.
+
+`KeyboardSubtypeRegistry` may log subtype names or IDs. It must not log active field values or committed text.
 
 ## Logging Rules
 
@@ -115,10 +165,12 @@ Allowed log fields:
 - Field count
 - Protected field count
 - Extras key names
+- Subtype ID or subtype name
 
 Forbidden log fields:
 
 - Field values
+- Committed text
 - KP2A raw JSON
 - Passwords
 - TOTP codes
@@ -218,22 +270,25 @@ ClipboardManager.setPrimaryClip(...)
 
 Keepass2Android Plugin SDK2 manages plugin access tokens.
 
-Rules:
+Do not log, copy, persist, or document access token values.
 
-- Do not log access tokens.
-- Do not expose access tokens in UI.
-- Do not copy access tokens to custom logs.
-- Prefer official `AccessManager` over custom token storage.
+## Signing Secret Policy
 
-## Developer Checklist
+Release signing uses local `keystore.properties` or CI secrets.
 
-Before merging changes involving field values:
+Sensitive signing data includes:
 
-- [ ] No field value in `KeyboardUiState`.
-- [ ] No field value in `KeyboardFieldUiModel`.
-- [ ] No field value in Compose UI.
-- [ ] No raw KP2A JSON logs.
-- [ ] No access token logs.
-- [ ] No clipboard usage.
-- [ ] Unit tests still pass.
-- [ ] Runtime logs do not expose real field values.
+- Keystore file contents.
+- Keystore Base64 content.
+- Keystore password.
+- Key alias when it reveals private naming.
+- Key password.
+
+These values must not be committed, logged, or copied into documentation examples with real values.
+
+Use placeholders in docs:
+
+```properties
+storePassword=...
+keyPassword=...
+```

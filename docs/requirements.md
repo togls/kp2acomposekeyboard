@@ -7,8 +7,10 @@ P0 implements a minimal secure Keepass2Android-focused keyboard.
 Included:
 
 - Android input method host.
-- Default text input layout.
-- Entry layout.
+- Entry system subtype.
+- Optional English (US) text input subtype.
+- Text input layout for English letters, numbers, and symbols.
+- Entry layout for selected KeePass fields.
 - Keepass2Android entry selection.
 - Field button input.
 - In-memory session security layer.
@@ -16,10 +18,12 @@ Included:
 - Manual session clearing.
 - Settings page.
 - Material 3 theme.
+- Quick-action bar and quick-action panel.
 - Basic portrait / landscape support.
 - Adaptive keyboard metrics.
 - Navigation-aware bottom spacing.
-- Basic unit tests.
+- Basic unit and instrumentation tests.
+- CI, nightly, and tagged release workflows.
 
 Excluded from P0:
 
@@ -29,37 +33,25 @@ Excluded from P0:
 - Autocorrect.
 - Handwriting.
 - Voice input.
-- Multi-language layouts.
+- Additional language layouts beyond English (US).
 - Full Gboard feature parity.
 - KeePassDX support.
 - Dedicated landscape layout.
 - Custom search result UI.
 - Full password manager behavior.
 
-## Default Keyboard Layout
+## Text Input Layout
 
-The default layout supports:
+The text input layout supports:
 
-- Letter mode
-- Number mode
-- Symbol mode
+- Letter mode.
+- Number mode.
+- Symbol mode.
 
 Bottom action row:
 
 ```text
-[?123/ABC] [#+=/ABC] [Space] [Select Entry] [Enter]
-```
-
-Optional quick-action row:
-
-```text
-[Quick-action panel] [Pinned quick actions or current entry hint] [Optional pinned quick action]
-```
-
-If an active session exists, the top area shows:
-
-```text
-Current entry: {entryName} [Back to Entry Layout]
+[?123/ABC] [Language when letters] [Space] [Select Entry] [Enter]
 ```
 
 Requirements:
@@ -71,26 +63,40 @@ Requirements:
 - Tapping `Enter` sends enter.
 - Tapping delete removes the previous character.
 - Tapping `Select Entry` starts the Keepass2Android entry selection flow.
-- Tapping `Settings` opens the settings page.
-- Tapping the quick-action panel button expands or closes the quick-action panel.
-- The quick-action panel occupies the main keyboard content area and leaves only the bottom IME safe/navigation area.
+- Tapping the language key switches from `Entry` to `English (US)` when English is enabled.
+- If English is not enabled, tapping the language key delegates to Android's next input method behavior.
+- Letter, number, and symbol rows use shared row metrics so fixed and flexible keys align consistently.
+
+## Quick-action Requirements
+
+The quick-action area appears above the main keyboard content.
+
+Requirements:
+
+- The left quick-action button expands or closes the quick-action panel.
+- When an active session exists and the panel is closed, the center area shows the current entry hint.
+- Tapping the current entry hint returns to the entry layout without querying Keepass2Android again.
+- The panel occupies the main keyboard content area and leaves the bottom IME safe/navigation area untouched.
 - Quick-action items can be tapped directly from the panel.
 - Quick-action items can be long-pressed and dragged into the center area or right slot.
-- Dragging only updates hover feedback until release; the final slot change is committed on drag end.
-- The left quick-action panel button does not count toward the five pinned quick actions.
-- If an active session exists, the center area shows the current entry hint while the quick-action panel is closed.
-- Quick-action slot persistence stores only quick-action IDs and never stores entry or field values.
-- If an active session exists, tapping `Back to Entry Layout` returns to the entry layout without querying Keepass2Android again.
-- Letter, number, and symbol rows should use shared width calculation when mixing fixed and flexible keys.
+- Dragging updates hover feedback before release; the final slot change is committed on drag end.
+- Pinned quick actions are capped by `KeyboardQuickActionSlots.MAX_PINNED_ITEMS`.
+- Quick-action slot persistence stores only quick-action IDs.
+- Quick-action persistence must never store entry names, field labels from KP2A, field values, or KP2A raw JSON.
+
+Current production quick actions:
+
+- Settings.
+- Clear entry.
 
 ## Entry Keyboard Layout
 
 The entry layout contains:
 
-- Current entry header
-- Fixed field row
-- Extra field panel
-- Bottom action row
+- Fixed field row.
+- Extra field panel.
+- Normal entry action row.
+- Expanded field list and expanded action rows.
 
 Fixed fields:
 
@@ -100,24 +106,25 @@ Password
 TOTP
 ```
 
-Extra fields:
+Normal mode:
 
-- Displayed in pages.
-- Default page size is 3.
-- `prev` and `next` switch pages.
-- `All` switches to expanded mode.
+- Fixed fields use one row when present.
+- Extra fields use the remaining field area.
+- The extra field area scrolls internally.
+- The normal action row stays fixed at the bottom of the entry content.
 
 Expanded mode:
 
-- Displays all fields.
+- Displays fixed and extra fields together.
 - Field area scrolls internally.
-- Current entry header stays fixed.
-- Bottom action rows stay fixed.
+- Expanded action rows stay fixed at the bottom.
+- Previous and next actions page through the scroll area.
+- Scroll end snaps to page-sized offsets.
 - Expanded fields must not increase the overall keyboard height.
 
-## Field Button Requirements
+## Field Key Requirements
 
-Field buttons must:
+Field keys must:
 
 - Show only field labels.
 - Never show field values.
@@ -162,6 +169,20 @@ SCOPE_QUERY_CREDENTIALS
 
 `SCOPE_QUERY_CREDENTIALS_FOR_OWN_PACKAGE` should only be added if the app later implements an own-package query mode.
 
+## Subtype Requirements
+
+The IME uses a static `Entry` subtype and a dynamic `English (US)` subtype.
+
+Requirements:
+
+- `Entry` is always available through `method.xml`.
+- `English (US)` is registered as an additional subtype only when enabled in app settings.
+- Subtype IDs and extra values must stay stable.
+- Unknown or missing Android subtype values must fall back to `Entry`.
+- Subtype changes must update `KeyboardUiState.currentSubtype` and `KeyboardUiState.mainLayout`.
+- Disabling `English (US)` should leave only the `Entry` subtype registered by the app.
+- ROM subtype caching must be treated as a compatibility limitation, not as app state truth.
+
 ## Session Requirements
 
 The session stores the currently selected entry in memory.
@@ -186,19 +207,29 @@ Settings page supports:
 - Dynamic color.
 - Keyboard height: Compact, Normal, and Tall.
 - Session timeout.
+- English (US) subtype enablement.
 - Haptic feedback.
 - Key sound.
 - Key preview.
+- Quick-action slots.
 - Reset to default.
 
 Settings must be persisted using DataStore Preferences.
 
+Settings may store only safe values:
+
+- Enum names.
+- Booleans.
+- Bounded timeout seconds.
+- Quick-action IDs.
+
 Settings must not store:
 
-- Entry field values
-- KP2A raw JSON
-- KP2A access tokens
-- Session data
+- Entry field values.
+- KP2A raw JSON.
+- KP2A access tokens.
+- Session data.
+- Committed text.
 
 ## Theme Requirements
 
@@ -206,17 +237,17 @@ The app must use Material 3.
 
 Theme support:
 
-- Light mode
-- Dark mode
-- System mode
-- Android 12+ dynamic color
-- Fallback default Material 3 color schemes when dynamic color is unavailable
+- Light mode.
+- Dark mode.
+- System mode.
+- Android 12+ dynamic color.
+- Fallback default Material 3 color schemes when dynamic color is unavailable.
 
 The same theme system is used for:
 
-- Keyboard UI
-- Entry picker UI
-- Settings UI
+- Keyboard UI.
+- Entry picker UI.
+- Settings UI.
 
 ## Keyboard Height Requirements
 
@@ -227,11 +258,11 @@ Requirements:
 - Compact / Normal / Tall height modes.
 - Entry fields must not increase overall keyboard height.
 - Expanded mode must scroll field content internally.
-- Header stays fixed.
-- Bottom action rows stay fixed.
+- Bottom action rows must stay fixed.
 - Bottom action rows must avoid gesture navigation / navigation bar areas.
 - Landscape mode uses compressed height.
 - Key height, horizontal padding, corner radius, bottom safe padding, and navigation-aware bottom padding must come from adaptive keyboard metrics when possible.
+- Row height must be snapped down by density when needed to avoid cumulative pixel overflow.
 
 ## Portrait / Landscape Requirements
 
@@ -243,38 +274,76 @@ P0 requirements:
 - Landscape key height and spacing can be reduced.
 - Dedicated landscape layout is deferred to P1.
 
+## Build and Release Requirements
+
+Local debug builds must work without signing secrets.
+
+Release and nightly builds require signing inputs:
+
+```text
+ANDROID_KEYSTORE_PATH
+ANDROID_KEYSTORE_PASSWORD
+ANDROID_KEY_ALIAS
+ANDROID_KEY_PASSWORD
+```
+
+GitHub Actions additionally require this secret so the keystore can be reconstructed on the runner:
+
+```text
+ANDROID_KEYSTORE_BASE64
+```
+
+Requirements:
+
+- CI runs unit tests, debug APK build, and debug lint.
+- Nightly builds run unit tests and publish a signed release APK artifact.
+- Release builds run on tags matching `v*.*.*` and publish a signed APK to GitHub Releases.
+- Keystore files and `keystore.properties` must not be committed.
+
 ## Logging Requirements
 
 Allowed:
 
-- Event names
-- Result codes
-- Whether data exists
-- Extras key names
-- Field count
-- Protected field count
-- Error type
+- Event names.
+- Result codes.
+- Whether data exists.
+- Extras key names.
+- Field count.
+- Protected field count.
+- Subtype IDs or names.
+- Error type.
 
 Forbidden:
 
-- Password values
-- TOTP values
-- Recovery code values
-- Token values
-- Secret values
-- Access token values
-- Raw KP2A field JSON
-- Full Intent extras values
+- Password values.
+- TOTP values.
+- Recovery code values.
+- Token values.
+- Secret values.
+- Access token values.
+- Raw KP2A field JSON.
+- Full Intent extras values.
+- Committed text.
 
 ## Testing Requirements
 
 Unit tests should cover:
 
-- KP2A result parsing
-- Field classification
-- Sensitive field detection
-- KP2A result mapping
-- Session snapshot safety
-- Settings defaults and bounds
+- KP2A result parsing.
+- Field classification.
+- Sensitive field detection.
+- KP2A result mapping.
+- Commit-field behavior.
+- Session snapshot safety.
+- Settings defaults and bounds.
+- Settings persistence codecs.
+- Runtime subtype registry behavior.
+- Quick-action reducer and UI policies.
+- Keyboard layout metrics and paging math.
 
-Integration and UI tests are deferred.
+Instrumentation tests should cover:
+
+- Text input layout behavior.
+- Entry layout behavior.
+- Sensitive data non-display guarantees.
+- Height and inset behavior on device/emulator.
