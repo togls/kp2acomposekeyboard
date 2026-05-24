@@ -1,20 +1,20 @@
-name: Nightly Build
+name: Release APK
 
 on:
-  schedule:
-    - cron: "0 18 * * *"
-  workflow_dispatch:
+  push:
+    tags:
+      - "v*.*.*"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: nightly-build-${{ github.ref }}
-  cancel-in-progress: true
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  build:
-    name: Test and build signed nightly APK
+  release:
+    name: Build and publish release APK
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -37,10 +37,7 @@ jobs:
       - name: Grant execute permission for Gradle
         run: chmod +x ./gradlew
 
-      - name: Run unit tests
-        run: ./gradlew :app:testDebugUnitTest --stacktrace
-
-      - name: Validate signing secrets
+      - name: Validate release secrets
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -63,13 +60,13 @@ jobs:
 
           exit "$missing"
 
-      - name: Decode signing keystore
+      - name: Decode release keystore
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
           printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > release-keystore.jks
 
-      - name: Build signed nightly APK
+      - name: Build release APK
         env:
           ANDROID_KEYSTORE_PATH: ${{ github.workspace }}/release-keystore.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -77,10 +74,10 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: ./gradlew :app:assembleRelease --stacktrace
 
-      - name: Prepare nightly artifact
+      - name: Prepare release artifact
         run: |
-          mkdir -p nightly
-          SHORT_SHA="${GITHUB_SHA::7}"
+          VERSION_NAME="${GITHUB_REF_NAME}"
+          mkdir -p release
 
           APK_PATH="$(find app/build/outputs/apk/release -maxdepth 1 -type f -name '*.apk' ! -name '*unsigned*.apk' | head -n 1)"
 
@@ -94,22 +91,14 @@ jobs:
             exit 1
           fi
 
-          cp "$APK_PATH" "nightly/kp2acomposekeyboard-nightly-${SHORT_SHA}.apk"
-          ls -lah nightly
+          cp "$APK_PATH" "release/kp2acomposekeyboard-${VERSION_NAME}.apk"
+          ls -lah release
 
-      - name: Upload signed nightly APK
-        uses: actions/upload-artifact@v6
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v3
         with:
-          name: kp2a-compose-keyboard-signed-nightly-apk
-          path: nightly/*.apk
-          if-no-files-found: error
-          retention-days: 14
-
-      - name: Upload unit test report
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: unit-test-report
-          path: app/build/reports/tests/testDebugUnitTest/
-          if-no-files-found: warn
-          retention-days: 14
+          files: release/*.apk
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
