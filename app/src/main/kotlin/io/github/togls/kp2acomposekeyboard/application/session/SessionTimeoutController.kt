@@ -47,6 +47,7 @@ class SessionTimeoutController @Inject constructor(
     }
 
     companion object {
-        const val DEFAULT_TIMEOUT_MILLIS = 60_000L
+        // KP2A close, lock, and database events are the primary cleanup path.
+        const val DEFAULT_TIMEOUT_MILLIS = 300_000L
     }
 }
