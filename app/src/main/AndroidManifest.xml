@@ -74,5 +74,19 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".data.kp2a.Kp2aPluginActionReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="keepass2android.ACTION_OPEN_ENTRY" />
+                <action android:name="keepass2android.ACTION_ENTRY_OUTPUT_MODIFIED" />
+                <action android:name="keepass2android.ACTION_CLOSE_ENTRY_VIEW" />
+                <action android:name="keepass2android.ACTION_LOCK_DATABASE" />
+                <action android:name="keepass2android.ACTION_CLOSE_DATABASE" />
+                <action android:name="keepass2android.ACTION_OPEN_DATABASE" />
+                <action android:name="keepass2android.ACTION_UNLOCK_DATABASE" />
+            </intent-filter>
+        </receiver>
+
     </application>
 </manifest>
