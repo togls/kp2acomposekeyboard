@@ -119,7 +119,7 @@ private fun DefaultKeyboardActionRow(
         if (state.defaultInputMode == DefaultInputMode.Letters) {
             LanguageSwitchKey(
                 onIntent = onIntent,
-                modifier = Modifier.width(metrics.sideKeyWidth),
+                modifier = Modifier.width(metrics.standardKeyWidth),
             )
         }
 
