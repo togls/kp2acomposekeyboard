@@ -5,6 +5,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.EntryFieldDisplayMode
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.shared.KeyboardTestTags
 import org.junit.Assert.fail
 import org.junit.Rule
 
