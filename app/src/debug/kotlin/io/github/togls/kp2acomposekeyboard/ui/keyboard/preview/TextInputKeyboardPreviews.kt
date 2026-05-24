@@ -13,9 +13,9 @@ import io.github.togls.kp2acomposekeyboard.domain.keyboard.TextInputMode
     heightDp = 320,
 )
 @Composable
-private fun DefaultKeyboardLettersPreview() {
+private fun TextInputKeyboardLettersPreview() {
     KeyboardPreviewContent(
-        state = previewDefaultKeyboardState(
+        state = previewTextInputKeyboardState(
             inputMode = TextInputMode.Letters,
         ),
     )
@@ -29,9 +29,9 @@ private fun DefaultKeyboardLettersPreview() {
     heightDp = 320,
 )
 @Composable
-private fun DefaultKeyboardNumbersPreview() {
+private fun TextInputKeyboardNumbersPreview() {
     KeyboardPreviewContent(
-        state = previewDefaultKeyboardState(
+        state = previewTextInputKeyboardState(
             inputMode = TextInputMode.Numbers,
         ),
     )
@@ -45,9 +45,9 @@ private fun DefaultKeyboardNumbersPreview() {
     heightDp = 320,
 )
 @Composable
-private fun DefaultKeyboardSymbolsPreview() {
+private fun TextInputKeyboardSymbolsPreview() {
     KeyboardPreviewContent(
-        state = previewDefaultKeyboardState(
+        state = previewTextInputKeyboardState(
             inputMode = TextInputMode.Symbols,
         ),
     )
@@ -62,9 +62,9 @@ private fun DefaultKeyboardSymbolsPreview() {
     uiMode = Configuration.UI_MODE_NIGHT_YES,
 )
 @Composable
-private fun DefaultKeyboardLettersDarkPreview() {
+private fun TextInputKeyboardLettersDarkPreview() {
     KeyboardPreviewContent(
-        state = previewDefaultKeyboardState(
+        state = previewTextInputKeyboardState(
             inputMode = TextInputMode.Letters,
         ),
         settings = previewDarkSettings(),
@@ -72,29 +72,29 @@ private fun DefaultKeyboardLettersDarkPreview() {
 }
 
 @Preview(
-    name = "Utility Panel",
+    name = "Quick Action Panel",
     group = "Keyboard / Default",
     showBackground = true,
     widthDp = 411,
     heightDp = 320,
 )
 @Composable
-private fun DefaultKeyboardUtilityPanelPreview() {
+private fun TextInputKeyboardQuickActionPanelPreview() {
     KeyboardPreviewContent(
-        state = previewUtilityPanelState(),
+        state = previewQuickActionPanelState(),
     )
 }
 
 @Preview(
-    name = "Right Utility Slot",
+    name = "Right Quick Action Slot",
     group = "Keyboard / Default",
     showBackground = true,
     widthDp = 411,
     heightDp = 320,
 )
 @Composable
-private fun DefaultKeyboardRightUtilitySlotPreview() {
+private fun TextInputKeyboardRightQuickActionSlotPreview() {
     KeyboardPreviewContent(
-        state = previewRightUtilitySlotState(),
+        state = previewRightQuickActionSlotState(),
     )
 }

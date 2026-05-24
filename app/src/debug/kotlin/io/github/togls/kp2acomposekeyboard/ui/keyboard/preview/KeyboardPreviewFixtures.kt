@@ -64,7 +64,7 @@ internal fun previewDarkSettings(): KeyboardSettings {
     )
 }
 
-internal fun previewDefaultKeyboardState(
+internal fun previewTextInputKeyboardState(
     inputMode: TextInputMode = TextInputMode.Letters,
 ): KeyboardUiState {
     return KeyboardUiState(
@@ -76,16 +76,16 @@ internal fun previewDefaultKeyboardState(
     )
 }
 
-internal fun previewUtilityPanelState(): KeyboardUiState {
-    return previewDefaultKeyboardState().copy(
+internal fun previewQuickActionPanelState(): KeyboardUiState {
+    return previewTextInputKeyboardState().copy(
         hasActiveSession = false,
         currentEntryName = null,
         isQuickActionPanelExpanded = true,
     )
 }
 
-internal fun previewRightUtilitySlotState(): KeyboardUiState {
-    return previewDefaultKeyboardState().copy(
+internal fun previewRightQuickActionSlotState(): KeyboardUiState {
+    return previewTextInputKeyboardState().copy(
         hasActiveSession = false,
         currentEntryName = null,
         quickActionSlots = KeyboardQuickActionSlots(

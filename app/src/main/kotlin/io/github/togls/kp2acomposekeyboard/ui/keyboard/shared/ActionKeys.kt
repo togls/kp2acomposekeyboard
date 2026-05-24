@@ -52,7 +52,7 @@ internal fun SelectEntryKey(
 }
 
 @Composable
-internal fun SwitchToDefaultLayoutKey(
+internal fun SwitchToTextInputKey(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -60,7 +60,7 @@ internal fun SwitchToDefaultLayoutKey(
         modifier = modifier,
         iconRes = R.drawable.ic_keyboard_24,
         contentDescription = stringResource(R.string.cd_key_switch_to_default_layout),
-        onClick = { onIntent(KeyboardIntent.SwitchToDefaultLayout) },
+        onClick = { onIntent(KeyboardIntent.SwitchToTextInput) },
         emphasis = KeyboardKeyEmphasis.Action,
     )
 }

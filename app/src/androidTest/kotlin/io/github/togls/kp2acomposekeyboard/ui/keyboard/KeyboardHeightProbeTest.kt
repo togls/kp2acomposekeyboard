@@ -15,7 +15,7 @@ class KeyboardHeightProbeTest {
     //@Test
     fun printDefaultBounds() {
         composeRule.setContent {
-            KeyboardRootTestContent(state = testDefaultState())
+            KeyboardImeContentTestContent(state = testTextInputState())
         }
         composeRule.waitForIdle()
 
@@ -39,7 +39,7 @@ class KeyboardHeightProbeTest {
     //@Test
     fun printEntryBounds() {
         composeRule.setContent {
-            KeyboardRootTestContent(state = testEntryState(EntryFieldDisplayMode.Paged))
+            KeyboardImeContentTestContent(state = testEntryState(EntryFieldDisplayMode.Paged))
         }
         composeRule.waitForIdle()
 

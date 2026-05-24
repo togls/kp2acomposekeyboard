@@ -14,14 +14,14 @@ import io.github.togls.kp2acomposekeyboard.domain.keyboard.EntryFieldDisplayMode
 import org.junit.Rule
 import org.junit.Test
 
-class KeyboardRootEntryLayoutTest {
+class KeyboardImeContentEntryTest {
     @get:Rule
     val composeRule = createComposeRule()
 
     @Test
     fun normalEntryHasNoPageControls() {
         composeRule.setContent {
-            KeyboardRootTestContent(testEntryState(EntryFieldDisplayMode.Paged))
+            KeyboardImeContentTestContent(testEntryState(EntryFieldDisplayMode.Paged))
         }
 
         composeRule.onNodeWithTag(KeyboardTestTags.EntryNormalContent).assertIsDisplayed()
@@ -32,7 +32,7 @@ class KeyboardRootEntryLayoutTest {
     @Test
     fun normalRemainingFieldsScrollVertically() {
         composeRule.setContent {
-            KeyboardRootTestContent(
+            KeyboardImeContentTestContent(
                 testEntryState(
                     EntryFieldDisplayMode.Paged,
                     extraFieldCount = 12
@@ -49,7 +49,7 @@ class KeyboardRootEntryLayoutTest {
     @Test
     fun expandedEntryShowsPageControls() {
         composeRule.setContent {
-            KeyboardRootTestContent(testEntryState(EntryFieldDisplayMode.Expanded))
+            KeyboardImeContentTestContent(testEntryState(EntryFieldDisplayMode.Expanded))
         }
 
         composeRule.onNodeWithTag(KeyboardTestTags.EntryExpandedContent).assertIsDisplayed()
@@ -60,7 +60,7 @@ class KeyboardRootEntryLayoutTest {
     @Test
     fun expandedControlsDisableWhenContentFitsOnePage() {
         composeRule.setContent {
-            KeyboardRootTestContent(
+            KeyboardImeContentTestContent(
                 testEntryState(EntryFieldDisplayMode.Expanded, extraFieldCount = 0),
             )
         }
@@ -70,9 +70,9 @@ class KeyboardRootEntryLayoutTest {
     }
 
     @Test
-    fun emptyEntryLayoutShowsLanguageSwitchAndNoFieldButtons() {
+    fun emptyEntryShowsLanguageSwitchAndNoFieldButtons() {
         composeRule.setContent {
-            KeyboardRootTestContent(testEntryEmptyState())
+            KeyboardImeContentTestContent(testEntryEmptyState())
         }
 
         composeRule.onNodeWithTag(KeyboardTestTags.EntryNormalContent).assertIsDisplayed()

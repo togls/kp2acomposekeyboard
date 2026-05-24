@@ -89,8 +89,8 @@ class KeyboardViewModel(
                 )
             }
 
-            KeyboardIntent.SwitchToDefaultLayout -> switchToDefaultLayout()
-            KeyboardIntent.SwitchToEntryLayout -> switchToEntryLayout()
+            KeyboardIntent.SwitchToTextInput -> switchToTextInput()
+            KeyboardIntent.SwitchToEntry -> switchToEntry()
             is KeyboardIntent.ChangeSubtype -> changeSubtype(intent.subtype)
             KeyboardIntent.SwitchLanguage -> switchLanguage()
 
@@ -192,13 +192,13 @@ class KeyboardViewModel(
         sendEffect(KeyboardEffect.CommitText(text))
     }
 
-    private fun switchToDefaultLayout() {
+    private fun switchToTextInput() {
         _uiState.update { state ->
             state.copy(mainLayout = MainKeyboardLayout.TextInput)
         }
     }
 
-    private fun switchToEntryLayout() {
+    private fun switchToEntry() {
         _uiState.update { state ->
             // Entry layout without a session would show empty credential controls.
             if (!state.hasActiveSession) {

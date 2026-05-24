@@ -32,7 +32,7 @@ internal fun shouldShowPanelQuickAction(
     itemId: KeyboardQuickActionId,
     quickActionSlots: KeyboardQuickActionSlots,
 ): Boolean {
-    // Panel items represent utilities available to pin; already pinned items
+    // Panel items represent quick actions available to pin; already pinned items
     // stay visible through their slot instead of being duplicated here.
     return itemId !in quickActionSlots.centerItemIds &&
             itemId != quickActionSlots.rightItemId

@@ -18,8 +18,8 @@ sealed interface KeyboardIntent {
     data class MoveQuickActionToRight(val itemId: KeyboardQuickActionId) : KeyboardIntent
     data class RemoveQuickAction(val itemId: KeyboardQuickActionId) : KeyboardIntent
 
-    data object SwitchToDefaultLayout : KeyboardIntent
-    data object SwitchToEntryLayout : KeyboardIntent
+    data object SwitchToTextInput : KeyboardIntent
+    data object SwitchToEntry : KeyboardIntent
     data class ChangeSubtype(val subtype: KeyboardSubtype) : KeyboardIntent
     data object SwitchLanguage : KeyboardIntent
 

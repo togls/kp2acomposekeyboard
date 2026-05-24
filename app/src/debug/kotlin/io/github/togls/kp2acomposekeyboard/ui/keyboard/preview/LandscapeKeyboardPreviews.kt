@@ -15,7 +15,7 @@ import io.github.togls.kp2acomposekeyboard.domain.keyboard.EntryFieldDisplayMode
 @Composable
 private fun LandscapeDefaultLettersPreview() {
     KeyboardPreviewContent(
-        state = previewDefaultKeyboardState(
+        state = previewTextInputKeyboardState(
             inputMode = TextInputMode.Letters,
         ),
         settings = previewCompactLightSettings(),
@@ -32,7 +32,7 @@ private fun LandscapeDefaultLettersPreview() {
 @Composable
 private fun LandscapeDefaultNumbersPreview() {
     KeyboardPreviewContent(
-        state = previewDefaultKeyboardState(
+        state = previewTextInputKeyboardState(
             inputMode = TextInputMode.Numbers,
         ),
         settings = previewCompactLightSettings(),

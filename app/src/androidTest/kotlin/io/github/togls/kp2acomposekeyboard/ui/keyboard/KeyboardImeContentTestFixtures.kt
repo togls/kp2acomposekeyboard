@@ -26,7 +26,7 @@ internal val forbiddenSensitiveValues = listOf(
 )
 
 @Composable
-internal fun KeyboardRootTestContent(
+internal fun KeyboardImeContentTestContent(
     state: KeyboardUiState,
     onIntent: (KeyboardIntent) -> Unit = {},
 ) {
@@ -42,7 +42,7 @@ internal fun KeyboardRootTestContent(
     }
 }
 
-internal fun testDefaultState() = KeyboardUiState(
+internal fun testTextInputState() = KeyboardUiState(
     mainLayout = MainKeyboardLayout.TextInput,
     currentSubtype = KeyboardSubtype.EnglishUs,
     englishUsSubtypeEnabled = true,

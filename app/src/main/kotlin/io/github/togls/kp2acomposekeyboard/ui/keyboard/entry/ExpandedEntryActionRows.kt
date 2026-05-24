@@ -13,7 +13,7 @@ import io.github.togls.kp2acomposekeyboard.ui.keyboard.shared.DeleteKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.shared.NextPageKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.shared.PreviousPageKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.shared.SelectEntryKey
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.shared.SwitchToDefaultLayoutKey
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.shared.SwitchToTextInputKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.metrics.KeyboardMetrics
 
 @Composable
@@ -55,7 +55,7 @@ internal fun ExpandedEntryActionRows(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
         ) {
-            SwitchToDefaultLayoutKey(
+            SwitchToTextInputKey(
                 onIntent = onIntent,
                 modifier = Modifier.weight(1.8f),
             )

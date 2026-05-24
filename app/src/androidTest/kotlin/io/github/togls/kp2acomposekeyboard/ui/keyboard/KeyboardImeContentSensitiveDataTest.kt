@@ -15,14 +15,14 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
-class KeyboardRootSensitiveDataTest {
+class KeyboardImeContentSensitiveDataTest {
     @get:Rule
     val composeRule = createComposeRule()
 
     @Test
     fun sensitiveValuesDoNotAppearInTextContentDescriptionsOrSemanticsDump() {
         composeRule.setContent {
-            KeyboardRootTestContent(testEntryState(EntryFieldDisplayMode.Paged))
+            KeyboardImeContentTestContent(testEntryState(EntryFieldDisplayMode.Paged))
         }
 
         val semanticsDump = composeRule.onRoot(useUnmergedTree = true).printToString()
@@ -39,7 +39,7 @@ class KeyboardRootSensitiveDataTest {
     fun fieldClickSendsFieldIdOnly() {
         val intents = mutableListOf<KeyboardIntent>()
         composeRule.setContent {
-            KeyboardRootTestContent(
+            KeyboardImeContentTestContent(
                 state = testEntryState(EntryFieldDisplayMode.Paged),
                 onIntent = intents::add,
             )

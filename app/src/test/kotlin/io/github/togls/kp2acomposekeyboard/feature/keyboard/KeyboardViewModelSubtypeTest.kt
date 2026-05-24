@@ -47,7 +47,7 @@ class KeyboardViewModelSubtypeTest {
     }
 
     @Test
-    fun initialState_defaultsToEntryLayout() = runTest(dispatcher) {
+    fun initialState_defaultsToEntry() = runTest(dispatcher) {
         val viewModel = createViewModel()
         advanceUntilIdle()
 
@@ -56,7 +56,7 @@ class KeyboardViewModelSubtypeTest {
     }
 
     @Test
-    fun changeSubtypeToEnglish_selectsDefaultLayout() = runTest(dispatcher) {
+    fun changeSubtypeToEnglish_selectsTextInput() = runTest(dispatcher) {
         val viewModel = createViewModel()
 
         viewModel.onIntent(KeyboardIntent.ChangeSubtype(KeyboardSubtype.EnglishUs))
@@ -67,7 +67,7 @@ class KeyboardViewModelSubtypeTest {
     }
 
     @Test
-    fun changeSubtypeToEntry_selectsEntryLayoutWithoutSession() = runTest(dispatcher) {
+    fun changeSubtypeToEntry_selectsEntryWithoutSession() = runTest(dispatcher) {
         val viewModel = createViewModel()
 
         viewModel.onIntent(KeyboardIntent.ChangeSubtype(KeyboardSubtype.Entry))

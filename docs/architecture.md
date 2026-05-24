@@ -144,15 +144,15 @@ SettingsViewModel
     -> DataStore Preferences
 ```
 
-Keyboard runtime code depends on `application.settings.KeyboardSettingsStore`, a small port that exposes settings observation and utility slot updates. `data.settings.SettingsRepository` implements that port and owns DataStore persistence.
+Keyboard runtime code depends on `application.settings.KeyboardSettingsStore`, a small port that exposes settings observation and quick-action slot updates. `data.settings.SettingsRepository` implements that port and owns DataStore persistence.
 
-Settings may store theme mode, dynamic color, session timeout, keyboard height, subtype enablement, haptic feedback, key sound, key preview, and utility slots.
+Settings may store theme mode, dynamic color, session timeout, keyboard height, subtype enablement, haptic feedback, key sound, key preview, and quick-action slots.
 
 Settings must never contain Keepass2Android field values, raw entry JSON, access tokens, or committed text.
 
 ## UI Responsibilities
 
-`KeyboardRoot` and keyboard UI components:
+`KeyboardImeContent` and keyboard UI components:
 
 - Render `KeyboardUiState`.
 - Send `KeyboardIntent`.

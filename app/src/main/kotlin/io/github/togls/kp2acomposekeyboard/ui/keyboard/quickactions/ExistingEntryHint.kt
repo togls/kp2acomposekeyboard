@@ -53,7 +53,7 @@ internal fun ExistingEntryHint(
             )
 
             IconButton(
-                onClick = { onIntent(KeyboardIntent.SwitchToEntryLayout) },
+                onClick = { onIntent(KeyboardIntent.SwitchToEntry) },
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow_outward_24),

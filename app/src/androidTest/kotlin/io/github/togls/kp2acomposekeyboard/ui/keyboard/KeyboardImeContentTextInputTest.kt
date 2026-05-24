@@ -9,14 +9,14 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
-class KeyboardRootDefaultLayoutTest {
+class KeyboardImeContentTextInputTest {
     @get:Rule
     val composeRule = createComposeRule()
 
     @Test
-    fun rendersDefaultKeyboard() {
+    fun rendersTextInputKeyboard() {
         composeRule.setContent {
-            KeyboardRootTestContent(state = testDefaultState())
+            KeyboardImeContentTestContent(state = testTextInputState())
         }
 
         composeRule.onNodeWithTag(KeyboardTestTags.Root).assertIsDisplayed()
@@ -27,7 +27,7 @@ class KeyboardRootDefaultLayoutTest {
     @Test
     fun tenKeyReferenceRowUsesConsistentWidths() {
         composeRule.setContent {
-            KeyboardRootTestContent(state = testDefaultState())
+            KeyboardImeContentTestContent(state = testTextInputState())
         }
 
         val keyBounds = "qwertyuiop".associateWith { letter ->
@@ -46,7 +46,7 @@ class KeyboardRootDefaultLayoutTest {
     @Test
     fun defaultRowsFitInsideKeyboardContent() {
         composeRule.setContent {
-            KeyboardRootTestContent(state = testDefaultState())
+            KeyboardImeContentTestContent(state = testTextInputState())
         }
 
         val contentBounds = composeRule.onNodeWithTag(KeyboardTestTags.DefaultContent)
@@ -65,7 +65,7 @@ class KeyboardRootDefaultLayoutTest {
     @Test
     fun letterLayoutShowsLanguageSwitchNextToNumberSwitch() {
         composeRule.setContent {
-            KeyboardRootTestContent(state = testDefaultState())
+            KeyboardImeContentTestContent(state = testTextInputState())
         }
 
         val switchBounds = composeRule.onNodeWithTag(KeyboardTestTags.DefaultSwitchKey)
