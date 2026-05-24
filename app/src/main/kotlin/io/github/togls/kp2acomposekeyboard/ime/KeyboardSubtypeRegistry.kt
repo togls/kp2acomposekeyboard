@@ -28,6 +28,14 @@ object KeyboardSubtypeRegistry {
         }
     }
 
+    fun explicitlyEnabledSubtypeHashCodes(settings: KeyboardSettings): IntArray {
+        return if (settings.englishUsSubtypeEnabled) {
+            intArrayOf(ENTRY_SUBTYPE_ID, englishUsInputMethodSubtype().hashCode())
+        } else {
+            intArrayOf(ENTRY_SUBTYPE_ID)
+        }
+    }
+
     fun inputMethodSubtypeFor(subtype: KeyboardSubtype): InputMethodSubtype? {
         return when (subtype) {
             KeyboardSubtype.Entry -> null

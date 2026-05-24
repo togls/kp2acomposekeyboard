@@ -73,6 +73,30 @@ class KeyboardSubtypeRegistryTest {
         assertEquals(KeyboardSubtype.EnglishUs, KeyboardSubtypeRegistry.fromInputMethodSubtype(subtypes.single()))
     }
 
+    @Test
+    fun explicitlyEnabledSubtypeHashCodes_returnsEntryOnlyWhenEnglishDisabled() {
+        val hashCodes = KeyboardSubtypeRegistry.explicitlyEnabledSubtypeHashCodes(
+            KeyboardSettings(englishUsSubtypeEnabled = false),
+        )
+
+        assertEquals(listOf(KeyboardSubtypeRegistry.ENTRY_SUBTYPE_ID), hashCodes.toList())
+    }
+
+    @Test
+    fun explicitlyEnabledSubtypeHashCodes_returnsEntryAndEnglishWhenEnglishEnabled() {
+        val hashCodes = KeyboardSubtypeRegistry.explicitlyEnabledSubtypeHashCodes(
+            KeyboardSettings(englishUsSubtypeEnabled = true),
+        )
+
+        assertEquals(
+            listOf(
+                KeyboardSubtypeRegistry.ENTRY_SUBTYPE_ID,
+                KeyboardSubtypeRegistry.englishUsInputMethodSubtype().hashCode(),
+            ),
+            hashCodes.toList(),
+        )
+    }
+
     private fun subtypeWithExtra(extraValue: String): InputMethodSubtype {
         return InputMethodSubtype.InputMethodSubtypeBuilder()
             .setSubtypeId(9999)

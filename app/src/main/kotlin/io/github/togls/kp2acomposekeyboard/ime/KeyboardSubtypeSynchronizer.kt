@@ -2,6 +2,7 @@ package io.github.togls.kp2acomposekeyboard.ime
 
 import android.content.ComponentName
 import android.content.Context
+import android.os.Build
 import android.view.inputmethod.InputMethodManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
@@ -29,12 +30,15 @@ class KeyboardSubtypeSynchronizer @Inject constructor(
         }
 
         return runCatching {
+            val imeId = imeId()
             val additionalSubtypes = KeyboardSubtypeRegistry.additionalSubtypes(settings)
-            manager.setAdditionalInputMethodSubtypes(imeId(), additionalSubtypes)
+            manager.setAdditionalInputMethodSubtypes(imeId, additionalSubtypes)
+            val enabledSubtypeCount = synchronizeExplicitlyEnabledSubtypes(manager, imeId, settings)
             SecureLog.d(
                 message = "ime subtypes synchronized",
                 "englishUsEnabled" to settings.englishUsSubtypeEnabled,
                 "additionalSubtypeCount" to additionalSubtypes.size,
+                "enabledSubtypeCount" to enabledSubtypeCount,
             )
             true
         }.getOrElse { error ->
@@ -46,6 +50,20 @@ class KeyboardSubtypeSynchronizer @Inject constructor(
             )
             false
         }
+    }
+
+    private fun synchronizeExplicitlyEnabledSubtypes(
+        manager: InputMethodManager,
+        imeId: String,
+        settings: KeyboardSettings,
+    ): Int {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            return -1
+        }
+
+        val enabledSubtypeHashCodes = KeyboardSubtypeRegistry.explicitlyEnabledSubtypeHashCodes(settings)
+        manager.setExplicitlyEnabledInputMethodSubtypes(imeId, enabledSubtypeHashCodes)
+        return enabledSubtypeHashCodes.size
     }
 
     private fun imeId(): String {
