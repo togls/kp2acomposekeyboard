@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.togls.kp2acomposekeyboard.R
+import io.github.togls.kp2acomposekeyboard.data.settings.SettingsRepository
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow

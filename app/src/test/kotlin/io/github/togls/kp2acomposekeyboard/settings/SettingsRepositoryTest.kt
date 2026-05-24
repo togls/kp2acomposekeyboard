@@ -1,6 +1,6 @@
 package io.github.togls.kp2acomposekeyboard.settings
 
-import io.github.togls.kp2acomposekeyboard.feature.settings.SettingsRepository
+import io.github.togls.kp2acomposekeyboard.data.settings.SettingsRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest

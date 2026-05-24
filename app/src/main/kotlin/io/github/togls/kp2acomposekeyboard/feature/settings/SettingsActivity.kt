@@ -13,7 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.togls.kp2acomposekeyboard.R
-import io.github.togls.kp2acomposekeyboard.ime.KeyboardSubtypeSynchronizer
+import io.github.togls.kp2acomposekeyboard.platform.ime.KeyboardSubtypeSynchronizer
 import io.github.togls.kp2acomposekeyboard.ui.theme.KeyboardTheme
 import javax.inject.Inject
 

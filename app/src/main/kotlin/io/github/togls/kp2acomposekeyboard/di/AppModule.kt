@@ -7,7 +7,7 @@ import dagger.hilt.components.SingletonComponent
 import io.github.togls.kp2acomposekeyboard.domain.policy.KeyboardFieldClassifier
 import io.github.togls.kp2acomposekeyboard.domain.policy.SensitiveFieldPolicy
 import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettingsStore
-import io.github.togls.kp2acomposekeyboard.feature.settings.SettingsRepository
+import io.github.togls.kp2acomposekeyboard.data.settings.SettingsRepository
 
 @Module
 @InstallIn(SingletonComponent::class)

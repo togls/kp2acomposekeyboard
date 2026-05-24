@@ -6,10 +6,10 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.togls.kp2acomposekeyboard.R
-import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aEntryMapper
-import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aEntryResult
+import io.github.togls.kp2acomposekeyboard.data.kp2a.Kp2aEntryMapper
+import io.github.togls.kp2acomposekeyboard.data.kp2a.Kp2aEntryResult
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
-import io.github.togls.kp2acomposekeyboard.session.KeyboardSessionRepository
+import io.github.togls.kp2acomposekeyboard.data.session.KeyboardSessionRepository
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

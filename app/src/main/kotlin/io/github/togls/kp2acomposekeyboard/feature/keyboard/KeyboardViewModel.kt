@@ -6,6 +6,7 @@ import io.github.togls.kp2acomposekeyboard.domain.keyboard.EntryFieldDisplayMode
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardSubtype
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilityItemId
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlotsReducer
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.MainKeyboardLayout
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.SettingsUtilityItemId
 
@@ -13,9 +14,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettingsStore
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
-import io.github.togls.kp2acomposekeyboard.session.KeyboardSessionRepository
+import io.github.togls.kp2acomposekeyboard.data.session.KeyboardSessionRepository
 import io.github.togls.kp2acomposekeyboard.domain.session.KeyboardSessionSnapshot
-import io.github.togls.kp2acomposekeyboard.session.SessionTimeoutController
+import io.github.togls.kp2acomposekeyboard.application.session.SessionTimeoutController
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -50,7 +50,7 @@
             android:exported="true"></activity>
 
         <service
-            android:name=".ime.KeyboardImeService"
+            android:name=".platform.ime.KeyboardImeService"
             android:enabled="true"
             android:exported="true"
             android:label="@string/ime_name"
@@ -65,7 +65,7 @@
         </service>
 
         <receiver
-            android:name=".kp2a.Kp2aPluginAccessReceiver"
+            android:name=".data.kp2a.Kp2aPluginAccessReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="keepass2android.ACTION_TRIGGER_REQUEST_ACCESS" />

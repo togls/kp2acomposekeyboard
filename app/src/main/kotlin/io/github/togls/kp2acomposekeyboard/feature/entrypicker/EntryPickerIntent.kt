@@ -1,6 +1,6 @@
 package io.github.togls.kp2acomposekeyboard.feature.entrypicker
 
-import io.github.togls.kp2acomposekeyboard.kp2a.Kp2aEntryResult
+import io.github.togls.kp2acomposekeyboard.data.kp2a.Kp2aEntryResult
 
 sealed interface EntryPickerIntent {
     data object StartSelection : EntryPickerIntent
