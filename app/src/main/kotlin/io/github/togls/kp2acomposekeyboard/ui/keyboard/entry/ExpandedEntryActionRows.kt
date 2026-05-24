@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
@@ -15,6 +16,7 @@ import io.github.togls.kp2acomposekeyboard.ui.keyboard.shared.PreviousPageKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.shared.SelectEntryKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.shared.SwitchToTextInputKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.metrics.KeyboardMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.metrics.LocalKeyboardLayoutMetrics
 
 @Composable
 internal fun ExpandedEntryActionRows(
@@ -25,6 +27,8 @@ internal fun ExpandedEntryActionRows(
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val metrics = LocalKeyboardLayoutMetrics.current
+
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(KeyboardMetrics.RowSpacing),
@@ -33,6 +37,16 @@ internal fun ExpandedEntryActionRows(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
         ) {
+            SelectEntryKey(
+                onIntent = onIntent,
+                modifier = Modifier.width(metrics.sideKeyWidth),
+            )
+
+            SwitchToTextInputKey(
+                onIntent = onIntent,
+                modifier = Modifier.width(metrics.standardKeyWidth),
+            )
+
             PreviousPageKey(
                 enabled = canScrollUp,
                 onClick = onScrollUp,
@@ -47,27 +61,12 @@ internal fun ExpandedEntryActionRows(
 
             CollapseFieldsKey(
                 onIntent = onIntent,
-                modifier = Modifier.weight(1f),
-            )
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
-        ) {
-            SwitchToTextInputKey(
-                onIntent = onIntent,
-                modifier = Modifier.weight(1.8f),
-            )
-
-            SelectEntryKey(
-                onIntent = onIntent,
-                modifier = Modifier.weight(1.5f),
+                modifier = Modifier.width(metrics.standardKeyWidth),
             )
 
             DeleteKey(
-                modifier = Modifier.weight(1f),
                 onIntent = onIntent,
+                modifier = Modifier.width(metrics.sideKeyWidth),
             )
         }
     }
