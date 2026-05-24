@@ -2,14 +2,8 @@ package io.github.togls.kp2acomposekeyboard.data.kp2a
 
 import android.content.Context
 import keepass2android.pluginsdk.AccessManager
-import keepass2android.pluginsdk.Strings
 
 object Kp2aPluginAccess {
-
-    private val requiredScopes = arrayListOf(
-        Strings.SCOPE_CURRENT_ENTRY,
-        Strings.SCOPE_QUERY_CREDENTIALS,
-    )
 
     fun hasRequiredAccess(context: Context): Boolean {
         return findAccessibleHostPackage(context) != null
@@ -20,7 +14,7 @@ object Kp2aPluginAccess {
             AccessManager.tryGetAccessToken(
                 context,
                 hostPackage,
-                requiredScopes,
+                Kp2aPluginScopes.requiredScopesForAccessManager(),
             ) != null
         }
     }

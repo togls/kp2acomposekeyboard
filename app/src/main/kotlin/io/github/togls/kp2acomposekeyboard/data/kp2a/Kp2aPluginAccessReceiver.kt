@@ -2,7 +2,6 @@ package io.github.togls.kp2acomposekeyboard.data.kp2a
 
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
 import keepass2android.pluginsdk.PluginAccessBroadcastReceiver
-import keepass2android.pluginsdk.Strings
 
 class Kp2aPluginAccessReceiver : PluginAccessBroadcastReceiver() {
 
@@ -12,13 +11,10 @@ class Kp2aPluginAccessReceiver : PluginAccessBroadcastReceiver() {
             "scopeCount" to REQUIRED_SCOPES.size,
         )
 
-        return ArrayList(REQUIRED_SCOPES)
+        return Kp2aPluginScopes.requiredScopesForAccessManager()
     }
 
     companion object {
-        val REQUIRED_SCOPES = listOf(
-            Strings.SCOPE_CURRENT_ENTRY,
-            Strings.SCOPE_QUERY_CREDENTIALS,
-        )
+        val REQUIRED_SCOPES = Kp2aPluginScopes.REQUIRED_SCOPES
     }
 }
