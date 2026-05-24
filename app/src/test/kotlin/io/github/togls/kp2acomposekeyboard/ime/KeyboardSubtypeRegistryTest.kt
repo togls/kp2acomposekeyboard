@@ -2,6 +2,7 @@ package io.github.togls.kp2acomposekeyboard.ime
 
 import android.view.inputmethod.InputMethodSubtype
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardSubtype
+import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -51,6 +52,25 @@ class KeyboardSubtypeRegistryTest {
         assertEquals("layout=english_us", subtype.extraValue)
         assertTrue(subtype.isAsciiCapable)
         assertFalse(subtype.isAuxiliary)
+    }
+
+    @Test
+    fun additionalSubtypes_returnsEmptyArrayWhenEnglishDisabled() {
+        val subtypes = KeyboardSubtypeRegistry.additionalSubtypes(
+            KeyboardSettings(englishUsSubtypeEnabled = false),
+        )
+
+        assertEquals(0, subtypes.size)
+    }
+
+    @Test
+    fun additionalSubtypes_returnsEnglishSubtypeWhenEnglishEnabled() {
+        val subtypes = KeyboardSubtypeRegistry.additionalSubtypes(
+            KeyboardSettings(englishUsSubtypeEnabled = true),
+        )
+
+        assertEquals(1, subtypes.size)
+        assertEquals(KeyboardSubtype.EnglishUs, KeyboardSubtypeRegistry.fromInputMethodSubtype(subtypes.single()))
     }
 
     private fun subtypeWithExtra(extraValue: String): InputMethodSubtype {

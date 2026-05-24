@@ -3,6 +3,7 @@ package io.github.togls.kp2acomposekeyboard.ime
 import android.view.inputmethod.InputMethodSubtype
 import io.github.togls.kp2acomposekeyboard.R
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardSubtype
+import io.github.togls.kp2acomposekeyboard.feature.settings.KeyboardSettings
 
 object KeyboardSubtypeRegistry {
     const val ENTRY_SUBTYPE_ID = 1001
@@ -16,6 +17,14 @@ object KeyboardSubtypeRegistry {
             "english_us" -> KeyboardSubtype.EnglishUs
             "entry" -> KeyboardSubtype.Entry
             else -> KeyboardSubtype.Entry
+        }
+    }
+
+    fun additionalSubtypes(settings: KeyboardSettings): Array<InputMethodSubtype> {
+        return if (settings.englishUsSubtypeEnabled) {
+            arrayOf(englishUsInputMethodSubtype())
+        } else {
+            emptyArray()
         }
     }
 

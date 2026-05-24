@@ -13,12 +13,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.togls.kp2acomposekeyboard.R
+import io.github.togls.kp2acomposekeyboard.ime.KeyboardSubtypeSynchronizer
 import io.github.togls.kp2acomposekeyboard.ui.theme.KeyboardTheme
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettingsActivity : ComponentActivity() {
 
     private val viewModel: SettingsViewModel by viewModels()
+
+    @Inject
+    lateinit var subtypeSynchronizer: KeyboardSubtypeSynchronizer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +47,12 @@ class SettingsActivity : ComponentActivity() {
                                 snackbarHostState.showSnackbar(effect.message)
                             }
                         }
+                    }
+                }
+
+                LaunchedEffect(state.isLoading, state.settings.englishUsSubtypeEnabled) {
+                    if (!state.isLoading) {
+                        subtypeSynchronizer.synchronize(state.settings)
                     }
                 }
 

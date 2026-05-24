@@ -58,6 +58,9 @@ class KeyboardImeService :
     @Inject
     lateinit var settingsRepository: SettingsRepository
 
+    @Inject
+    lateinit var subtypeSynchronizer: KeyboardSubtypeSynchronizer
+
     private lateinit var viewModel: KeyboardViewModel
 
     /**
@@ -121,6 +124,7 @@ class KeyboardImeService :
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
 
         collectKeyboardEffects()
+        collectSettingsForSubtypeSync()
 
         SecureLog.d("IME created")
     }
@@ -291,6 +295,17 @@ class KeyboardImeService :
         serviceScope.launch {
             viewModel.effect.collect { effect ->
                 handleKeyboardEffect(effect)
+            }
+        }
+    }
+
+    /**
+     * Keeps dynamically registered subtypes aligned with app settings.
+     */
+    private fun collectSettingsForSubtypeSync() {
+        serviceScope.launch {
+            settingsRepository.settings.collect { settings ->
+                subtypeSynchronizer.synchronize(settings)
             }
         }
     }
