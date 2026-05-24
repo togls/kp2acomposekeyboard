@@ -11,14 +11,14 @@ import androidx.compose.ui.geometry.Rect
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionId
 
 @Stable
-internal class UtilityDragState {
+internal class QuickActionDragState {
     var draggedItemId by mutableStateOf<KeyboardQuickActionId?>(null)
         private set
-    var dragSource by mutableStateOf<UtilityDragSource?>(null)
+    var dragSource by mutableStateOf<QuickActionDragSource?>(null)
         private set
     var positionInRoot by mutableStateOf(Offset.Zero)
         private set
-    var hoveredDropTarget by mutableStateOf<UtilityDropTarget?>(null)
+    var hoveredDropTarget by mutableStateOf<QuickActionDropTarget?>(null)
         private set
     var sourceBoundsInRoot by mutableStateOf<Rect?>(null)
         private set
@@ -41,7 +41,7 @@ internal class UtilityDragState {
 
     fun startDrag(
         itemId: KeyboardQuickActionId,
-        source: UtilityDragSource,
+        source: QuickActionDragSource,
         sourceBounds: Rect,
         localPointerPosition: Offset,
     ) {
@@ -70,8 +70,8 @@ internal class UtilityDragState {
         sourceBoundsInRoot = null
     }
 
-    fun resolveDropTarget(positionInRoot: Offset): UtilityDropTarget {
-        return resolveUtilityDropTarget(
+    fun resolveDropTarget(positionInRoot: Offset): QuickActionDropTarget {
+        return resolveQuickActionDropTarget(
             positionInRoot = positionInRoot,
             centerItemBounds = centerItemBounds,
             centerContainerBounds = centerContainerBounds,
@@ -81,6 +81,6 @@ internal class UtilityDragState {
 }
 
 @Composable
-internal fun rememberUtilityDragState(): UtilityDragState {
-    return remember { UtilityDragState() }
+internal fun rememberQuickActionDragState(): QuickActionDragState {
+    return remember { QuickActionDragState() }
 }

@@ -19,12 +19,12 @@ import androidx.compose.ui.unit.dp
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.metrics.LocalKeyboardAdaptiveMetrics
 
 @Composable
-internal fun UtilityDragPreview(
-    dragState: UtilityDragState,
+internal fun QuickActionDragPreview(
+    dragState: QuickActionDragState,
     containerBoundsInRoot: Rect?,
     modifier: Modifier = Modifier,
 ) {
-    val item = dragState.draggedItemId?.toKeyboardUtilityItem() ?: return
+    val item = dragState.draggedItemId?.toKeyboardQuickAction() ?: return
     val containerBounds = containerBoundsInRoot ?: return
     val previewSize = LocalKeyboardAdaptiveMetrics.current.keyHeight * DragPreviewScale
     val previewSizePx = with(LocalDensity.current) { previewSize.toPx() }
@@ -34,7 +34,7 @@ internal fun UtilityDragPreview(
     Surface(
         modifier = modifier
             .offset {
-                resolveUtilityDragPreviewOffset(
+                resolveQuickActionDragPreviewOffset(
                     positionInRoot = dragState.positionInRoot,
                     containerBoundsInRoot = containerBounds,
                     previewSizePx = previewSizePx,

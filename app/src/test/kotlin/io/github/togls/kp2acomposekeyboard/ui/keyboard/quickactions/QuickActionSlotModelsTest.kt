@@ -5,18 +5,18 @@ import androidx.compose.ui.geometry.Rect
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class UtilitySlotModelsTest {
+class QuickActionSlotModelsTest {
 
     @Test
     fun resolveDropTarget_returnsRightWhenPointerInsideRightSlot() {
-        val target = resolveUtilityDropTarget(
+        val target = resolveQuickActionDropTarget(
             positionInRoot = Offset(310f, 20f),
             centerItemBounds = emptyList(),
             centerContainerBounds = Rect(50f, 0f, 250f, 50f),
             rightSlotBounds = Rect(300f, 0f, 350f, 50f),
         )
 
-        assertEquals(UtilityDropTarget.Right, target)
+        assertEquals(QuickActionDropTarget.Right, target)
     }
 
     @Test
@@ -27,8 +27,8 @@ class UtilitySlotModelsTest {
         )
 
         assertEquals(
-            UtilityDropTarget.Center(targetIndex = 0),
-            resolveUtilityDropTarget(
+            QuickActionDropTarget.Center(targetIndex = 0),
+            resolveQuickActionDropTarget(
                 positionInRoot = Offset(60f, 20f),
                 centerItemBounds = bounds,
                 centerContainerBounds = Rect(50f, 0f, 160f, 50f),
@@ -36,8 +36,8 @@ class UtilitySlotModelsTest {
             ),
         )
         assertEquals(
-            UtilityDropTarget.Center(targetIndex = 1),
-            resolveUtilityDropTarget(
+            QuickActionDropTarget.Center(targetIndex = 1),
+            resolveQuickActionDropTarget(
                 positionInRoot = Offset(90f, 20f),
                 centerItemBounds = bounds,
                 centerContainerBounds = Rect(50f, 0f, 160f, 50f),
@@ -45,8 +45,8 @@ class UtilitySlotModelsTest {
             ),
         )
         assertEquals(
-            UtilityDropTarget.Center(targetIndex = 2),
-            resolveUtilityDropTarget(
+            QuickActionDropTarget.Center(targetIndex = 2),
+            resolveQuickActionDropTarget(
                 positionInRoot = Offset(150f, 20f),
                 centerItemBounds = bounds,
                 centerContainerBounds = Rect(50f, 0f, 160f, 50f),
@@ -57,13 +57,13 @@ class UtilitySlotModelsTest {
 
     @Test
     fun resolveDropTarget_returnsOutsideWhenPointerMissesTargets() {
-        val target = resolveUtilityDropTarget(
+        val target = resolveQuickActionDropTarget(
             positionInRoot = Offset(10f, 200f),
             centerItemBounds = emptyList(),
             centerContainerBounds = Rect(50f, 0f, 160f, 50f),
             rightSlotBounds = Rect(300f, 0f, 350f, 50f),
         )
 
-        assertEquals(UtilityDropTarget.Outside, target)
+        assertEquals(QuickActionDropTarget.Outside, target)
     }
 }

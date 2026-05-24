@@ -15,9 +15,9 @@ import io.github.togls.kp2acomposekeyboard.ui.keyboard.metrics.KeyboardMetrics
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.metrics.LocalKeyboardAdaptiveMetrics
 
 @Composable
-internal fun UtilityPanel(
+internal fun QuickActionPanel(
     state: KeyboardUiState,
-    dragState: UtilityDragState,
+    dragState: QuickActionDragState,
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -37,23 +37,23 @@ internal fun UtilityPanel(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
         ) {
-            availableKeyboardUtilityItems()
-                // Pinned utilities are already reachable from UtilityRow; keeping
+            availableKeyboardQuickActions()
+                // Pinned quick actions are already reachable from QuickActionBar; keeping
                 // them in the panel would create two visible copies after drop.
                 .filter { item ->
-                    shouldShowPanelUtilityItem(
+                    shouldShowPanelQuickAction(
                         itemId = item.id,
                         quickActionSlots = state.quickActionSlots,
                     )
                 }
                 .forEach { item ->
-                    UtilityItemSlot(
+                    QuickActionSlot(
                         itemId = item.id,
                         onIntent = onIntent,
                         dragState = dragState,
-                        dragSource = UtilityDragSource.Panel,
+                        dragSource = QuickActionDragSource.Panel,
                         onDrop = { itemId, source, target ->
-                            dispatchUtilityDrop(
+                            dispatchQuickActionDrop(
                                 itemId = itemId,
                                 source = source,
                                 target = target,

@@ -38,22 +38,22 @@ import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionId
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.metrics.LocalKeyboardAdaptiveMetrics
 
 @Composable
-internal fun UtilityItemSlot(
+internal fun QuickActionSlot(
     itemId: KeyboardQuickActionId?,
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
     emptySlot: Boolean = false,
     iconSize: Dp = 24.dp,
-    dragState: UtilityDragState? = null,
-    dragSource: UtilityDragSource = UtilityDragSource.Pinned,
+    dragState: QuickActionDragState? = null,
+    dragSource: QuickActionDragSource = QuickActionDragSource.Pinned,
     onBoundsChanged: ((KeyboardQuickActionId, Rect) -> Unit)? = null,
     onDrop: ((
         itemId: KeyboardQuickActionId,
-        source: UtilityDragSource,
-        target: UtilityDropTarget?,
+        source: QuickActionDragSource,
+        target: QuickActionDropTarget?,
     ) -> Unit)? = null,
 ) {
-    val item = itemId?.toKeyboardUtilityItem()
+    val item = itemId?.toKeyboardQuickAction()
 
     when {
         item != null -> {
@@ -61,7 +61,7 @@ internal fun UtilityItemSlot(
             // Keep the source slot composed during drag so pointerInput can
             // finish the gesture, but hide it visually to avoid duplicate icons.
             val sourceItemAlpha = if (
-                shouldShowDraggedSourceItem(
+                shouldShowDraggedSourceAction(
                     itemId = item.id,
                     source = dragSource,
                     draggedItemId = dragState?.draggedItemId,
@@ -114,7 +114,7 @@ internal fun UtilityItemSlot(
                 }
             }
 
-            UtilityIconButton(
+            QuickActionIconButton(
                 modifier = modifier
                     .alpha(sourceItemAlpha)
                     .then(draggableModifier),
@@ -125,7 +125,7 @@ internal fun UtilityItemSlot(
         }
 
         emptySlot -> {
-            EmptyUtilitySlot(
+            EmptyQuickActionSlot(
                 modifier = modifier,
                 iconSize = iconSize,
             )
@@ -134,7 +134,7 @@ internal fun UtilityItemSlot(
 }
 
 @Composable
-internal fun UtilityIconButton(
+internal fun QuickActionIconButton(
     iconRes: Int,
     contentDescription: String,
     onClick: () -> Unit,
@@ -167,7 +167,7 @@ internal fun UtilityIconButton(
 }
 
 @Composable
-private fun EmptyUtilitySlot(
+private fun EmptyQuickActionSlot(
     modifier: Modifier = Modifier,
     iconSize: Dp = 24.dp,
 ) {
@@ -186,7 +186,7 @@ private fun EmptyUtilitySlot(
             Icon(
                 modifier = Modifier.size(iconSize),
                 painter = painterResource(id = R.drawable.ic_apps_24),
-                contentDescription = stringResource(R.string.cd_key_empty_utility_slot),
+                contentDescription = stringResource(R.string.cd_key_empty_quick_action_slot),
             )
         }
     }

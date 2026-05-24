@@ -7,34 +7,34 @@ import io.github.togls.kp2acomposekeyboard.domain.keyboard.ClearEntryQuickAction
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionId
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.SettingsQuickActionId
 
-internal data class KeyboardUtilityItem(
+internal data class KeyboardQuickAction(
     val id: KeyboardQuickActionId,
     @param:DrawableRes val iconRes: Int,
     @param:StringRes val labelRes: Int,
     @param:StringRes val contentDescriptionRes: Int,
 )
 
-internal fun availableKeyboardUtilityItems(): List<KeyboardUtilityItem> {
-    return AvailableKeyboardUtilityItems
+internal fun availableKeyboardQuickActions(): List<KeyboardQuickAction> {
+    return AvailableKeyboardQuickActions
 }
 
-internal fun KeyboardQuickActionId.toKeyboardUtilityItem(): KeyboardUtilityItem? {
-    return AvailableKeyboardUtilityItems.firstOrNull { item ->
-        item.id == this
+internal fun KeyboardQuickActionId.toKeyboardQuickAction(): KeyboardQuickAction? {
+    return AvailableKeyboardQuickActions.firstOrNull { action ->
+        action.id == this
     }
 }
 
-private val AvailableKeyboardUtilityItems = listOf(
-    KeyboardUtilityItem(
+private val AvailableKeyboardQuickActions = listOf(
+    KeyboardQuickAction(
         id = SettingsQuickActionId,
         iconRes = R.drawable.ic_settings_24,
-        labelRes = R.string.keyboard_utility_settings,
+        labelRes = R.string.keyboard_quick_action_settings,
         contentDescriptionRes = R.string.cd_key_open_settings,
     ),
-    KeyboardUtilityItem(
+    KeyboardQuickAction(
         id = ClearEntryQuickActionId,
         iconRes = R.drawable.ic_delete_sweep_24,
-        labelRes = R.string.keyboard_utility_clear_entry,
+        labelRes = R.string.keyboard_quick_action_clear_entry,
         contentDescriptionRes = R.string.cd_key_clear_entry,
     ),
 )

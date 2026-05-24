@@ -28,16 +28,16 @@ import io.github.togls.kp2acomposekeyboard.ui.keyboard.metrics.KeyboardMetrics
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.metrics.LocalKeyboardAdaptiveMetrics
 
 @Composable
-internal fun UtilityRow(
+internal fun QuickActionBar(
     state: KeyboardUiState,
-    dragState: UtilityDragState,
+    dragState: QuickActionDragState,
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val adaptiveMetrics = LocalKeyboardAdaptiveMetrics.current
     val sideSlotSize = adaptiveMetrics.keyHeight * SideSlotScale
     val centerSlotWidth = adaptiveMetrics.keyHeight * CenterSlotWidthScale
-    val showRightSlot = shouldShowRightUtilitySlot(
+    val showRightSlot = shouldShowRightQuickActionSlot(
         rightItemId = state.quickActionSlots.rightItemId,
         isQuickActionPanelExpanded = state.isQuickActionPanelExpanded,
     )
@@ -62,7 +62,7 @@ internal fun UtilityRow(
         horizontalArrangement = Arrangement.spacedBy(KeyboardMetrics.KeySpacing),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        UtilityIconButton(
+        QuickActionIconButton(
             modifier = Modifier
                 .width(sideSlotSize)
                 .height(sideSlotSize),
@@ -73,9 +73,9 @@ internal fun UtilityRow(
             },
             contentDescription = stringResource(
                 if (state.isQuickActionPanelExpanded) {
-                    R.string.cd_key_close_utility_panel
+                    R.string.cd_key_close_quick_action_panel
                 } else {
-                    R.string.cd_key_toggle_utility_panel
+                    R.string.cd_key_toggle_quick_action_panel
                 },
             ),
             onClick = { onIntent(KeyboardIntent.ToggleQuickActionPanel) },
@@ -94,7 +94,7 @@ internal fun UtilityRow(
                     .height(adaptiveMetrics.keyHeight),
             )
         } else {
-            UtilityCenterSlots(
+            QuickActionCenterSlots(
                 state = state,
                 dragState = dragState,
                 onIntent = onIntent,
@@ -111,14 +111,14 @@ internal fun UtilityRow(
         }
 
         if (showRightSlot) {
-            UtilityItemSlot(
+            QuickActionSlot(
                 itemId = state.quickActionSlots.rightItemId,
                 onIntent = onIntent,
                 emptySlot = true,
                 dragState = dragState,
-                dragSource = UtilityDragSource.Pinned,
+                dragSource = QuickActionDragSource.Pinned,
                 onDrop = { itemId, source, target ->
-                    dispatchUtilityDrop(
+                    dispatchQuickActionDrop(
                         itemId = itemId,
                         source = source,
                         target = target,
@@ -137,9 +137,9 @@ internal fun UtilityRow(
 }
 
 @Composable
-private fun UtilityCenterSlots(
+private fun QuickActionCenterSlots(
     state: KeyboardUiState,
-    dragState: UtilityDragState,
+    dragState: QuickActionDragState,
     onIntent: (KeyboardIntent) -> Unit,
     onItemBoundsChanged: (KeyboardQuickActionId, Rect) -> Unit,
     itemWidth: Dp,
@@ -161,14 +161,14 @@ private fun UtilityCenterSlots(
             )
         } else {
             centerItems.forEach { itemId ->
-                UtilityItemSlot(
+                QuickActionSlot(
                     itemId = itemId,
                     onIntent = onIntent,
                     dragState = dragState,
-                    dragSource = UtilityDragSource.Pinned,
+                    dragSource = QuickActionDragSource.Pinned,
                     onBoundsChanged = onItemBoundsChanged,
                     onDrop = { droppedItemId, source, target ->
-                        dispatchUtilityDrop(
+                        dispatchQuickActionDrop(
                             itemId = droppedItemId,
                             source = source,
                             target = target,

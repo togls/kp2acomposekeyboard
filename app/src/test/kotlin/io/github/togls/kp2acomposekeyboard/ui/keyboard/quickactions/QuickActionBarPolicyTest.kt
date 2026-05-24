@@ -10,12 +10,12 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class UtilityRowPolicyTest {
+class QuickActionBarPolicyTest {
 
     @Test
     fun shouldShowRightSlot_hidesEmptySlotWhenPanelIsClosed() {
         assertFalse(
-            shouldShowRightUtilitySlot(
+            shouldShowRightQuickActionSlot(
                 rightItemId = null,
                 isQuickActionPanelExpanded = false,
             ),
@@ -25,7 +25,7 @@ class UtilityRowPolicyTest {
     @Test
     fun shouldShowRightSlot_showsEmptySlotWhenPanelIsExpanded() {
         assertTrue(
-            shouldShowRightUtilitySlot(
+            shouldShowRightQuickActionSlot(
                 rightItemId = null,
                 isQuickActionPanelExpanded = true,
             ),
@@ -35,7 +35,7 @@ class UtilityRowPolicyTest {
     @Test
     fun shouldShowRightSlot_showsPinnedRightItemWhenPanelIsClosed() {
         assertTrue(
-            shouldShowRightUtilitySlot(
+            shouldShowRightQuickActionSlot(
                 rightItemId = SettingsQuickActionId,
                 isQuickActionPanelExpanded = false,
             ),
@@ -44,7 +44,7 @@ class UtilityRowPolicyTest {
 
     @Test
     fun resolveDragPreviewOffset_centersPreviewOnPointerInsideContainer() {
-        val offset = resolveUtilityDragPreviewOffset(
+        val offset = resolveQuickActionDragPreviewOffset(
             positionInRoot = Offset(150f, 80f),
             containerBoundsInRoot = Rect(100f, 50f, 400f, 250f),
             previewSizePx = 40f,
@@ -54,9 +54,9 @@ class UtilityRowPolicyTest {
     }
 
     @Test
-    fun shouldShowPanelUtilityItem_hidesPinnedCenterItem() {
+    fun shouldShowPanelQuickAction_hidesPinnedCenterItem() {
         assertFalse(
-            shouldShowPanelUtilityItem(
+            shouldShowPanelQuickAction(
                 itemId = SettingsQuickActionId,
                 quickActionSlots = KeyboardQuickActionSlots(
                     centerItemIds = listOf(SettingsQuickActionId),
@@ -66,9 +66,9 @@ class UtilityRowPolicyTest {
     }
 
     @Test
-    fun shouldShowPanelUtilityItem_hidesPinnedRightItem() {
+    fun shouldShowPanelQuickAction_hidesPinnedRightItem() {
         assertFalse(
-            shouldShowPanelUtilityItem(
+            shouldShowPanelQuickAction(
                 itemId = SettingsQuickActionId,
                 quickActionSlots = KeyboardQuickActionSlots(
                     centerItemIds = emptyList(),
@@ -81,19 +81,19 @@ class UtilityRowPolicyTest {
     @Test
     fun shouldShowDraggedSourceItem_hidesOnlyMatchingDraggedSource() {
         assertFalse(
-            shouldShowDraggedSourceItem(
+            shouldShowDraggedSourceAction(
                 itemId = SettingsQuickActionId,
-                source = UtilityDragSource.Panel,
+                source = QuickActionDragSource.Panel,
                 draggedItemId = SettingsQuickActionId,
-                dragSource = UtilityDragSource.Panel,
+                dragSource = QuickActionDragSource.Panel,
             ),
         )
         assertTrue(
-            shouldShowDraggedSourceItem(
+            shouldShowDraggedSourceAction(
                 itemId = SettingsQuickActionId,
-                source = UtilityDragSource.Pinned,
+                source = QuickActionDragSource.Pinned,
                 draggedItemId = SettingsQuickActionId,
-                dragSource = UtilityDragSource.Panel,
+                dragSource = QuickActionDragSource.Panel,
             ),
         )
     }

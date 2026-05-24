@@ -17,10 +17,10 @@ import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.MainKeyboardLayout
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.entry.EntryKeyboardLayout
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.quickactions.UtilityDragPreview
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.quickactions.UtilityPanel
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.quickactions.UtilityRow
-import io.github.togls.kp2acomposekeyboard.ui.keyboard.quickactions.rememberUtilityDragState
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.quickactions.QuickActionDragPreview
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.quickactions.QuickActionPanel
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.quickactions.QuickActionBar
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.quickactions.rememberQuickActionDragState
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.textinput.TextInputKeyboardLayout
 
 /**
@@ -43,21 +43,21 @@ internal fun KeyboardContentArea(
                 contentBoundsInRoot = coordinates.boundsInRoot()
             },
     ) {
-        val utilityDragState = rememberUtilityDragState()
+        val quickActionDragState = rememberQuickActionDragState()
 
         Column(
             modifier = Modifier.fillMaxWidth(),
         ) {
-            UtilityRow(
+            QuickActionBar(
                 state = state,
-                dragState = utilityDragState,
+                dragState = quickActionDragState,
                 onIntent = onIntent,
             )
 
             if (state.isQuickActionPanelExpanded) {
-                UtilityPanel(
+                QuickActionPanel(
                     state = state,
-                    dragState = utilityDragState,
+                    dragState = quickActionDragState,
                     onIntent = onIntent,
                     modifier = Modifier.weight(1f),
                 )
@@ -82,8 +82,8 @@ internal fun KeyboardContentArea(
             }
         }
 
-        UtilityDragPreview(
-            dragState = utilityDragState,
+        QuickActionDragPreview(
+            dragState = quickActionDragState,
             containerBoundsInRoot = contentBoundsInRoot,
         )
     }

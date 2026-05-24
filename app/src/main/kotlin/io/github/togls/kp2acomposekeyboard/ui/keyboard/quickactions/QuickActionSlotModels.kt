@@ -5,57 +5,57 @@ import androidx.compose.ui.geometry.Rect
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionId
 
-internal sealed interface UtilityDragSource {
-    data object Panel : UtilityDragSource
-    data object Pinned : UtilityDragSource
+internal sealed interface QuickActionDragSource {
+    data object Panel : QuickActionDragSource
+    data object Pinned : QuickActionDragSource
 }
 
-internal sealed interface UtilityDropTarget {
+internal sealed interface QuickActionDropTarget {
     data class Center(
         val targetIndex: Int,
-    ) : UtilityDropTarget
+    ) : QuickActionDropTarget
 
-    data object Right : UtilityDropTarget
-    data object Outside : UtilityDropTarget
+    data object Right : QuickActionDropTarget
+    data object Outside : QuickActionDropTarget
 }
 
-internal fun resolveUtilityDropTarget(
+internal fun resolveQuickActionDropTarget(
     positionInRoot: Offset,
     centerItemBounds: List<Rect>,
     centerContainerBounds: Rect?,
     rightSlotBounds: Rect?,
-): UtilityDropTarget {
+): QuickActionDropTarget {
     if (rightSlotBounds?.contains(positionInRoot) == true) {
-        return UtilityDropTarget.Right
+        return QuickActionDropTarget.Right
     }
 
     if (centerContainerBounds?.contains(positionInRoot) != true) {
-        return UtilityDropTarget.Outside
+        return QuickActionDropTarget.Outside
     }
 
     if (centerItemBounds.isEmpty()) {
-        return UtilityDropTarget.Center(targetIndex = 0)
+        return QuickActionDropTarget.Center(targetIndex = 0)
     }
 
     // Use each item's midpoint instead of container width ratios so insertion
     // stays accurate when slots have gaps or different widths.
     centerItemBounds.forEachIndexed { index, bounds ->
         if (positionInRoot.x < bounds.center.x) {
-            return UtilityDropTarget.Center(targetIndex = index)
+            return QuickActionDropTarget.Center(targetIndex = index)
         }
     }
 
-    return UtilityDropTarget.Center(targetIndex = centerItemBounds.size)
+    return QuickActionDropTarget.Center(targetIndex = centerItemBounds.size)
 }
 
-internal fun dispatchUtilityDrop(
+internal fun dispatchQuickActionDrop(
     itemId: KeyboardQuickActionId,
-    source: UtilityDragSource,
-    target: UtilityDropTarget?,
+    source: QuickActionDragSource,
+    target: QuickActionDropTarget?,
     onIntent: (KeyboardIntent) -> Unit,
 ) {
     when (target) {
-        is UtilityDropTarget.Center -> {
+        is QuickActionDropTarget.Center -> {
             onIntent(
                 KeyboardIntent.MoveQuickActionToCenter(
                     itemId = itemId,
@@ -64,14 +64,14 @@ internal fun dispatchUtilityDrop(
             )
         }
 
-        UtilityDropTarget.Right -> {
+        QuickActionDropTarget.Right -> {
             onIntent(KeyboardIntent.MoveQuickActionToRight(itemId))
         }
 
-        UtilityDropTarget.Outside -> {
-            // Only pinned utilities can be removed by dropping outside; panel
+        QuickActionDropTarget.Outside -> {
+            // Only pinned quick actions can be removed by dropping outside; panel
             // items are not persisted until the final drop target is valid.
-            if (source == UtilityDragSource.Pinned) {
+            if (source == QuickActionDragSource.Pinned) {
                 onIntent(KeyboardIntent.RemoveQuickAction(itemId))
             }
         }

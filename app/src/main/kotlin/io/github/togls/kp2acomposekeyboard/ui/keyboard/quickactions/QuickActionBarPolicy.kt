@@ -7,14 +7,14 @@ import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionId
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionSlots
 import kotlin.math.roundToInt
 
-internal fun shouldShowRightUtilitySlot(
+internal fun shouldShowRightQuickActionSlot(
     rightItemId: KeyboardQuickActionId?,
     isQuickActionPanelExpanded: Boolean,
 ): Boolean {
     return rightItemId != null || isQuickActionPanelExpanded
 }
 
-internal fun resolveUtilityDragPreviewOffset(
+internal fun resolveQuickActionDragPreviewOffset(
     positionInRoot: Offset,
     containerBoundsInRoot: Rect,
     previewSizePx: Float,
@@ -28,7 +28,7 @@ internal fun resolveUtilityDragPreviewOffset(
     )
 }
 
-internal fun shouldShowPanelUtilityItem(
+internal fun shouldShowPanelQuickAction(
     itemId: KeyboardQuickActionId,
     quickActionSlots: KeyboardQuickActionSlots,
 ): Boolean {
@@ -38,13 +38,13 @@ internal fun shouldShowPanelUtilityItem(
             itemId != quickActionSlots.rightItemId
 }
 
-internal fun shouldShowDraggedSourceItem(
+internal fun shouldShowDraggedSourceAction(
     itemId: KeyboardQuickActionId,
-    source: UtilityDragSource,
+    source: QuickActionDragSource,
     draggedItemId: KeyboardQuickActionId?,
-    dragSource: UtilityDragSource?,
+    dragSource: QuickActionDragSource?,
 ): Boolean {
     // Match both item and source so dragging from panel does not hide the same
-    // utility that is already pinned in the row during reorder/replace flows.
+    // quick action that is already pinned in the row during reorder/replace flows.
     return itemId != draggedItemId || source != dragSource
 }
