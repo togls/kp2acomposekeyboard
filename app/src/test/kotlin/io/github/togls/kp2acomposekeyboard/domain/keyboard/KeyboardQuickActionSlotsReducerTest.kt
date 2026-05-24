@@ -4,53 +4,53 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 
-class KeyboardUtilitySlotsReducerTest {
+class KeyboardQuickActionSlotsReducerTest {
 
     @Test
     fun defaultSlots_pinSettingsInCenterAndLeaveRightEmpty() {
-        val slots = KeyboardUtilitySlots()
+        val slots = KeyboardQuickActionSlots()
 
-        assertEquals(listOf(SettingsUtilityItemId), slots.centerItemIds)
+        assertEquals(listOf(SettingsQuickActionId), slots.centerItemIds)
         assertNull(slots.rightItemId)
     }
 
     @Test
     fun moveToRight_removesItemFromCenter() {
-        val slots = KeyboardUtilitySlotsReducer()
-            .moveToRight(KeyboardUtilitySlots(), SettingsUtilityItemId)
+        val slots = KeyboardQuickActionSlotsReducer()
+            .moveToRight(KeyboardQuickActionSlots(), SettingsQuickActionId)
 
-        assertEquals(emptyList<KeyboardUtilityItemId>(), slots.centerItemIds)
-        assertEquals(SettingsUtilityItemId, slots.rightItemId)
+        assertEquals(emptyList<KeyboardQuickActionId>(), slots.centerItemIds)
+        assertEquals(SettingsQuickActionId, slots.rightItemId)
     }
 
     @Test
     fun moveToCenter_removesItemFromRightAndInsertsAtIndex() {
-        val reducer = KeyboardUtilitySlotsReducer()
+        val reducer = KeyboardQuickActionSlotsReducer()
 
         val slots = reducer.moveToCenter(
-            slots = KeyboardUtilitySlots(
+            slots = KeyboardQuickActionSlots(
                 centerItemIds = emptyList(),
-                rightItemId = SettingsUtilityItemId,
+                rightItemId = SettingsQuickActionId,
             ),
-            itemId = SettingsUtilityItemId,
+            itemId = SettingsQuickActionId,
             targetIndex = 0,
         )
 
-        assertEquals(listOf(SettingsUtilityItemId), slots.centerItemIds)
+        assertEquals(listOf(SettingsQuickActionId), slots.centerItemIds)
         assertNull(slots.rightItemId)
     }
 
     @Test
     fun reducerForTest_reordersExistingCenterItem() {
-        val first = SettingsUtilityItemId
-        val second = FakeUtilityItemId("second")
-        val third = FakeUtilityItemId("third")
-        val reducer = KeyboardUtilitySlotsReducer(
+        val first = SettingsQuickActionId
+        val second = FakeQuickActionId("second")
+        val third = FakeQuickActionId("third")
+        val reducer = KeyboardQuickActionSlotsReducer(
             allowedItemIds = listOf(first, second, third),
         )
 
         val slots = reducer.moveToCenter(
-            slots = KeyboardUtilitySlots(centerItemIds = listOf(first, second, third)),
+            slots = KeyboardQuickActionSlots(centerItemIds = listOf(first, second, third)),
             itemId = first,
             targetIndex = 2,
         )
@@ -60,9 +60,9 @@ class KeyboardUtilitySlotsReducerTest {
 
     @Test
     fun reducerForTest_rejectsSixthCenterItem() {
-        val items = (1..6).map { index -> FakeUtilityItemId("item-$index") }
-        val reducer = KeyboardUtilitySlotsReducer(allowedItemIds = items)
-        val fullSlots = KeyboardUtilitySlots(centerItemIds = items.take(5))
+        val items = (1..6).map { index -> FakeQuickActionId("item-$index") }
+        val reducer = KeyboardQuickActionSlotsReducer(allowedItemIds = items)
+        val fullSlots = KeyboardQuickActionSlots(centerItemIds = items.take(5))
 
         val slots = reducer.moveToCenter(
             slots = fullSlots,
@@ -75,15 +75,15 @@ class KeyboardUtilitySlotsReducerTest {
 
     @Test
     fun reducerForTest_moveToRightReplacesExistingRightItemWithoutIncreasingPinnedCount() {
-        val centerItems = (1..4).map { index -> FakeUtilityItemId("center-$index") }
-        val oldRight = FakeUtilityItemId("old-right")
-        val newRight = FakeUtilityItemId("new-right")
-        val reducer = KeyboardUtilitySlotsReducer(
+        val centerItems = (1..4).map { index -> FakeQuickActionId("center-$index") }
+        val oldRight = FakeQuickActionId("old-right")
+        val newRight = FakeQuickActionId("new-right")
+        val reducer = KeyboardQuickActionSlotsReducer(
             allowedItemIds = centerItems + oldRight + newRight,
         )
 
         val slots = reducer.moveToRight(
-            slots = KeyboardUtilitySlots(
+            slots = KeyboardQuickActionSlots(
                 centerItemIds = centerItems,
                 rightItemId = oldRight,
             ),
@@ -97,11 +97,11 @@ class KeyboardUtilitySlotsReducerTest {
 
     @Test
     fun reducerForTest_sanitizedRemovesDuplicatesAndUnknownIds() {
-        val known = SettingsUtilityItemId
-        val unknown = FakeUtilityItemId("unknown")
+        val known = SettingsQuickActionId
+        val unknown = FakeQuickActionId("unknown")
 
-        val slots = KeyboardUtilitySlotsReducer().sanitize(
-            KeyboardUtilitySlots(
+        val slots = KeyboardQuickActionSlotsReducer().sanitize(
+            KeyboardQuickActionSlots(
                 centerItemIds = listOf(known, known, unknown),
                 rightItemId = known,
             ),
@@ -111,7 +111,7 @@ class KeyboardUtilitySlotsReducerTest {
         assertNull(slots.rightItemId)
     }
 
-    private data class FakeUtilityItemId(
+    private data class FakeQuickActionId(
         override val storageValue: String,
-    ) : KeyboardUtilityItemId
+    ) : KeyboardQuickActionId
 }

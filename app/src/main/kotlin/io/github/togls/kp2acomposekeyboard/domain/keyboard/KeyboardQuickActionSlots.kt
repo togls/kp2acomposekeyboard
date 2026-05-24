@@ -1,8 +1,8 @@
 package io.github.togls.kp2acomposekeyboard.domain.keyboard
 
-data class KeyboardUtilitySlots(
-    val centerItemIds: List<KeyboardUtilityItemId> = listOf(SettingsUtilityItemId),
-    val rightItemId: KeyboardUtilityItemId? = null,
+data class KeyboardQuickActionSlots(
+    val centerItemIds: List<KeyboardQuickActionId> = listOf(SettingsQuickActionId),
+    val rightItemId: KeyboardQuickActionId? = null,
 ) {
     val pinnedCount: Int
         get() = centerItemIds.size + if (rightItemId == null) 0 else 1

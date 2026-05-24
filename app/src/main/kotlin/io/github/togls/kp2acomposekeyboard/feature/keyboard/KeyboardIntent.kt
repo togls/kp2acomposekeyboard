@@ -1,22 +1,22 @@
 package io.github.togls.kp2acomposekeyboard.feature.keyboard
 
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardSubtype
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilityItemId
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionId
 
 sealed interface KeyboardIntent {
     data object SelectEntry : KeyboardIntent
     data object OpenSettings : KeyboardIntent
     data object ClearEntry : KeyboardIntent
-    data object ToggleUtilityPanel : KeyboardIntent
-    data object CloseUtilityPanel : KeyboardIntent
-    data class ClickUtilityItem(val itemId: KeyboardUtilityItemId) : KeyboardIntent
-    data class MoveUtilityItemToCenter(
-        val itemId: KeyboardUtilityItemId,
+    data object ToggleQuickActionPanel : KeyboardIntent
+    data object CloseQuickActionPanel : KeyboardIntent
+    data class ClickQuickAction(val itemId: KeyboardQuickActionId) : KeyboardIntent
+    data class MoveQuickActionToCenter(
+        val itemId: KeyboardQuickActionId,
         val targetIndex: Int,
     ) : KeyboardIntent
 
-    data class MoveUtilityItemToRight(val itemId: KeyboardUtilityItemId) : KeyboardIntent
-    data class RemoveUtilityItem(val itemId: KeyboardUtilityItemId) : KeyboardIntent
+    data class MoveQuickActionToRight(val itemId: KeyboardQuickActionId) : KeyboardIntent
+    data class RemoveQuickAction(val itemId: KeyboardQuickActionId) : KeyboardIntent
 
     data object SwitchToDefaultLayout : KeyboardIntent
     data object SwitchToEntryLayout : KeyboardIntent

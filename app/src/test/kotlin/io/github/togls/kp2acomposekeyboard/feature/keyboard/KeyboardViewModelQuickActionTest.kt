@@ -4,8 +4,8 @@ import io.github.togls.kp2acomposekeyboard.application.keyboard.ClearKeyboardSes
 import io.github.togls.kp2acomposekeyboard.application.keyboard.CommitKeyboardFieldUseCase
 import io.github.togls.kp2acomposekeyboard.application.keyboard.ObserveKeyboardSessionSnapshotUseCase
 import io.github.togls.kp2acomposekeyboard.application.session.SessionTimeoutController
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.SettingsUtilityItemId
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionSlots
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.SettingsQuickActionId
 
 import io.github.togls.kp2acomposekeyboard.application.settings.KeyboardSettingsStore
 import io.github.togls.kp2acomposekeyboard.data.session.KeyboardSessionRepository
@@ -33,7 +33,7 @@ import org.robolectric.annotation.Config
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35])
-class KeyboardViewModelUtilityTest {
+class KeyboardViewModelQuickActionTest {
 
     private val dispatcher = StandardTestDispatcher()
 
@@ -48,24 +48,24 @@ class KeyboardViewModelUtilityTest {
     }
 
     @Test
-    fun toggleUtilityPanel_togglesExpandedState() = runTest(dispatcher) {
+    fun toggleQuickActionPanel_togglesExpandedState() = runTest(dispatcher) {
         val viewModel = createViewModel()
 
-        viewModel.onIntent(KeyboardIntent.ToggleUtilityPanel)
+        viewModel.onIntent(KeyboardIntent.ToggleQuickActionPanel)
         advanceUntilIdle()
 
-        assertTrue(viewModel.uiState.value.isUtilityPanelExpanded)
+        assertTrue(viewModel.uiState.value.isQuickActionPanelExpanded)
     }
 
     @Test
-    fun closeUtilityPanel_setsExpandedStateFalse() = runTest(dispatcher) {
+    fun closeQuickActionPanel_setsExpandedStateFalse() = runTest(dispatcher) {
         val viewModel = createViewModel()
 
-        viewModel.onIntent(KeyboardIntent.ToggleUtilityPanel)
-        viewModel.onIntent(KeyboardIntent.CloseUtilityPanel)
+        viewModel.onIntent(KeyboardIntent.ToggleQuickActionPanel)
+        viewModel.onIntent(KeyboardIntent.CloseQuickActionPanel)
         advanceUntilIdle()
 
-        assertFalse(viewModel.uiState.value.isUtilityPanelExpanded)
+        assertFalse(viewModel.uiState.value.isQuickActionPanelExpanded)
     }
 
     @Test
@@ -77,7 +77,7 @@ class KeyboardViewModelUtilityTest {
         }
         runCurrent()
 
-        viewModel.onIntent(KeyboardIntent.ClickUtilityItem(SettingsUtilityItemId))
+        viewModel.onIntent(KeyboardIntent.ClickQuickAction(SettingsQuickActionId))
         advanceUntilIdle()
 
         assertEquals(listOf(KeyboardEffect.LaunchSettings), effects)
@@ -85,56 +85,56 @@ class KeyboardViewModelUtilityTest {
     }
 
     @Test
-    fun moveUtilityItemToRight_updatesSettingsStore() = runTest(dispatcher) {
+    fun moveQuickActionToRight_updatesSettingsStore() = runTest(dispatcher) {
         val settingsStore = FakeKeyboardSettingsStore()
         val viewModel = createViewModel(settingsStore)
 
-        viewModel.onIntent(KeyboardIntent.MoveUtilityItemToRight(SettingsUtilityItemId))
+        viewModel.onIntent(KeyboardIntent.MoveQuickActionToRight(SettingsQuickActionId))
         advanceUntilIdle()
 
         assertEquals(
-            KeyboardUtilitySlots(
+            KeyboardQuickActionSlots(
                 centerItemIds = emptyList(),
-                rightItemId = SettingsUtilityItemId,
+                rightItemId = SettingsQuickActionId,
             ),
             settingsStore.savedSlots,
         )
     }
 
     @Test
-    fun removeUtilityItem_updatesSettingsStore() = runTest(dispatcher) {
+    fun removeQuickAction_updatesSettingsStore() = runTest(dispatcher) {
         val settingsStore = FakeKeyboardSettingsStore()
         settingsStore.settingsFlow.value = KeyboardSettings(
-            utilitySlots = KeyboardUtilitySlots(rightItemId = SettingsUtilityItemId),
+            quickActionSlots = KeyboardQuickActionSlots(rightItemId = SettingsQuickActionId),
         )
         val viewModel = createViewModel(settingsStore)
         advanceUntilIdle()
 
-        viewModel.onIntent(KeyboardIntent.RemoveUtilityItem(SettingsUtilityItemId))
+        viewModel.onIntent(KeyboardIntent.RemoveQuickAction(SettingsQuickActionId))
         advanceUntilIdle()
 
-        assertEquals(KeyboardUtilitySlots(centerItemIds = emptyList()), settingsStore.savedSlots)
+        assertEquals(KeyboardQuickActionSlots(centerItemIds = emptyList()), settingsStore.savedSlots)
     }
 
     @Test
-    fun settingsFlow_updatesUiStateUtilitySlots() = runTest(dispatcher) {
+    fun settingsFlow_updatesUiStateQuickActionSlots() = runTest(dispatcher) {
         val settingsStore = FakeKeyboardSettingsStore()
         val viewModel = createViewModel(settingsStore)
 
         settingsStore.settingsFlow.value = KeyboardSettings(
-            utilitySlots = KeyboardUtilitySlots(
+            quickActionSlots = KeyboardQuickActionSlots(
                 centerItemIds = emptyList(),
-                rightItemId = SettingsUtilityItemId,
+                rightItemId = SettingsQuickActionId,
             ),
         )
         advanceUntilIdle()
 
         assertEquals(
-            KeyboardUtilitySlots(
+            KeyboardQuickActionSlots(
                 centerItemIds = emptyList(),
-                rightItemId = SettingsUtilityItemId,
+                rightItemId = SettingsQuickActionId,
             ),
-            viewModel.uiState.value.utilitySlots,
+            viewModel.uiState.value.quickActionSlots,
         )
     }
 
@@ -153,13 +153,13 @@ class KeyboardViewModelUtilityTest {
 
     private class FakeKeyboardSettingsStore : KeyboardSettingsStore {
         val settingsFlow = MutableStateFlow(KeyboardSettings())
-        var savedSlots: KeyboardUtilitySlots? = null
+        var savedSlots: KeyboardQuickActionSlots? = null
 
         override val settings = settingsFlow
 
-        override suspend fun updateUtilitySlots(slots: KeyboardUtilitySlots) {
+        override suspend fun updateQuickActionSlots(slots: KeyboardQuickActionSlots) {
             savedSlots = slots
-            settingsFlow.value = settingsFlow.value.copy(utilitySlots = slots)
+            settingsFlow.value = settingsFlow.value.copy(quickActionSlots = slots)
         }
     }
 }

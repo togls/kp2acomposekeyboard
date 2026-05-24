@@ -3,7 +3,7 @@ package io.github.togls.kp2acomposekeyboard.feature.keyboard
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.TextInputMode
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.EntryFieldDisplayMode
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardSubtype
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionSlots
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.MainKeyboardLayout
 
 import io.github.togls.kp2acomposekeyboard.domain.field.KeyboardFieldSummary
@@ -42,8 +42,8 @@ data class KeyboardUiState(
     val extraFieldPageIndex: Int = 0,
     val extraFieldPageSize: Int = DEFAULT_EXTRA_FIELD_PAGE_SIZE,
     val isUppercase: Boolean = false,
-    val utilitySlots: KeyboardUtilitySlots = KeyboardUtilitySlots(),
-    val isUtilityPanelExpanded: Boolean = false,
+    val quickActionSlots: KeyboardQuickActionSlots = KeyboardQuickActionSlots(),
+    val isQuickActionPanelExpanded: Boolean = false,
 ) {
     companion object {
         /**

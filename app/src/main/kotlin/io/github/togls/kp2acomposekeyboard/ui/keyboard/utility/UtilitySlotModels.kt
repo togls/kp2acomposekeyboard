@@ -3,7 +3,7 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard.utility
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilityItemId
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionId
 
 internal sealed interface UtilityDragSource {
     data object Panel : UtilityDragSource
@@ -49,7 +49,7 @@ internal fun resolveUtilityDropTarget(
 }
 
 internal fun dispatchUtilityDrop(
-    itemId: KeyboardUtilityItemId,
+    itemId: KeyboardQuickActionId,
     source: UtilityDragSource,
     target: UtilityDropTarget?,
     onIntent: (KeyboardIntent) -> Unit,
@@ -57,7 +57,7 @@ internal fun dispatchUtilityDrop(
     when (target) {
         is UtilityDropTarget.Center -> {
             onIntent(
-                KeyboardIntent.MoveUtilityItemToCenter(
+                KeyboardIntent.MoveQuickActionToCenter(
                     itemId = itemId,
                     targetIndex = target.targetIndex,
                 ),
@@ -65,14 +65,14 @@ internal fun dispatchUtilityDrop(
         }
 
         UtilityDropTarget.Right -> {
-            onIntent(KeyboardIntent.MoveUtilityItemToRight(itemId))
+            onIntent(KeyboardIntent.MoveQuickActionToRight(itemId))
         }
 
         UtilityDropTarget.Outside -> {
             // Only pinned utilities can be removed by dropping outside; panel
             // items are not persisted until the final drop target is valid.
             if (source == UtilityDragSource.Pinned) {
-                onIntent(KeyboardIntent.RemoveUtilityItem(itemId))
+                onIntent(KeyboardIntent.RemoveQuickAction(itemId))
             }
         }
 

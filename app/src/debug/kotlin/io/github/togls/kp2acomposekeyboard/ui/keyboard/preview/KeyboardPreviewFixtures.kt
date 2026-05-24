@@ -6,9 +6,9 @@ import io.github.togls.kp2acomposekeyboard.domain.field.KeyboardFieldSummary
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.TextInputMode
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.EntryFieldDisplayMode
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionSlots
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.MainKeyboardLayout
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.SettingsUtilityItemId
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.SettingsQuickActionId
 import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardHeightMode
 import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardSettings
 import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardThemeMode
@@ -80,7 +80,7 @@ internal fun previewUtilityPanelState(): KeyboardUiState {
     return previewDefaultKeyboardState().copy(
         hasActiveSession = false,
         currentEntryName = null,
-        isUtilityPanelExpanded = true,
+        isQuickActionPanelExpanded = true,
     )
 }
 
@@ -88,9 +88,9 @@ internal fun previewRightUtilitySlotState(): KeyboardUiState {
     return previewDefaultKeyboardState().copy(
         hasActiveSession = false,
         currentEntryName = null,
-        utilitySlots = KeyboardUtilitySlots(
+        quickActionSlots = KeyboardQuickActionSlots(
             centerItemIds = emptyList(),
-            rightItemId = SettingsUtilityItemId,
+            rightItemId = SettingsQuickActionId,
         ),
     )
 }

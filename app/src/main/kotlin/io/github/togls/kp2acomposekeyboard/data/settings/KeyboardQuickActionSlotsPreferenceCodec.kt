@@ -1,27 +1,27 @@
 package io.github.togls.kp2acomposekeyboard.data.settings
 
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilityItemId
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlotsReducer
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionId
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionSlots
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionSlotsReducer
 
-object KeyboardUtilitySlotsPreferenceCodec {
+object KeyboardQuickActionSlotsPreferenceCodec {
 
-    private val reducer = KeyboardUtilitySlotsReducer()
+    private val reducer = KeyboardQuickActionSlotsReducer()
 
-    fun encode(slots: KeyboardUtilitySlots): String {
+    fun encode(slots: KeyboardQuickActionSlots): String {
         val sanitizedSlots = reducer.sanitize(slots)
         val centerValue = sanitizedSlots.centerItemIds.joinToString(separator = ",") { itemId ->
             itemId.storageValue
         }
         val rightValue = sanitizedSlots.rightItemId?.storageValue.orEmpty()
 
-        // Keep the value compact and non-sensitive: only utility IDs are stored.
+        // Keep the value compact and non-sensitive: only quick-action IDs are stored.
         return "center=$centerValue;right=$rightValue"
     }
 
-    fun decode(rawValue: String?): KeyboardUtilitySlots {
+    fun decode(rawValue: String?): KeyboardQuickActionSlots {
         if (rawValue.isNullOrBlank()) {
-            return KeyboardUtilitySlots()
+            return KeyboardQuickActionSlots()
         }
 
         val valuesByKey = rawValue.split(";").mapNotNull { part ->
@@ -36,7 +36,7 @@ object KeyboardUtilitySlotsPreferenceCodec {
         // Unknown fields are ignored for forward compatibility, but the two
         // known fields must exist so a malformed value falls back safely.
         if (!valuesByKey.containsKey(CENTER_KEY) || !valuesByKey.containsKey(RIGHT_KEY)) {
-            return KeyboardUtilitySlots()
+            return KeyboardQuickActionSlots()
         }
 
         val centerValue = valuesByKey.getValue(CENTER_KEY)
@@ -45,14 +45,14 @@ object KeyboardUtilitySlotsPreferenceCodec {
         val centerItems = centerValue
             .split(",")
             .mapNotNull { value -> value.takeIf { it.isNotBlank() } }
-            .mapNotNull(KeyboardUtilityItemId::fromStorageValue)
+            .mapNotNull(KeyboardQuickActionId::fromStorageValue)
 
         val rightItem = rightValue
             .takeIf { value -> value.isNotBlank() }
-            ?.let(KeyboardUtilityItemId::fromStorageValue)
+            ?.let(KeyboardQuickActionId::fromStorageValue)
 
         return reducer.sanitize(
-            KeyboardUtilitySlots(
+            KeyboardQuickActionSlots(
                 centerItemIds = centerItems,
                 rightItemId = rightItem,
             ),

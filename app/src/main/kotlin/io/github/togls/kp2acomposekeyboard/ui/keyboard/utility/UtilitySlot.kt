@@ -34,21 +34,21 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.togls.kp2acomposekeyboard.R
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilityItemId
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionId
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.LocalKeyboardAdaptiveMetrics
 
 @Composable
 internal fun UtilityItemSlot(
-    itemId: KeyboardUtilityItemId?,
+    itemId: KeyboardQuickActionId?,
     onIntent: (KeyboardIntent) -> Unit,
     modifier: Modifier = Modifier,
     emptySlot: Boolean = false,
     iconSize: Dp = 24.dp,
     dragState: UtilityDragState? = null,
     dragSource: UtilityDragSource = UtilityDragSource.Pinned,
-    onBoundsChanged: ((KeyboardUtilityItemId, Rect) -> Unit)? = null,
+    onBoundsChanged: ((KeyboardQuickActionId, Rect) -> Unit)? = null,
     onDrop: ((
-        itemId: KeyboardUtilityItemId,
+        itemId: KeyboardQuickActionId,
         source: UtilityDragSource,
         target: UtilityDropTarget?,
     ) -> Unit)? = null,
@@ -120,7 +120,7 @@ internal fun UtilityItemSlot(
                     .then(draggableModifier),
                 iconRes = item.iconRes,
                 contentDescription = stringResource(item.contentDescriptionRes),
-                onClick = { onIntent(KeyboardIntent.ClickUtilityItem(item.id)) },
+                onClick = { onIntent(KeyboardIntent.ClickQuickAction(item.id)) },
             )
         }
 

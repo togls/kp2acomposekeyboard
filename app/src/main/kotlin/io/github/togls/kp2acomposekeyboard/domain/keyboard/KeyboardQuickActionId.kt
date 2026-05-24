@@ -1,12 +1,12 @@
 package io.github.togls.kp2acomposekeyboard.domain.keyboard
 
-interface KeyboardUtilityItemId {
+interface KeyboardQuickActionId {
     val storageValue: String
 
     companion object {
-        val productionItems: List<KeyboardUtilityItemId> = listOf(SettingsUtilityItemId)
+        val productionItems: List<KeyboardQuickActionId> = listOf(SettingsQuickActionId)
 
-        fun fromStorageValue(value: String): KeyboardUtilityItemId? {
+        fun fromStorageValue(value: String): KeyboardQuickActionId? {
             return productionItems.firstOrNull { itemId ->
                 itemId.storageValue == value
             }
@@ -14,10 +14,10 @@ interface KeyboardUtilityItemId {
     }
 }
 
-data object SettingsUtilityItemId : KeyboardUtilityItemId {
+data object SettingsQuickActionId : KeyboardQuickActionId {
     override val storageValue = "settings"
 }
 
-data object ClearEntryUtilityItemId : KeyboardUtilityItemId {
+data object ClearEntryQuickActionId : KeyboardQuickActionId {
     override val storageValue = "clear_entry"
 }

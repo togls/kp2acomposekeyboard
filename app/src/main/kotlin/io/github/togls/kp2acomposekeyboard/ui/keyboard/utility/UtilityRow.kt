@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.Dp
 import io.github.togls.kp2acomposekeyboard.R
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardIntent
 import io.github.togls.kp2acomposekeyboard.feature.keyboard.KeyboardUiState
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilityItemId
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionId
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.key.ExistingEntryHint
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.KeyboardMetrics
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.style.LocalKeyboardAdaptiveMetrics
@@ -39,18 +39,18 @@ internal fun UtilityRow(
     val sideSlotSize = adaptiveMetrics.keyHeight * SideSlotScale
     val centerSlotWidth = adaptiveMetrics.keyHeight * CenterSlotWidthScale
     val showRightSlot = shouldShowRightUtilitySlot(
-        rightItemId = state.utilitySlots.rightItemId,
-        isUtilityPanelExpanded = state.isUtilityPanelExpanded,
+        rightItemId = state.quickActionSlots.rightItemId,
+        isQuickActionPanelExpanded = state.isQuickActionPanelExpanded,
     )
     var centerContainerBounds by remember { mutableStateOf<Rect?>(null) }
     var rightSlotBounds by remember { mutableStateOf<Rect?>(null) }
-    val centerItemBounds = remember { mutableStateMapOf<KeyboardUtilityItemId, Rect>() }
+    val centerItemBounds = remember { mutableStateMapOf<KeyboardQuickActionId, Rect>() }
 
     SideEffect {
         // Bounds are refreshed after composition so drop detection uses the
         // latest row layout, including the optional right slot.
         dragState.updateDropTargets(
-            centerItemBounds = state.utilitySlots.centerItemIds.mapNotNull { itemId ->
+            centerItemBounds = state.quickActionSlots.centerItemIds.mapNotNull { itemId ->
                 centerItemBounds[itemId]
             },
             centerContainerBounds = centerContainerBounds,
@@ -67,22 +67,22 @@ internal fun UtilityRow(
             modifier = Modifier
                 .width(sideSlotSize)
                 .height(sideSlotSize),
-            iconRes = if (state.isUtilityPanelExpanded) {
+            iconRes = if (state.isQuickActionPanelExpanded) {
                 R.drawable.ic_close_24
             } else {
                 R.drawable.ic_apps_24
             },
             contentDescription = stringResource(
-                if (state.isUtilityPanelExpanded) {
+                if (state.isQuickActionPanelExpanded) {
                     R.string.cd_key_close_utility_panel
                 } else {
                     R.string.cd_key_toggle_utility_panel
                 },
             ),
-            onClick = { onIntent(KeyboardIntent.ToggleUtilityPanel) },
+            onClick = { onIntent(KeyboardIntent.ToggleQuickActionPanel) },
         )
 
-        if (state.hasActiveSession && !state.isUtilityPanelExpanded) {
+        if (state.hasActiveSession && !state.isQuickActionPanelExpanded) {
             val entryName = state.currentEntryName
                 ?.takeIf { it.isNotBlank() }
                 ?: stringResource(R.string.entry_name_unnamed)
@@ -113,7 +113,7 @@ internal fun UtilityRow(
 
         if (showRightSlot) {
             UtilityItemSlot(
-                itemId = state.utilitySlots.rightItemId,
+                itemId = state.quickActionSlots.rightItemId,
                 onIntent = onIntent,
                 emptySlot = true,
                 dragState = dragState,
@@ -142,12 +142,12 @@ private fun UtilityCenterSlots(
     state: KeyboardUiState,
     dragState: UtilityDragState,
     onIntent: (KeyboardIntent) -> Unit,
-    onItemBoundsChanged: (KeyboardUtilityItemId, Rect) -> Unit,
+    onItemBoundsChanged: (KeyboardQuickActionId, Rect) -> Unit,
     itemWidth: Dp,
     modifier: Modifier = Modifier,
 ) {
     val adaptiveMetrics = LocalKeyboardAdaptiveMetrics.current
-    val centerItems = state.utilitySlots.centerItemIds
+    val centerItems = state.quickActionSlots.centerItemIds
 
     Row(
         modifier = modifier,

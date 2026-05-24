@@ -1,10 +1,10 @@
 package io.github.togls.kp2acomposekeyboard.domain.keyboard
 
-class KeyboardUtilitySlotsReducer(
-    private val allowedItemIds: List<KeyboardUtilityItemId> = KeyboardUtilityItemId.productionItems,
+class KeyboardQuickActionSlotsReducer(
+    private val allowedItemIds: List<KeyboardQuickActionId> = KeyboardQuickActionId.productionItems,
 ) {
 
-    fun sanitize(slots: KeyboardUtilitySlots): KeyboardUtilitySlots {
+    fun sanitize(slots: KeyboardQuickActionSlots): KeyboardQuickActionSlots {
         val allowedCenterItems = slots.centerItemIds
             .filter { itemId -> itemId in allowedItemIds }
             .distinct()
@@ -14,22 +14,22 @@ class KeyboardUtilitySlotsReducer(
             ?.takeUnless { itemId -> itemId in allowedCenterItems }
 
         val maxCenterSize = if (allowedRightItem == null) {
-            KeyboardUtilitySlots.MAX_PINNED_ITEMS
+            KeyboardQuickActionSlots.MAX_PINNED_ITEMS
         } else {
-            KeyboardUtilitySlots.MAX_PINNED_ITEMS - 1
+            KeyboardQuickActionSlots.MAX_PINNED_ITEMS - 1
         }
 
-        return KeyboardUtilitySlots(
+        return KeyboardQuickActionSlots(
             centerItemIds = allowedCenterItems.take(maxCenterSize),
             rightItemId = allowedRightItem,
         )
     }
 
     fun moveToCenter(
-        slots: KeyboardUtilitySlots,
-        itemId: KeyboardUtilityItemId,
+        slots: KeyboardQuickActionSlots,
+        itemId: KeyboardQuickActionId,
         targetIndex: Int,
-    ): KeyboardUtilitySlots {
+    ): KeyboardQuickActionSlots {
         val sanitizedSlots = sanitize(slots)
         if (!canInsertToCenter(sanitizedSlots, itemId)) {
             return sanitizedSlots
@@ -48,9 +48,9 @@ class KeyboardUtilitySlotsReducer(
     }
 
     fun moveToRight(
-        slots: KeyboardUtilitySlots,
-        itemId: KeyboardUtilityItemId,
-    ): KeyboardUtilitySlots {
+        slots: KeyboardQuickActionSlots,
+        itemId: KeyboardQuickActionId,
+    ): KeyboardQuickActionSlots {
         val sanitizedSlots = sanitize(slots)
         if (!canMoveToRight(itemId)) {
             return sanitizedSlots
@@ -64,9 +64,9 @@ class KeyboardUtilitySlotsReducer(
     }
 
     fun remove(
-        slots: KeyboardUtilitySlots,
-        itemId: KeyboardUtilityItemId,
-    ): KeyboardUtilitySlots {
+        slots: KeyboardQuickActionSlots,
+        itemId: KeyboardQuickActionId,
+    ): KeyboardQuickActionSlots {
         return sanitize(
             slots.copy(
                 centerItemIds = slots.centerItemIds.filterNot { existingItemId ->
@@ -80,18 +80,18 @@ class KeyboardUtilitySlotsReducer(
     }
 
     private fun canInsertToCenter(
-        slots: KeyboardUtilitySlots,
-        itemId: KeyboardUtilityItemId,
+        slots: KeyboardQuickActionSlots,
+        itemId: KeyboardQuickActionId,
     ): Boolean {
         return itemId in allowedItemIds &&
                 (itemId in slots.centerItemIds ||
                         itemId == slots.rightItemId ||
-                        slots.pinnedCount < KeyboardUtilitySlots.MAX_PINNED_ITEMS)
+                        slots.pinnedCount < KeyboardQuickActionSlots.MAX_PINNED_ITEMS)
     }
 
-    private fun canMoveToRight(itemId: KeyboardUtilityItemId): Boolean {
+    private fun canMoveToRight(itemId: KeyboardQuickActionId): Boolean {
         // Right-slot replacement is allowed even when pinned count is already
-        // full, as long as the item is a supported production utility.
+        // full, as long as the item is a supported production quick action.
         return itemId in allowedItemIds
     }
 }

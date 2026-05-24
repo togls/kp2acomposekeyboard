@@ -43,7 +43,7 @@ internal fun UtilityPanel(
                 .filter { item ->
                     shouldShowPanelUtilityItem(
                         itemId = item.id,
-                        utilitySlots = state.utilitySlots,
+                        quickActionSlots = state.quickActionSlots,
                     )
                 }
                 .forEach { item ->

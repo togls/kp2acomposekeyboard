@@ -5,7 +5,7 @@ import io.github.togls.kp2acomposekeyboard.application.keyboard.CommitKeyboardFi
 import io.github.togls.kp2acomposekeyboard.application.keyboard.ObserveKeyboardSessionSnapshotUseCase
 import io.github.togls.kp2acomposekeyboard.application.session.SessionTimeoutController
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardSubtype
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionSlots
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.MainKeyboardLayout
 
 import io.github.togls.kp2acomposekeyboard.application.settings.KeyboardSettingsStore
@@ -163,8 +163,8 @@ class KeyboardViewModelSubtypeTest {
 
         override val settings = settingsFlow
 
-        override suspend fun updateUtilitySlots(slots: KeyboardUtilitySlots) {
-            settingsFlow.value = settingsFlow.value.copy(utilitySlots = slots)
+        override suspend fun updateQuickActionSlots(slots: KeyboardQuickActionSlots) {
+            settingsFlow.value = settingsFlow.value.copy(quickActionSlots = slots)
         }
     }
 }

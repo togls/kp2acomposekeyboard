@@ -16,7 +16,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.togls.kp2acomposekeyboard.application.settings.KeyboardSettingsStore
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionSlots
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -97,9 +97,9 @@ class SettingsRepository @Inject constructor(
         }
     }
 
-    override suspend fun updateUtilitySlots(slots: KeyboardUtilitySlots) {
+    override suspend fun updateQuickActionSlots(slots: KeyboardQuickActionSlots) {
         context.keyboardSettingsDataStore.edit { preferences ->
-            preferences[Keys.UTILITY_SLOTS] = KeyboardUtilitySlotsPreferenceCodec.encode(slots)
+            preferences[Keys.QUICK_ACTION_SLOTS] = KeyboardQuickActionSlotsPreferenceCodec.encode(slots)
         }
     }
 
@@ -136,7 +136,9 @@ class SettingsRepository @Inject constructor(
                 ?: KeyboardSettings().keySoundEnabled,
             showKeyPreview = this[Keys.SHOW_KEY_PREVIEW]
                 ?: KeyboardSettings().showKeyPreview,
-            utilitySlots = KeyboardUtilitySlotsPreferenceCodec.decode(this[Keys.UTILITY_SLOTS]),
+            quickActionSlots = KeyboardQuickActionSlotsPreferenceCodec.decode(
+                this[Keys.QUICK_ACTION_SLOTS],
+            ),
         )
     }
 
@@ -160,6 +162,6 @@ class SettingsRepository @Inject constructor(
         val HAPTIC_FEEDBACK_ENABLED = booleanPreferencesKey("haptic_feedback_enabled")
         val KEY_SOUND_ENABLED = booleanPreferencesKey("key_sound_enabled")
         val SHOW_KEY_PREVIEW = booleanPreferencesKey("show_key_preview")
-        val UTILITY_SLOTS = stringPreferencesKey("utility_slots")
+        val QUICK_ACTION_SLOTS = stringPreferencesKey("quick_action_slots")
     }
 }

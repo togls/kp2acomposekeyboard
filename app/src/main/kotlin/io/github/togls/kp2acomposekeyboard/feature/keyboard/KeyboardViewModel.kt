@@ -5,15 +5,15 @@ import io.github.togls.kp2acomposekeyboard.application.keyboard.CommitKeyboardFi
 import io.github.togls.kp2acomposekeyboard.application.keyboard.ObserveKeyboardSessionSnapshotUseCase
 import io.github.togls.kp2acomposekeyboard.application.session.SessionTimeoutController
 import io.github.togls.kp2acomposekeyboard.application.settings.KeyboardSettingsStore
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.ClearEntryUtilityItemId
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.ClearEntryQuickActionId
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.TextInputMode
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.EntryFieldDisplayMode
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardSubtype
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilityItemId
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlotsReducer
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionId
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionSlots
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionSlotsReducer
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.MainKeyboardLayout
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.SettingsUtilityItemId
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.SettingsQuickActionId
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -36,7 +36,7 @@ class KeyboardViewModel(
     private val settingsStore: KeyboardSettingsStore,
 ) : ViewModel() {
 
-    private val utilitySlotsReducer = KeyboardUtilitySlotsReducer()
+    private val quickActionSlotsReducer = KeyboardQuickActionSlotsReducer()
 
     private val _uiState = MutableStateFlow(KeyboardUiState())
     val uiState: StateFlow<KeyboardUiState> = _uiState.asStateFlow()
@@ -64,26 +64,26 @@ class KeyboardViewModel(
             )
 
             KeyboardIntent.ClearEntry -> sessionTimeoutController.clearNow()
-            KeyboardIntent.ToggleUtilityPanel -> toggleUtilityPanel()
-            KeyboardIntent.CloseUtilityPanel -> closeUtilityPanel()
-            is KeyboardIntent.ClickUtilityItem -> clickUtilityItem(intent.itemId)
-            is KeyboardIntent.MoveUtilityItemToCenter -> updateUtilitySlots { slots ->
-                utilitySlotsReducer.moveToCenter(
+            KeyboardIntent.ToggleQuickActionPanel -> toggleQuickActionPanel()
+            KeyboardIntent.CloseQuickActionPanel -> closeQuickActionPanel()
+            is KeyboardIntent.ClickQuickAction -> clickQuickAction(intent.itemId)
+            is KeyboardIntent.MoveQuickActionToCenter -> updateQuickActionSlots { slots ->
+                quickActionSlotsReducer.moveToCenter(
                     slots = slots,
                     itemId = intent.itemId,
                     targetIndex = intent.targetIndex,
                 )
             }
 
-            is KeyboardIntent.MoveUtilityItemToRight -> updateUtilitySlots { slots ->
-                utilitySlotsReducer.moveToRight(
+            is KeyboardIntent.MoveQuickActionToRight -> updateQuickActionSlots { slots ->
+                quickActionSlotsReducer.moveToRight(
                     slots = slots,
                     itemId = intent.itemId,
                 )
             }
 
-            is KeyboardIntent.RemoveUtilityItem -> updateUtilitySlots { slots ->
-                utilitySlotsReducer.remove(
+            is KeyboardIntent.RemoveQuickAction -> updateQuickActionSlots { slots ->
+                quickActionSlotsReducer.remove(
                     slots = slots,
                     itemId = intent.itemId,
                 )
@@ -120,7 +120,7 @@ class KeyboardViewModel(
             settingsStore.settings.collect { settings ->
                 _uiState.update { state ->
                     state.copy(
-                        utilitySlots = settings.utilitySlots,
+                        quickActionSlots = settings.quickActionSlots,
                         englishUsSubtypeEnabled = settings.englishUsSubtypeEnabled,
                     )
                 }
@@ -245,32 +245,32 @@ class KeyboardViewModel(
         sendEffect(KeyboardEffect.SwitchToNextInputMethod)
     }
 
-    private fun toggleUtilityPanel() {
+    private fun toggleQuickActionPanel() {
         _uiState.update { state ->
-            state.copy(isUtilityPanelExpanded = !state.isUtilityPanelExpanded)
+            state.copy(isQuickActionPanelExpanded = !state.isQuickActionPanelExpanded)
         }
     }
 
-    private fun closeUtilityPanel() {
+    private fun closeQuickActionPanel() {
         _uiState.update { state ->
-            state.copy(isUtilityPanelExpanded = false)
+            state.copy(isQuickActionPanelExpanded = false)
         }
     }
 
-    private fun clickUtilityItem(itemId: KeyboardUtilityItemId) {
-        if (itemId == SettingsUtilityItemId) {
+    private fun clickQuickAction(itemId: KeyboardQuickActionId) {
+        if (itemId == SettingsQuickActionId) {
             sendEffect(KeyboardEffect.LaunchSettings)
         }
-        if (itemId == ClearEntryUtilityItemId) {
+        if (itemId == ClearEntryQuickActionId) {
             sessionTimeoutController.clearNow()
         }
     }
 
-    private fun updateUtilitySlots(
-        transform: (KeyboardUtilitySlots) -> KeyboardUtilitySlots,
+    private fun updateQuickActionSlots(
+        transform: (KeyboardQuickActionSlots) -> KeyboardQuickActionSlots,
     ) {
         viewModelScope.launch {
-            settingsStore.updateUtilitySlots(transform(_uiState.value.utilitySlots))
+            settingsStore.updateQuickActionSlots(transform(_uiState.value.quickActionSlots))
         }
     }
 

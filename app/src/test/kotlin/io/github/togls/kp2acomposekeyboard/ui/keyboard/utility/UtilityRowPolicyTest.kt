@@ -3,8 +3,8 @@ package io.github.togls.kp2acomposekeyboard.ui.keyboard.utility
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.unit.IntOffset
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.SettingsUtilityItemId
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionSlots
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.SettingsQuickActionId
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -17,7 +17,7 @@ class UtilityRowPolicyTest {
         assertFalse(
             shouldShowRightUtilitySlot(
                 rightItemId = null,
-                isUtilityPanelExpanded = false,
+                isQuickActionPanelExpanded = false,
             ),
         )
     }
@@ -27,7 +27,7 @@ class UtilityRowPolicyTest {
         assertTrue(
             shouldShowRightUtilitySlot(
                 rightItemId = null,
-                isUtilityPanelExpanded = true,
+                isQuickActionPanelExpanded = true,
             ),
         )
     }
@@ -36,8 +36,8 @@ class UtilityRowPolicyTest {
     fun shouldShowRightSlot_showsPinnedRightItemWhenPanelIsClosed() {
         assertTrue(
             shouldShowRightUtilitySlot(
-                rightItemId = SettingsUtilityItemId,
-                isUtilityPanelExpanded = false,
+                rightItemId = SettingsQuickActionId,
+                isQuickActionPanelExpanded = false,
             ),
         )
     }
@@ -57,9 +57,9 @@ class UtilityRowPolicyTest {
     fun shouldShowPanelUtilityItem_hidesPinnedCenterItem() {
         assertFalse(
             shouldShowPanelUtilityItem(
-                itemId = SettingsUtilityItemId,
-                utilitySlots = KeyboardUtilitySlots(
-                    centerItemIds = listOf(SettingsUtilityItemId),
+                itemId = SettingsQuickActionId,
+                quickActionSlots = KeyboardQuickActionSlots(
+                    centerItemIds = listOf(SettingsQuickActionId),
                 ),
             ),
         )
@@ -69,10 +69,10 @@ class UtilityRowPolicyTest {
     fun shouldShowPanelUtilityItem_hidesPinnedRightItem() {
         assertFalse(
             shouldShowPanelUtilityItem(
-                itemId = SettingsUtilityItemId,
-                utilitySlots = KeyboardUtilitySlots(
+                itemId = SettingsQuickActionId,
+                quickActionSlots = KeyboardQuickActionSlots(
                     centerItemIds = emptyList(),
-                    rightItemId = SettingsUtilityItemId,
+                    rightItemId = SettingsQuickActionId,
                 ),
             ),
         )
@@ -82,17 +82,17 @@ class UtilityRowPolicyTest {
     fun shouldShowDraggedSourceItem_hidesOnlyMatchingDraggedSource() {
         assertFalse(
             shouldShowDraggedSourceItem(
-                itemId = SettingsUtilityItemId,
+                itemId = SettingsQuickActionId,
                 source = UtilityDragSource.Panel,
-                draggedItemId = SettingsUtilityItemId,
+                draggedItemId = SettingsQuickActionId,
                 dragSource = UtilityDragSource.Panel,
             ),
         )
         assertTrue(
             shouldShowDraggedSourceItem(
-                itemId = SettingsUtilityItemId,
+                itemId = SettingsQuickActionId,
                 source = UtilityDragSource.Pinned,
-                draggedItemId = SettingsUtilityItemId,
+                draggedItemId = SettingsQuickActionId,
                 dragSource = UtilityDragSource.Panel,
             ),
         )

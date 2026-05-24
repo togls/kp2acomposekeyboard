@@ -8,11 +8,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
-import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilityItemId
+import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardQuickActionId
 
 @Stable
 internal class UtilityDragState {
-    var draggedItemId by mutableStateOf<KeyboardUtilityItemId?>(null)
+    var draggedItemId by mutableStateOf<KeyboardQuickActionId?>(null)
         private set
     var dragSource by mutableStateOf<UtilityDragSource?>(null)
         private set
@@ -40,7 +40,7 @@ internal class UtilityDragState {
     }
 
     fun startDrag(
-        itemId: KeyboardUtilityItemId,
+        itemId: KeyboardQuickActionId,
         source: UtilityDragSource,
         sourceBounds: Rect,
         localPointerPosition: Offset,
