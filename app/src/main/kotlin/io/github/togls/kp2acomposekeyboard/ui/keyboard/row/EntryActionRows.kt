@@ -41,11 +41,6 @@ internal fun NormalEntryActionRow(
             modifier = Modifier.width(metrics.standardKeyWidth),
         )
 
-        ClearEntryKey(
-            onIntent = onIntent,
-            modifier = Modifier.width(metrics.standardKeyWidth),
-        )
-
         DeleteKey(
             onIntent = onIntent,
             modifier = Modifier.width(metrics.sideKeyWidth),

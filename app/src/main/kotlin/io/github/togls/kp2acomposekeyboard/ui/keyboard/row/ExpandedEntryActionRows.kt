@@ -65,11 +65,6 @@ internal fun ExpandedEntryActionRows(
                 modifier = Modifier.weight(1.5f),
             )
 
-            ClearEntryKey(
-                onIntent = onIntent,
-                modifier = Modifier.weight(1f),
-            )
-
             DeleteKey(
                 modifier = Modifier.weight(1f),
                 onIntent = onIntent,

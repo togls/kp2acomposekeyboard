@@ -17,3 +17,7 @@ interface KeyboardUtilityItemId {
 data object SettingsUtilityItemId : KeyboardUtilityItemId {
     override val storageValue = "settings"
 }
+
+data object ClearEntryUtilityItemId : KeyboardUtilityItemId {
+    override val storageValue = "clear_entry"
+}

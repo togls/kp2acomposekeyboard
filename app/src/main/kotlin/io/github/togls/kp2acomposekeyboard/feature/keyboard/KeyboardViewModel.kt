@@ -251,6 +251,9 @@ class KeyboardViewModel(
         if (itemId == SettingsUtilityItemId) {
             sendEffect(KeyboardEffect.LaunchSettings)
         }
+        if (itemId == ClearEntryUtilityItemId) {
+            sessionTimeoutController.clearNow()
+        }
     }
 
     private fun updateUtilitySlots(
