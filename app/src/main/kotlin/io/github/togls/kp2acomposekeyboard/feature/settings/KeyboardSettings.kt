@@ -7,6 +7,7 @@ data class KeyboardSettings(
     val useDynamicColor: Boolean = true,
     val sessionTimeoutSeconds: Int = DEFAULT_SESSION_TIMEOUT_SECONDS,
     val keyboardHeightMode: KeyboardHeightMode = KeyboardHeightMode.Normal,
+    val englishUsSubtypeEnabled: Boolean = false,
     val hapticFeedbackEnabled: Boolean = false,
     val keySoundEnabled: Boolean = false,
     val showKeyPreview: Boolean = false,

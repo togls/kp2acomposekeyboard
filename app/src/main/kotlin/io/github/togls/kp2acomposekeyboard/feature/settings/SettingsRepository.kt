@@ -68,6 +68,12 @@ class SettingsRepository @Inject constructor(
         }
     }
 
+    suspend fun updateEnglishUsSubtypeEnabled(enabled: Boolean) {
+        context.keyboardSettingsDataStore.edit { preferences ->
+            preferences[Keys.ENGLISH_US_SUBTYPE_ENABLED] = enabled
+        }
+    }
+
     suspend fun updateHapticFeedbackEnabled(enabled: Boolean) {
         context.keyboardSettingsDataStore.edit { preferences ->
             preferences[Keys.HAPTIC_FEEDBACK_ENABLED] = enabled
@@ -117,6 +123,8 @@ class SettingsRepository @Inject constructor(
                 key = Keys.KEYBOARD_HEIGHT_MODE,
                 defaultValue = KeyboardHeightMode.Normal,
             ),
+            englishUsSubtypeEnabled = this[Keys.ENGLISH_US_SUBTYPE_ENABLED]
+                ?: KeyboardSettings().englishUsSubtypeEnabled,
             hapticFeedbackEnabled = this[Keys.HAPTIC_FEEDBACK_ENABLED]
                 ?: KeyboardSettings().hapticFeedbackEnabled,
             keySoundEnabled = this[Keys.KEY_SOUND_ENABLED]
@@ -143,6 +151,7 @@ class SettingsRepository @Inject constructor(
         val USE_DYNAMIC_COLOR = booleanPreferencesKey("use_dynamic_color")
         val SESSION_TIMEOUT_SECONDS = intPreferencesKey("session_timeout_seconds")
         val KEYBOARD_HEIGHT_MODE = stringPreferencesKey("keyboard_height_mode")
+        val ENGLISH_US_SUBTYPE_ENABLED = booleanPreferencesKey("english_us_subtype_enabled")
         val HAPTIC_FEEDBACK_ENABLED = booleanPreferencesKey("haptic_feedback_enabled")
         val KEY_SOUND_ENABLED = booleanPreferencesKey("key_sound_enabled")
         val SHOW_KEY_PREVIEW = booleanPreferencesKey("show_key_preview")

@@ -17,6 +17,10 @@ sealed interface SettingsIntent {
         val heightMode: KeyboardHeightMode,
     ) : SettingsIntent
 
+    data class ChangeEnglishUsSubtypeEnabled(
+        val enabled: Boolean,
+    ) : SettingsIntent
+
     data class ChangeHapticFeedbackEnabled(
         val enabled: Boolean,
     ) : SettingsIntent

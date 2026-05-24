@@ -63,6 +63,12 @@ class SettingsViewModel @Inject constructor(
                 }
             }
 
+            is SettingsIntent.ChangeEnglishUsSubtypeEnabled -> {
+                saveSetting {
+                    settingsRepository.updateEnglishUsSubtypeEnabled(intent.enabled)
+                }
+            }
+
             is SettingsIntent.ChangeHapticFeedbackEnabled -> {
                 saveSetting {
                     settingsRepository.updateHapticFeedbackEnabled(intent.enabled)

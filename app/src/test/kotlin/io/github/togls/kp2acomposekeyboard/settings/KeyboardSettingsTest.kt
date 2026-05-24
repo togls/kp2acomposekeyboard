@@ -17,6 +17,7 @@ class KeyboardSettingsTest {
         assertEquals(true, settings.useDynamicColor)
         assertEquals(60, settings.sessionTimeoutSeconds)
         assertEquals(KeyboardHeightMode.Normal, settings.keyboardHeightMode)
+        assertEquals(false, settings.englishUsSubtypeEnabled)
         assertEquals(false, settings.hapticFeedbackEnabled)
         assertEquals(false, settings.keySoundEnabled)
         assertEquals(false, settings.showKeyPreview)

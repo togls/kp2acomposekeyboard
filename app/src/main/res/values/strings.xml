@@ -33,6 +33,11 @@
     <string name="settings_keyboard_height_compact">Compact</string>
     <string name="settings_keyboard_height_normal">Normal</string>
     <string name="settings_keyboard_height_tall">Tall</string>
+    <string name="settings_section_input_layouts">Input layouts</string>
+    <string name="settings_entry_layout_title">Entry</string>
+    <string name="settings_entry_layout_description">Always available for selected KeePass entry fields</string>
+    <string name="settings_english_us_layout_title">English (US)</string>
+    <string name="settings_english_us_layout_description">Show English (US) as a system input method layout</string>
     <string name="settings_session_timeout_title">Entry auto-clear</string>
     <string name="settings_session_timeout_description">Controls how long password fields stay in the in-memory session</string>
     <string name="settings_session_timeout_decrease">-15 sec</string>

@@ -142,6 +142,24 @@ private fun SettingsContent(
 
         HorizontalDivider()
 
+        SectionTitle(text = stringResource(R.string.settings_section_input_layouts))
+
+        FixedEnabledSettingRow(
+            title = stringResource(R.string.settings_entry_layout_title),
+            description = stringResource(R.string.settings_entry_layout_description),
+        )
+
+        SwitchSettingRow(
+            title = stringResource(R.string.settings_english_us_layout_title),
+            description = stringResource(R.string.settings_english_us_layout_description),
+            checked = settings.englishUsSubtypeEnabled,
+            onCheckedChange = { enabled ->
+                onIntent(SettingsIntent.ChangeEnglishUsSubtypeEnabled(enabled))
+            },
+        )
+
+        HorizontalDivider()
+
         SectionTitle(text = stringResource(R.string.settings_section_security))
 
         SessionTimeoutSetting(
@@ -295,6 +313,41 @@ private fun SessionTimeoutSetting(
                 Text(text = stringResource(R.string.settings_session_timeout_increase))
             }
         }
+    }
+}
+
+@Composable
+private fun FixedEnabledSettingRow(
+    title: String,
+    description: String,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+            )
+
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Switch(
+            checked = true,
+            enabled = false,
+            onCheckedChange = null,
+        )
     }
 }
 
