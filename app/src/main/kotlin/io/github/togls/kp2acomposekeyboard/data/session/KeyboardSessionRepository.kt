@@ -1,7 +1,6 @@
 package io.github.togls.kp2acomposekeyboard.data.session
 
 import io.github.togls.kp2acomposekeyboard.domain.session.KeyboardSession
-import io.github.togls.kp2acomposekeyboard.domain.session.KeyboardSessionSnapshot
 
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,10 +30,5 @@ class KeyboardSessionRepository @Inject constructor() {
             ?.fields
             ?.firstOrNull { field -> field.id == fieldId }
             ?.value
-    }
-
-    fun getSnapshot(): KeyboardSessionSnapshot? {
-        // Snapshots are the UI safety boundary and must not expose raw field values.
-        return _session.value?.toSnapshot()
     }
 }

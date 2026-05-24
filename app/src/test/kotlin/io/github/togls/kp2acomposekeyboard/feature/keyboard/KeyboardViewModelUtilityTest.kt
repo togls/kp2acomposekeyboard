@@ -1,12 +1,15 @@
 package io.github.togls.kp2acomposekeyboard.feature.keyboard
 
+import io.github.togls.kp2acomposekeyboard.application.keyboard.ClearKeyboardSessionUseCase
+import io.github.togls.kp2acomposekeyboard.application.keyboard.CommitKeyboardFieldUseCase
+import io.github.togls.kp2acomposekeyboard.application.keyboard.ObserveKeyboardSessionSnapshotUseCase
+import io.github.togls.kp2acomposekeyboard.application.session.SessionTimeoutController
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.KeyboardUtilitySlots
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.SettingsUtilityItemId
 
 import io.github.togls.kp2acomposekeyboard.application.settings.KeyboardSettingsStore
-import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardSettings
 import io.github.togls.kp2acomposekeyboard.data.session.KeyboardSessionRepository
-import io.github.togls.kp2acomposekeyboard.application.session.SessionTimeoutController
+import io.github.togls.kp2acomposekeyboard.domain.settings.KeyboardSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -139,9 +142,11 @@ class KeyboardViewModelUtilityTest {
         settingsStore: FakeKeyboardSettingsStore = FakeKeyboardSettingsStore(),
     ): KeyboardViewModel {
         val sessionRepository = KeyboardSessionRepository()
+        val clearKeyboardSession = ClearKeyboardSessionUseCase(sessionRepository)
         return KeyboardViewModel(
-            sessionRepository = sessionRepository,
-            sessionTimeoutController = SessionTimeoutController(sessionRepository),
+            observeKeyboardSessionSnapshot = ObserveKeyboardSessionSnapshotUseCase(sessionRepository),
+            commitKeyboardField = CommitKeyboardFieldUseCase(sessionRepository),
+            sessionTimeoutController = SessionTimeoutController(clearKeyboardSession),
             settingsStore = settingsStore,
         )
     }

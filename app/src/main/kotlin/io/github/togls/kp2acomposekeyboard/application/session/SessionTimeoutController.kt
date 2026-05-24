@@ -1,7 +1,7 @@
 package io.github.togls.kp2acomposekeyboard.application.session
 
 import io.github.togls.kp2acomposekeyboard.BuildConfig
-import io.github.togls.kp2acomposekeyboard.data.session.KeyboardSessionRepository
+import io.github.togls.kp2acomposekeyboard.application.keyboard.ClearKeyboardSessionUseCase
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -12,7 +12,7 @@ import javax.inject.Singleton
 
 @Singleton
 class SessionTimeoutController @Inject constructor(
-    private val sessionRepository: KeyboardSessionRepository,
+    private val clearKeyboardSession: ClearKeyboardSessionUseCase,
 ) {
 
     private var timeoutJob: Job? = null
@@ -31,7 +31,7 @@ class SessionTimeoutController @Inject constructor(
                 return@launch
             }
 
-            sessionRepository.clear()
+            clearKeyboardSession()
         }
     }
 
@@ -43,7 +43,7 @@ class SessionTimeoutController @Inject constructor(
 
     fun clearNow() {
         cancelTimeout()
-        sessionRepository.clear()
+        clearKeyboardSession()
     }
 
     companion object {

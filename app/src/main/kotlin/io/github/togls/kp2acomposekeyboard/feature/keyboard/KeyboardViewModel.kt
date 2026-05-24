@@ -1,5 +1,10 @@
 package io.github.togls.kp2acomposekeyboard.feature.keyboard
 
+import io.github.togls.kp2acomposekeyboard.application.keyboard.CommitFieldResult
+import io.github.togls.kp2acomposekeyboard.application.keyboard.CommitKeyboardFieldUseCase
+import io.github.togls.kp2acomposekeyboard.application.keyboard.ObserveKeyboardSessionSnapshotUseCase
+import io.github.togls.kp2acomposekeyboard.application.session.SessionTimeoutController
+import io.github.togls.kp2acomposekeyboard.application.settings.KeyboardSettingsStore
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.ClearEntryUtilityItemId
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.DefaultInputMode
 import io.github.togls.kp2acomposekeyboard.domain.keyboard.EntryFieldDisplayMode
@@ -12,11 +17,8 @@ import io.github.togls.kp2acomposekeyboard.domain.keyboard.SettingsUtilityItemId
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.togls.kp2acomposekeyboard.application.settings.KeyboardSettingsStore
 import io.github.togls.kp2acomposekeyboard.security.SecureLog
-import io.github.togls.kp2acomposekeyboard.data.session.KeyboardSessionRepository
 import io.github.togls.kp2acomposekeyboard.domain.session.KeyboardSessionSnapshot
-import io.github.togls.kp2acomposekeyboard.application.session.SessionTimeoutController
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +30,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class KeyboardViewModel(
-    private val sessionRepository: KeyboardSessionRepository,
+    private val observeKeyboardSessionSnapshot: ObserveKeyboardSessionSnapshotUseCase,
+    private val commitKeyboardField: CommitKeyboardFieldUseCase,
     private val sessionTimeoutController: SessionTimeoutController,
     private val settingsStore: KeyboardSettingsStore,
 ) : ViewModel() {
@@ -127,11 +130,8 @@ class KeyboardViewModel(
 
     private fun observeSession() {
         viewModelScope.launch {
-            sessionRepository.session.collect { session ->
-                // Read a sanitized snapshot for UI updates before any raw field value could escape.
-                val snapshot = sessionRepository.getSnapshot()
-
-                if (session != null) {
+            observeKeyboardSessionSnapshot().collect { snapshot ->
+                if (snapshot != null) {
                     // Timeout is tied to the ViewModel scope so it stops with the IME UI lifecycle.
                     sessionTimeoutController.restartTimeout(viewModelScope)
                 } else {
@@ -281,15 +281,18 @@ class KeyboardViewModel(
     }
 
     private fun commitField(fieldId: String) {
-        val value = sessionRepository.getFieldValue(fieldId)
+        when (val result = commitKeyboardField(fieldId)) {
+            is CommitFieldResult.Commit -> {
+                sendEffect(KeyboardEffect.CommitText(result.text))
+            }
 
-        if (value.isNullOrEmpty()) {
-            SecureLog.d("Field commit ignored")
-            return
+            is CommitFieldResult.Ignored -> {
+                SecureLog.d(
+                    message = "Field commit ignored",
+                    "reason" to result.reason.name,
+                )
+            }
         }
-
-        // Values may be passwords, TOTP codes, or recovery codes; keep them out of UI state and logs.
-        sendEffect(KeyboardEffect.CommitText(value))
     }
 
     private fun previousExtraFieldPage() {
