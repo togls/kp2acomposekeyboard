@@ -337,6 +337,10 @@ class KeyboardImeService :
                 launchSettingsActivity()
                 SecureLog.d("Launch settings requested")
             }
+
+            is KeyboardEffect.SwitchToSubtype -> Unit
+
+            KeyboardEffect.SwitchToNextInputMethod -> Unit
         }
     }
 

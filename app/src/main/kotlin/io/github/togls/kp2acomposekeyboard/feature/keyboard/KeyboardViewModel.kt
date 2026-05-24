@@ -78,6 +78,8 @@ class KeyboardViewModel(
 
             KeyboardIntent.SwitchToDefaultLayout -> switchToDefaultLayout()
             KeyboardIntent.SwitchToEntryLayout -> switchToEntryLayout()
+            is KeyboardIntent.ChangeSubtype -> changeSubtype(intent.subtype)
+            KeyboardIntent.SwitchLanguage -> switchLanguage()
 
             KeyboardIntent.SwitchToLetters -> updateDefaultInputMode(DefaultInputMode.Letters)
             KeyboardIntent.SwitchToNumbers -> updateDefaultInputMode(DefaultInputMode.Numbers)
@@ -104,7 +106,10 @@ class KeyboardViewModel(
         viewModelScope.launch {
             settingsStore.settings.collect { settings ->
                 _uiState.update { state ->
-                    state.copy(utilitySlots = settings.utilitySlots)
+                    state.copy(
+                        utilitySlots = settings.utilitySlots,
+                        englishUsSubtypeEnabled = settings.englishUsSubtypeEnabled,
+                    )
                 }
             }
         }
@@ -158,7 +163,7 @@ class KeyboardViewModel(
 
     private fun KeyboardUiState.withoutSession(): KeyboardUiState {
         return copy(
-            mainLayout = MainKeyboardLayout.Default,
+            mainLayout = currentSubtype.mainLayout,
             entryFieldDisplayMode = EntryFieldDisplayMode.Paged,
             currentEntryName = null,
             hasActiveSession = false,
@@ -198,6 +203,36 @@ class KeyboardViewModel(
         _uiState.update { state ->
             state.copy(defaultInputMode = inputMode)
         }
+    }
+
+    private fun changeSubtype(subtype: KeyboardSubtype) {
+        _uiState.update { state ->
+            state.copy(
+                currentSubtype = subtype,
+                mainLayout = subtype.mainLayout,
+                entryFieldDisplayMode = EntryFieldDisplayMode.Paged,
+                extraFieldPageIndex = 0,
+            )
+        }
+    }
+
+    private fun switchLanguage() {
+        val state = _uiState.value
+
+        if (state.mainLayout == MainKeyboardLayout.Entry && state.englishUsSubtypeEnabled) {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    currentSubtype = KeyboardSubtype.EnglishUs,
+                    mainLayout = MainKeyboardLayout.Default,
+                    entryFieldDisplayMode = EntryFieldDisplayMode.Paged,
+                    extraFieldPageIndex = 0,
+                )
+            }
+            sendEffect(KeyboardEffect.SwitchToSubtype(KeyboardSubtype.EnglishUs))
+            return
+        }
+
+        sendEffect(KeyboardEffect.SwitchToNextInputMethod)
     }
 
     private fun toggleUtilityPanel() {

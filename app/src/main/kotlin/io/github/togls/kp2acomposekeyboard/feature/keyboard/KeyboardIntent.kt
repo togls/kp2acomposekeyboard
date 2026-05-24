@@ -17,6 +17,8 @@ sealed interface KeyboardIntent {
 
     data object SwitchToDefaultLayout : KeyboardIntent
     data object SwitchToEntryLayout : KeyboardIntent
+    data class ChangeSubtype(val subtype: KeyboardSubtype) : KeyboardIntent
+    data object SwitchLanguage : KeyboardIntent
 
     data object SwitchToLetters : KeyboardIntent
     data object SwitchToNumbers : KeyboardIntent

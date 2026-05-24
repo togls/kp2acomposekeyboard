@@ -6,7 +6,9 @@ import io.github.togls.kp2acomposekeyboard.domain.KeyboardFieldUiModel
  * Represents the complete UI state required to render the keyboard.
  */
 data class KeyboardUiState(
-    val mainLayout: MainKeyboardLayout = MainKeyboardLayout.Default,
+    val mainLayout: MainKeyboardLayout = MainKeyboardLayout.Entry,
+    val currentSubtype: KeyboardSubtype = KeyboardSubtype.Entry,
+    val englishUsSubtypeEnabled: Boolean = false,
     val defaultInputMode: DefaultInputMode = DefaultInputMode.Letters,
     val entryFieldDisplayMode: EntryFieldDisplayMode = EntryFieldDisplayMode.Paged,
     val currentEntryName: String? = null,

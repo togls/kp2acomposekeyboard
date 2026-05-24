@@ -11,4 +11,6 @@ sealed interface KeyboardEffect {
     ) : KeyboardEffect
 
     data object LaunchSettings : KeyboardEffect
+    data class SwitchToSubtype(val subtype: KeyboardSubtype) : KeyboardEffect
+    data object SwitchToNextInputMethod : KeyboardEffect
 }
