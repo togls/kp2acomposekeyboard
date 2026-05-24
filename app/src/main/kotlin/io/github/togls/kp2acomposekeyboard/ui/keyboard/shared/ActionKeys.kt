@@ -173,6 +173,5 @@ internal fun CollapseFieldsKey(
         iconRes = R.drawable.ic_collapse_all_24,
         contentDescription = stringResource(R.string.cd_key_collapse_fields),
         onClick = { onIntent(KeyboardIntent.CollapseFields) },
-        emphasis = KeyboardKeyEmphasis.Action,
     )
 }

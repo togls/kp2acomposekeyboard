@@ -17,6 +17,7 @@ import io.github.togls.kp2acomposekeyboard.ui.keyboard.shared.SelectEntryKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.shared.SwitchToTextInputKey
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.metrics.KeyboardMetrics
 import io.github.togls.kp2acomposekeyboard.ui.keyboard.metrics.LocalKeyboardLayoutMetrics
+import io.github.togls.kp2acomposekeyboard.ui.keyboard.shared.ExpandFieldsKey
 
 @Composable
 internal fun ExpandedEntryActionRows(
