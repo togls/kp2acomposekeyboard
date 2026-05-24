@@ -54,20 +54,11 @@ class Kp2aEntrySyncHandler @Inject constructor(
     }
 
     fun closeEntryView(closedEntryId: String?) {
-        val currentSession = sessionRepository.currentSession()
-
-        if (currentSession == null) {
-            logSyncResult(source = SOURCE_CLOSE_ENTRY_VIEW, result = RESULT_IGNORED)
-            return
-        }
-
-        if (!shouldClearClosedSession(currentSession, closedEntryId)) {
-            logSyncResult(source = SOURCE_CLOSE_ENTRY_VIEW, result = RESULT_IGNORED)
-            return
-        }
-
-        sessionRepository.clear()
-        logSyncResult(source = SOURCE_CLOSE_ENTRY_VIEW, result = RESULT_CLEARED)
+        logSyncResult(
+            source = SOURCE_CLOSE_ENTRY_VIEW,
+            result = RESULT_IGNORED,
+            hasEntryId = !closedEntryId.isNullOrBlank(),
+        )
     }
 
     fun lockDatabase() {
@@ -84,6 +75,10 @@ class Kp2aEntrySyncHandler @Inject constructor(
 
     fun unlockDatabase() {
         logSyncResult(source = SOURCE_UNLOCK_DATABASE, result = RESULT_IGNORED)
+    }
+
+    fun accessRevoked() {
+        clearForSecurityBoundary(source = SOURCE_ACCESS_REVOKED)
     }
 
     private fun parseEntry(intent: Intent): ParsedEntry? {
@@ -109,20 +104,11 @@ class Kp2aEntrySyncHandler @Inject constructor(
         return currentEntryId == incomingEntryId
     }
 
-    private fun shouldClearClosedSession(
-        currentSession: KeyboardSession,
-        closedEntryId: String?,
-    ): Boolean {
-        val currentEntryId = currentSession.entryId
-
-        if (currentEntryId.isNullOrBlank() || closedEntryId.isNullOrBlank()) {
-            return true
-        }
-
-        return currentEntryId == closedEntryId
+    private fun clearForDatabaseAction(source: String) {
+        clearForSecurityBoundary(source)
     }
 
-    private fun clearForDatabaseAction(source: String) {
+    private fun clearForSecurityBoundary(source: String) {
         sessionRepository.clear()
         logSyncResult(source = source, result = RESULT_CLEARED)
     }
@@ -131,12 +117,13 @@ class Kp2aEntrySyncHandler @Inject constructor(
         source: String,
         result: String,
         parsedEntry: ParsedEntry? = null,
+        hasEntryId: Boolean = !parsedEntry?.session?.entryId.isNullOrBlank(),
     ) {
         SecureLog.d(
             message = "kp2a entry sync handled",
             "source" to source,
             "result" to result,
-            "hasEntryId" to !parsedEntry?.session?.entryId.isNullOrBlank(),
+            "hasEntryId" to hasEntryId,
             "fieldCount" to (parsedEntry?.result?.fields?.size ?: 0),
             "protectedFieldCount" to (parsedEntry?.result?.protectedFields?.size ?: 0),
         )
@@ -155,6 +142,7 @@ class Kp2aEntrySyncHandler @Inject constructor(
         const val SOURCE_CLOSE_DATABASE = "close_database"
         const val SOURCE_OPEN_DATABASE = "open_database"
         const val SOURCE_UNLOCK_DATABASE = "unlock_database"
+        const val SOURCE_ACCESS_REVOKED = "access_revoked"
 
         const val RESULT_APPLIED = "applied"
         const val RESULT_CLEARED = "cleared"

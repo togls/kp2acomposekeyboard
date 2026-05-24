@@ -121,7 +121,7 @@ Keepass2Android plugin action broadcast
     -> KeyboardUiState
 ```
 
-`ACTION_OPEN_ENTRY` maps full entry output into a new keyboard session. `ACTION_ENTRY_OUTPUT_MODIFIED` maps the full modified output and replaces the active session when the entry identity is matching or unavailable. `ACTION_CLOSE_ENTRY_VIEW` clears the matching active session, and missing entry identity is treated conservatively. `ACTION_LOCK_DATABASE` and `ACTION_CLOSE_DATABASE` clear the session unconditionally. `ACTION_OPEN_DATABASE` and `ACTION_UNLOCK_DATABASE` never restore entry data.
+`ACTION_OPEN_ENTRY` maps full entry output into a new keyboard session. `ACTION_ENTRY_OUTPUT_MODIFIED` maps the full modified output and replaces the active session when the entry identity is matching or unavailable. `ACTION_CLOSE_ENTRY_VIEW` is ignored because Keepass2Android also sends it after a normal entry selection flow closes the entry activity. `ACTION_LOCK_DATABASE` and `ACTION_CLOSE_DATABASE` clear the session unconditionally. `ACTION_OPEN_DATABASE` and `ACTION_UNLOCK_DATABASE` never restore entry data. `ACTION_REVOKE_ACCESS` is handled by `Kp2aPluginAccessReceiver` and clears the active session after the SDK processes the access revocation.
 
 The receiver must not log raw entry JSON, field values, entry IDs, field IDs, database paths, or database display names.
 

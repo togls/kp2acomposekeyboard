@@ -235,9 +235,9 @@ Keepass2Android action broadcasts are the primary cleanup path. The timeout is a
 
 Clear triggers:
 
-- Keepass2Android closes the active entry view.
 - Keepass2Android locks the database.
 - Keepass2Android closes the database.
+- Keepass2Android revokes plugin access.
 - Timeout fallback.
 - Manual clear.
 - Normal IME destruction.
@@ -248,7 +248,8 @@ Do not clear the old session when:
 - Launching Keepass2Android selection temporarily hides or destroys the IME.
 - The user cancels entry selection.
 - Entry selection fails before a new session is created.
-- A modified or closed entry broadcast clearly belongs to a different entry.
+- Keepass2Android closes the entry view after a normal entry selection.
+- A modified entry broadcast clearly belongs to a different entry.
 
 ## Clipboard Policy
 

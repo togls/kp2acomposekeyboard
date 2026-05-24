@@ -115,36 +115,42 @@ class Kp2aEntrySyncHandlerTest {
     }
 
     @Test
-    fun closeEntryView_clearsWhenEntryIdsMatch() {
+    fun closeEntryView_keepsSessionWhenEntryIdsMatch() {
         val repository = KeyboardSessionRepository()
         val handler = createHandler(repository)
         handler.openEntry(entryIntent(entryId = "entry-1", username = "previous-user"))
 
         handler.closeEntryView(closedEntryId = "entry-1")
 
-        assertNull(repository.currentSession())
+        val session = repository.currentSession()
+        assertEquals("entry-1", session?.entryId)
+        assertEquals("previous-user", session?.usernameValue())
     }
 
     @Test
-    fun closeEntryView_clearsWhenCurrentSessionHasNoEntryId() {
+    fun closeEntryView_keepsSessionWhenCurrentSessionHasNoEntryId() {
         val repository = KeyboardSessionRepository()
         val handler = createHandler(repository)
         handler.openEntry(entryIntent(entryId = null, username = "previous-user"))
 
         handler.closeEntryView(closedEntryId = "entry-1")
 
-        assertNull(repository.currentSession())
+        val session = repository.currentSession()
+        assertNull(session?.entryId)
+        assertEquals("previous-user", session?.usernameValue())
     }
 
     @Test
-    fun closeEntryView_clearsWhenClosedEntryIdIsMissing() {
+    fun closeEntryView_keepsSessionWhenClosedEntryIdIsMissing() {
         val repository = KeyboardSessionRepository()
         val handler = createHandler(repository)
         handler.openEntry(entryIntent(entryId = "entry-1", username = "previous-user"))
 
         handler.closeEntryView(closedEntryId = null)
 
-        assertNull(repository.currentSession())
+        val session = repository.currentSession()
+        assertEquals("entry-1", session?.entryId)
+        assertEquals("previous-user", session?.usernameValue())
     }
 
     @Test
@@ -178,6 +184,17 @@ class Kp2aEntrySyncHandlerTest {
         handler.openEntry(entryIntent(entryId = "entry-1", username = "previous-user"))
 
         handler.closeDatabase()
+
+        assertNull(repository.currentSession())
+    }
+
+    @Test
+    fun accessRevoked_clearsSessionUnconditionally() {
+        val repository = KeyboardSessionRepository()
+        val handler = createHandler(repository)
+        handler.openEntry(entryIntent(entryId = "entry-1", username = "previous-user"))
+
+        handler.accessRevoked()
 
         assertNull(repository.currentSession())
     }
